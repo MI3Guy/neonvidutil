@@ -1,0 +1,5 @@
+# IDE Files
+*.userprefs
+
+# Build files
+bin/

@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeonVidUtil", "NeonVidUtil\NeonVidUtil.csproj", "{2A288B86-B932-444B-B669-F9FB19AC9C79}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Debug|x86.ActiveCfg = Debug|x86
+		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Debug|x86.Build.0 = Debug|x86
+		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Release|x86.ActiveCfg = Release|x86
+		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = NeonVidUtil\NeonVidUtil.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = None
+		$1.ResourceNamePolicy = FileFormatDefault
+		$0.TextStylePolicy = $2
+		$2.inheritsSet = null
+		$2.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $3
+		$3.IndentSwitchBody = True
+		$3.AlignEmbeddedUsingStatements = False
+		$3.AlignEmbeddedIfStatements = False
+		$3.NamespaceBraceStyle = EndOfLine
+		$3.ClassBraceStyle = EndOfLine
+		$3.InterfaceBraceStyle = EndOfLine
+		$3.StructBraceStyle = EndOfLine
+		$3.EnumBraceStyle = EndOfLine
+		$3.MethodBraceStyle = EndOfLine
+		$3.ConstructorBraceStyle = EndOfLine
+		$3.DestructorBraceStyle = EndOfLine
+		$3.IfElseBraceForcement = AddBraces
+		$3.ForBraceForcement = AddBraces
+		$3.WhileBraceForcement = AddBraces
+		$3.UsingBraceForcement = AddBraces
+		$3.FixedBraceForcement = AddBraces
+		$3.PlaceElseOnNewLine = True
+		$3.PlaceCatchOnNewLine = True
+		$3.PlaceFinallyOnNewLine = True
+		$3.BeforeMethodDeclarationParentheses = False
+		$3.BeforeMethodCallParentheses = False
+		$3.BeforeConstructorDeclarationParentheses = False
+		$3.BeforeIndexerDeclarationBracket = False
+		$3.BeforeDelegateDeclarationParentheses = False
+		$3.NewParentheses = False
+		$3.IfParentheses = False
+		$3.WhileParentheses = False
+		$3.ForParentheses = False
+		$3.ForeachParentheses = False
+		$3.CatchParentheses = False
+		$3.SwitchParentheses = False
+		$3.LockParentheses = False
+		$3.UsingParentheses = False
+		$3.SpacesBeforeBrackets = False
+		$3.inheritsSet = Mono
+		$3.inheritsScope = text/x-csharp
+		$3.scope = text/x-csharp
+	EndGlobalSection
+EndGlobal
