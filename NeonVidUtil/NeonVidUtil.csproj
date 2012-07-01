@@ -35,13 +35,29 @@
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Package>gtk-sharp-2.0</Package>
     </Reference>
+    <Reference Include="System" />
+    <Reference Include="Wav2Flac, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Wav2Flac.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="FormatHandler.cs" />
     <Compile Include="FormatType.cs" />
-    <Compile Include="FormatEncoder.cs" />
-    <Compile Include="FormatDecoder.cs" />
+    <Compile Include="MediaInfoFormatHandler.cs" />
+    <Compile Include="MediaInfoDLL.cs" />
+    <Compile Include="MKVFormatHandler.cs" />
+    <Compile Include="FLACFormatHandler.cs" />
+    <Compile Include="FormatCodec.cs" />
+    <Compile Include="MKVFormatDecoder.cs" />
+    <Compile Include="FLACFormatEncoder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NeonVidUtil.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ConversionPresets.txt" />
   </ItemGroup>
 </Project>

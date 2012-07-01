@@ -22,7 +22,7 @@ namespace NeonVidUtil {
 			Custom,
 			
 			FLAC,
-			MKV,
+			Matroska,
 			WAV
 			
 		}
@@ -32,12 +32,18 @@ namespace NeonVidUtil {
 			
 			Custom,
 			
+			// Video
+			AVC,
+			VC1,
+			MPEG2,
+			
 			FLAC,
 			PCM,
 			
+			SRT
 		}
 		
-		public FormatType(FormatCodec codec) : this(FormatContainer.None, FormatCodec.Unknown) {
+		public FormatType(FormatCodec codec) : this(FormatContainer.None, codec) {
 		}
 		
 		public FormatType(FormatContainer container, FormatCodec codec) {
@@ -65,10 +71,33 @@ namespace NeonVidUtil {
 			else if(containerString == null) {
 				Container = FormatContainer.None;
 			}
+			
+			FormatContainer econt;
+			if(Enum.TryParse<FormatContainer>(container, out econt)) {
+				containerString = null;
+				Container = econt;
+			}
+			
+			FormatCodec ecodec;
+			if(Enum.TryParse<FormatCodec>(codec, out ecodec)) {
+				codecString = null;
+				Codec = ecodec;
+			}
 		}
 		
 		public FormatType(string container, FormatType[] items) : this(FormatContainer.Custom, items) {
 			containerString = container;
+		}
+		
+		public bool IsRawContainer() {
+			return Container == FormatContainer.None || FormatHandler.AutoIsRawCodec(this);
+		}
+		
+		public FormatType IsRawCodec() {
+			FormatType outtype;
+			bool res = FormatHandler.AutoIsRawCodec(this, out outtype);
+			if(res) return outtype;
+			return null;
 		}
 		
 		
@@ -117,6 +146,10 @@ namespace NeonVidUtil {
 			protected set;
 		}
 		
+		public object Param {
+			get;
+			set;
+		}
 	}
 }
 
