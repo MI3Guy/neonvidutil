@@ -1,6 +1,6 @@
 using System;
 
-namespace NeonVidUtil {
+namespace NeonVidUtil.Core {
 	public class FormatType {
 		/// <summary>
 		/// Container specifies the container format.
@@ -69,17 +69,19 @@ namespace NeonVidUtil {
 				throw new ArgumentException();
 			}
 			else if(containerString == null) {
-				Container = FormatContainer.None;
-			}
+					Container = FormatContainer.None;
+				}
 			
-			FormatContainer econt;
-			if(Enum.TryParse<FormatContainer>(container, out econt)) {
-				containerString = null;
-				Container = econt;
+			if(container != null) {
+				FormatContainer econt;
+				if(Enum.TryParse<FormatContainer>(container.Replace("-", ""), out econt)) {
+					containerString = null;
+					Container = econt;
+				}
 			}
 			
 			FormatCodec ecodec;
-			if(Enum.TryParse<FormatCodec>(codec, out ecodec)) {
+			if(Enum.TryParse<FormatCodec>(codec.Replace("-", ""), out ecodec)) {
 				codecString = null;
 				Codec = ecodec;
 			}
@@ -96,10 +98,11 @@ namespace NeonVidUtil {
 		public FormatType IsRawCodec() {
 			FormatType outtype;
 			bool res = FormatHandler.AutoIsRawCodec(this, out outtype);
-			if(res) return outtype;
+			if(res) {
+				return outtype;
+			}
 			return null;
 		}
-		
 		
 		public FormatContainer Container {
 			get;
@@ -119,7 +122,6 @@ namespace NeonVidUtil {
 			}
 		}
 		
-		
 		public FormatCodec? Codec {
 			get;
 			protected set;
@@ -133,11 +135,11 @@ namespace NeonVidUtil {
 					return null;
 				}
 				else if(Codec == FormatCodec.Custom) {
-					return codecString;
-				}
-				else {
-					return ((FormatCodec)Codec).ToString();
-				}
+						return codecString;
+					}
+					else {
+						return ((FormatCodec)Codec).ToString();
+					}
 			}
 		}
 		
@@ -149,6 +151,23 @@ namespace NeonVidUtil {
 		public object Param {
 			get;
 			set;
+		}
+		
+		public override bool Equals(object obj) {
+			if(!(obj is FormatType)) {
+				return false;
+			}
+			FormatType other = (FormatType)obj;
+			
+			if((this.Items == null && other.Items != null) || (this.Items != null && other.Items != null)) {
+				return false;
+			}
+			else if(this.Items != null && other.Items != null) {
+				
+			}
+			
+			return this.ContainerString == other.ContainerString &&
+				this.CodecString == other.CodecString;
 		}
 	}
 }

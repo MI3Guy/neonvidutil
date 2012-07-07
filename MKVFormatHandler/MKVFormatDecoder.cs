@@ -1,8 +1,9 @@
 using System;
 using System.IO;
 using System.Diagnostics;
+using NeonVidUtil.Core;
 
-namespace NeonVidUtil {
+namespace NeonVidUtil.Plugin.MKVFormatHandler {
 	public class MKVFormatDecoder : FormatCodec {
 		public MKVFormatDecoder(int index) {
 			this.index = index - 1; // Handle mkvextract using odd index.
@@ -11,17 +12,7 @@ namespace NeonVidUtil {
 		private int index;
 		
 		public override void ConvertData(Stream inbuff, Stream outbuff) {
-			string fname;
-			if(inbuff is FileStream) {
-				FileStream fs = (FileStream)inbuff;
-				fname = fs.Name;
-			}
-			else {
-				using(FileStream fs = CreateTempFile()) {
-					inbuff.CopyTo(fs);
-					fname = fs.Name;
-				}
-			}
+			string fname = UseTempFile(inbuff);
 			
 			if(!File.Exists(fname)) throw new FileNotFoundException("Temp/original file could not be found", fname);
 			

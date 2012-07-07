@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-namespace NeonVidUtil {
+namespace NeonVidUtil.Core {
 	public abstract class FormatCodec {
 		private static List<string> tempFiles = new List<string>();
 		
@@ -42,6 +42,22 @@ namespace NeonVidUtil {
 		}
 		
 		public abstract void ConvertData(Stream inbuff, Stream outbuff);
+		
+		protected string UseTempFile(Stream inbuff) {
+			string fname;
+			if(inbuff is FileStream) {
+				FileStream fs = (FileStream)inbuff;
+				fname = fs.Name;
+				fs.Close();
+			}
+			else {
+				using(FileStream fs = CreateTempFile()) {
+					inbuff.CopyTo(fs);
+					fname = fs.Name;
+				}
+			}
+			return fname;
+		}
 		
 	}
 }

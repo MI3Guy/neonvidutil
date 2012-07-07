@@ -1,6 +1,7 @@
 using System;
+using NeonVidUtil.Core;
 
-namespace NeonVidUtil {
+namespace NeonVidUtil.Plugin.MKVFormatHandler {
 	public class MKVFormatHandler : FormatHandler {
 		public MKVFormatHandler() : base() {
 			

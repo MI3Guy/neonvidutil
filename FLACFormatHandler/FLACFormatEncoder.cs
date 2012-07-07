@@ -1,8 +1,9 @@
 using System;
 using System.IO;
 using Wav2Flac;
+using NeonVidUtil.Core;
 
-namespace NeonVidUtil {
+namespace NeonVidUtil.Plugin.FLACFormatHandler {
 	public class FLACFormatEncoder : FormatCodec {
 		public FLACFormatEncoder() {
 			

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using MediaInfoLib;
+using NeonVidUtil.Core;
 
-namespace NeonVidUtil {
+namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 	public class MediaInfoFormatHandler : FormatHandler {
 		public MediaInfoFormatHandler() : base() {
 			MI = new MediaInfo();

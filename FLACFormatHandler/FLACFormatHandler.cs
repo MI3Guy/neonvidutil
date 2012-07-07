@@ -1,9 +1,10 @@
 using System;
 using System.IO;
+using NeonVidUtil.Core;
 
-namespace NeonVidUtil {
+namespace NeonVidUtil.Plugin.FLACFormatHandler {
 	public class FLACFormatHandler : FormatHandler {
-		public FLACFormatHandler() : base() {
+		public FLACFormatHandler() {
 		}
 		
 		public override bool IsRawCodec(FormatType type) {
@@ -42,6 +43,18 @@ namespace NeonVidUtil {
 					(output.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.WAV) &&
 					output.Codec == FormatType.FormatCodec.PCM
 				)) ? new object() : null;
+		}
+		
+		public override FormatType[] OutputTypes(FormatType input) {
+			if(input.Container == FormatType.FormatContainer.FLAC && input.Codec == FormatType.FormatCodec.FLAC) {
+				return null;//new FormatType[] { new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodec.PCM) };
+			}
+			else if(input.Container == FormatType.FormatContainer.WAV && input.Codec == FormatType.FormatCodec.PCM) {
+				return new FormatType[] { new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodec.FLAC) };
+			}
+			else {
+				return null;
+			}
 		}
 	}
 }

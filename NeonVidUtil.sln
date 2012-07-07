@@ -3,16 +3,52 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeonVidUtil", "NeonVidUtil\NeonVidUtil.csproj", "{2A288B86-B932-444B-B669-F9FB19AC9C79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeonVidUtilCore", "NeonVidUtilCore\NeonVidUtilCore.csproj", "{510A298E-779D-49E5-831D-57EECE564DC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaInfoFormatHandler", "MediaInfoFormatHandler\MediaInfoFormatHandler.csproj", "{8A2FBEFF-6875-4396-90EB-2B5C10FE1D44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MKVFormatHandler", "MKVFormatHandler\MKVFormatHandler.csproj", "{9DE451FF-3FA3-4E5C-821C-A110FF45E979}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLACFormatHandler", "FLACFormatHandler\FLACFormatHandler.csproj", "{09A283E5-B047-43FF-BFDE-056E697CC438}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VC1FormatHandler", "VC1FormatHandler\VC1FormatHandler.csproj", "{B2F34AC2-61EC-4168-85C7-308D6D08DA40}"
+EndProject
+Project("{2857B73E-F847-4B02-9238-064979017E93}") = "vc1conv", "vc1conv\vc1conv.cproj", "{84D1A34D-1F70-465B-968D-B74BAEE16774}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09A283E5-B047-43FF-BFDE-056E697CC438}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{09A283E5-B047-43FF-BFDE-056E697CC438}.Debug|x86.Build.0 = Debug|Any CPU
+		{09A283E5-B047-43FF-BFDE-056E697CC438}.Release|x86.ActiveCfg = Release|Any CPU
+		{09A283E5-B047-43FF-BFDE-056E697CC438}.Release|x86.Build.0 = Release|Any CPU
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Debug|x86.ActiveCfg = Debug|x86
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Debug|x86.Build.0 = Debug|x86
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Release|x86.ActiveCfg = Release|x86
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Release|x86.Build.0 = Release|x86
+		{510A298E-779D-49E5-831D-57EECE564DC1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{510A298E-779D-49E5-831D-57EECE564DC1}.Debug|x86.Build.0 = Debug|Any CPU
+		{510A298E-779D-49E5-831D-57EECE564DC1}.Release|x86.ActiveCfg = Release|Any CPU
+		{510A298E-779D-49E5-831D-57EECE564DC1}.Release|x86.Build.0 = Release|Any CPU
+		{84D1A34D-1F70-465B-968D-B74BAEE16774}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{84D1A34D-1F70-465B-968D-B74BAEE16774}.Debug|x86.Build.0 = Debug|Any CPU
+		{84D1A34D-1F70-465B-968D-B74BAEE16774}.Release|x86.ActiveCfg = Release|Any CPU
+		{84D1A34D-1F70-465B-968D-B74BAEE16774}.Release|x86.Build.0 = Release|Any CPU
+		{8A2FBEFF-6875-4396-90EB-2B5C10FE1D44}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8A2FBEFF-6875-4396-90EB-2B5C10FE1D44}.Debug|x86.Build.0 = Debug|Any CPU
+		{8A2FBEFF-6875-4396-90EB-2B5C10FE1D44}.Release|x86.ActiveCfg = Release|Any CPU
+		{8A2FBEFF-6875-4396-90EB-2B5C10FE1D44}.Release|x86.Build.0 = Release|Any CPU
+		{9DE451FF-3FA3-4E5C-821C-A110FF45E979}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9DE451FF-3FA3-4E5C-821C-A110FF45E979}.Debug|x86.Build.0 = Debug|Any CPU
+		{9DE451FF-3FA3-4E5C-821C-A110FF45E979}.Release|x86.ActiveCfg = Release|Any CPU
+		{9DE451FF-3FA3-4E5C-821C-A110FF45E979}.Release|x86.Build.0 = Release|Any CPU
+		{B2F34AC2-61EC-4168-85C7-308D6D08DA40}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B2F34AC2-61EC-4168-85C7-308D6D08DA40}.Debug|x86.Build.0 = Debug|Any CPU
+		{B2F34AC2-61EC-4168-85C7-308D6D08DA40}.Release|x86.ActiveCfg = Release|Any CPU
+		{B2F34AC2-61EC-4168-85C7-308D6D08DA40}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = NeonVidUtil\NeonVidUtil.csproj

@@ -1,16 +1,45 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
-namespace NeonVidUtil {
+namespace NeonVidUtil.Core {
 	public abstract class FormatHandler {
-		protected FormatHandler() {
-			allHandlers.Add(this.GetType().Name, this);
+		
+		static FormatHandler() {
+			DirectoryInfo directory = new DirectoryInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Plugins"));
+			FileInfo[] files = directory.GetFiles("*.dll");
+			foreach(FileInfo file in files) {
+				string className = Path.GetFileNameWithoutExtension(file.Name);
+				try {
+					Assembly assembly = Assembly.LoadFrom(file.FullName);
+					Type type = assembly.GetType("NeonVidUtil.Plugin." + className + "." + className);
+
+					FormatHandler instance = (FormatHandler)Activator.CreateInstance(type);
+					allHandlers.Add(instance.GetType().Name, instance);
+				}
+				catch(Exception ex) {
+					Console.WriteLine("Error loading plugin: {0}", ex);
+				}
+			}
 		}
 		
 		public virtual bool IsRawCodec(FormatType type) {
 			return false;
 		}
 		
+		/// <summary>
+		/// Determines whether type is a raw codec and specifies the corresponding container.
+		/// </summary>
+		/// <returns>
+		/// <c>true</c> if type is a raw codec; otherwise, <c>false</c>.
+		/// </returns>
+		/// <param name='type'>
+		/// Type to test.
+		/// </param>
+		/// <param name='outtype'>
+		/// The format to use instead of the one passed.
+		/// </param>
 		public virtual bool IsRawCodec(FormatType type, out FormatType outtype) {
 			outtype = null;
 			return IsRawCodec(type);
@@ -44,8 +73,13 @@ namespace NeonVidUtil {
 			return null;
 		}
 		
-		private static Dictionary<string,FormatHandler> allHandlers = new Dictionary<string,FormatHandler>();
 		
+		private static Dictionary<string,FormatHandler> allHandlers = new Dictionary<string,FormatHandler>();
+		public static IEnumerable<KeyValuePair<string, FormatHandler>> AllHandlers {
+			get { return allHandlers; }
+		}
+		
+		// Static methods
 		public static bool AutoIsRawCodec(FormatType type) {
 			foreach(KeyValuePair<string, FormatHandler> kvp in allHandlers) {
 				if(kvp.Value.IsRawCodec(type)) return true;
@@ -65,35 +99,7 @@ namespace NeonVidUtil {
 			return false;
 		}
 
-		public static FormatType AutoReadInfo(string file) {
-			foreach(KeyValuePair<string, FormatHandler> kvp in allHandlers) {
-				FormatType type = kvp.Value.ReadInfo(file);
-				if(type != null) return type;
-			}
-			return null;
-		}
 		
-		public static FormatType AutoGenerateOutputType(string file) {
-			foreach(KeyValuePair<string, FormatHandler> kvp in allHandlers) {
-				FormatType type = kvp.Value.GenerateOutputType(file);
-				if(type != null) return type;
-			}
-			return null;
-		}
-		
-		public static FormatHandler FindConverter(FormatType input, FormatType output, string option) {
-			foreach(KeyValuePair<string, FormatHandler> kvp in allHandlers) {
-				object testparam = kvp.Value.HandlesConversion(input, output, option);
-				if(testparam != null) {
-					return kvp.Value;
-				}
-			}
-			return null;
-		}
-		
-		public static FormatHandler[] FindConvertPath(FormatType input, FormatType output) {
-			return null;
-		}
 	}
 }
 
