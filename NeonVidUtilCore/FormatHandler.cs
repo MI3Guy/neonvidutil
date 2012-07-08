@@ -65,11 +65,11 @@ namespace NeonVidUtil.Core {
 			return null;
 		}
 		
-		public virtual bool HandlesProcessing(FormatType format, string name) {
+		public virtual bool HandlesProcessing(FormatType format, string name, FormatType next) {
 			return false;
 		}
 		
-		public virtual FormatCodec Process(FormatType input, string name) {
+		public virtual FormatCodec Process(FormatType input, string name, FormatType next) {
 			return null;
 		}
 		

@@ -6,26 +6,50 @@ namespace NeonVidUtil.Core {
 	public abstract class FormatCodec {
 		private static List<string> tempFiles = new List<string>();
 		
-		public static FileStream CreateTempFile(string basis) {
-			string fname;
-			Random rand = new Random();
-			do {
-				fname = string.Format("{0}.{1}.tmp", basis, rand.Next());
-			} while(File.Exists(fname));
-			
-			lock(tempFiles) {
-				tempFiles.Add(fname);
+		
+		public static string GetTempFileName(string extension) {
+			if(extension == null) {
+				return Path.GetTempFileName();
 			}
-			
-			return File.OpenWrite(fname);
+			string fileName;
+			int attempt = 0;
+			bool exit = false;
+			do {
+				fileName = Path.GetRandomFileName();
+				fileName = Path.ChangeExtension(fileName, extension);
+				fileName = Path.Combine(Path.GetTempPath(), fileName);
+		
+				try {
+					using(new FileStream(fileName, FileMode.CreateNew)) {
+					}
+					
+					exit = true;
+				}
+				catch(IOException ex) {
+					if(++attempt == 10) {
+						throw new IOException("No unique temporary file name is available.", ex);
+					}
+				}
+		
+			} while (!exit);
+		
+			return fileName;
 		}
 		
 		public static FileStream CreateTempFile() {
-			return File.OpenWrite(CreateTempFileName());
+			return CreateTempFile(null);
+		}
+		
+		public static FileStream CreateTempFile(string ext) {
+			return File.OpenWrite(CreateTempFileName(ext));
 		}
 		
 		public static string CreateTempFileName() {
-			string fname = Path.GetTempFileName();
+			return CreateTempFileName(null);
+		}
+		
+		public static string CreateTempFileName(string ext) {
+			string fname = GetTempFileName(ext);
 			lock(tempFiles) {
 				tempFiles.Add(fname);
 			}
@@ -41,21 +65,35 @@ namespace NeonVidUtil.Core {
 			}
 		}
 		
+		public abstract Stream InitConvertData(Stream inbuff, string outfile);
 		public abstract void ConvertData(Stream inbuff, Stream outbuff);
 		
 		protected string UseTempFile(Stream inbuff) {
+			return UseTempFile(inbuff, null);
+		}
+		
+		protected string UseTempFile(Stream inbuff, string ext) {
 			string fname;
-			if(inbuff is FileStream) {
+			if(ext == null && inbuff is FileStream) {
 				FileStream fs = (FileStream)inbuff;
 				fname = fs.Name;
 				fs.Close();
 			}
+			else if(inbuff is FileStream) {
+				FileStream fs = (FileStream)inbuff;
+				fname = CreateTempFileName(ext);
+				fs.Close();
+				File.Delete(fname);
+				File.Move(fs.Name, fname);
+			}
 			else {
-				using(FileStream fs = CreateTempFile()) {
+				using(FileStream fs = CreateTempFile(ext)) {
 					inbuff.CopyTo(fs);
 					fname = fs.Name;
 				}
 			}
+			
+			
 			return fname;
 		}
 		

@@ -5,17 +5,17 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{510A298E-779D-49E5-831D-57EECE564DC1}</ProjectGuid>
+    <ProjectGuid>{9E858649-F8E8-4917-A5CB-FF784D84BE75}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>NeonVidUtilCore</RootNamespace>
-    <AssemblyName>NeonVidUtilCore</AssemblyName>
+    <RootNamespace>WAVFormatHandler</RootNamespace>
+    <AssemblyName>WAVFormatHandler</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -24,7 +24,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Release</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -34,11 +34,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="FormatCodec.cs" />
-    <Compile Include="FormatHandler.cs" />
-    <Compile Include="FormatType.cs" />
-    <Compile Include="EncodePath.cs" />
-    <Compile Include="EncodeStepHandler.cs" />
+    <Compile Include="WAVFormatHandler.cs" />
+    <Compile Include="WAVStripBits.cs" />
+    <Compile Include="WAVData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\NeonVidUtilCore\NeonVidUtilCore.csproj">
+      <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
+      <Name>NeonVidUtilCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FLACFormatHandler\FLACFormatHandler.csproj">
+      <Project>{09A283E5-B047-43FF-BFDE-056E697CC438}</Project>
+      <Name>FLACFormatHandler</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

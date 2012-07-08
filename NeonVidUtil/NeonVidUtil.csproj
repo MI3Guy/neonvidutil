@@ -20,7 +20,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <ConsolePause>false</ConsolePause>
+    <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -43,11 +43,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ConversionPresets.txt" />
+    <None Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NeonVidUtilCore\NeonVidUtilCore.csproj">
       <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
       <Name>NeonVidUtilCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WAVFormatHandler\WAVFormatHandler.csproj">
+      <Project>{9E858649-F8E8-4917-A5CB-FF784D84BE75}</Project>
+      <Name>WAVFormatHandler</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

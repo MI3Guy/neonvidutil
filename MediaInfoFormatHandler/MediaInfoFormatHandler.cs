@@ -14,7 +14,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 		
 		public override FormatType ReadInfo(string file) {
 			MI.Open(file);
-			Console.WriteLine(MI.Inform());
+			//Console.WriteLine(MI.Inform());
 			
 			FormatType.FormatContainer container = (FormatType.FormatContainer)Enum.Parse(typeof(FormatType.FormatContainer), MI.Get(StreamKind.General, 0, "Format"));
 			List<FormatType> items = new List<FormatType>();//[MI.Count_Get(StreamKind.Video) + MI.Count_Get(StreamKind.Audio) + MI.Count_Get(StreamKind.Text)];

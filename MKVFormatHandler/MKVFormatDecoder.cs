@@ -11,20 +11,26 @@ namespace NeonVidUtil.Plugin.MKVFormatHandler {
 		
 		private int index;
 		
-		public override void ConvertData(Stream inbuff, Stream outbuff) {
+		public override Stream InitConvertData(Stream inbuff, string outfile) {
 			string fname = UseTempFile(inbuff);
 			
-			if(!File.Exists(fname)) throw new FileNotFoundException("Temp/original file could not be found", fname);
+			if(!File.Exists(fname)) {
+				throw new FileNotFoundException("Temp/original file could not be found", fname);
+			}
 			
-			string outfile = Path.GetTempFileName();
+			if(outfile == null) {
+				outfile = CreateTempFileName();
+			}
 			string cmd = string.Format("tracks \"{0}\" --fullraw \"{2}:{1}\"", fname, outfile, index);
 			Console.WriteLine("Running: mkvextract {0}", cmd);
 			Process proc = Process.Start("mkvextract", cmd);
 			proc.WaitForExit();
 			
-			using(FileStream fs = File.OpenRead(outfile)) {
-				fs.CopyTo(outbuff);
-			}
+			return File.OpenRead(outfile);
+		}
+		
+		public override void ConvertData(Stream inbuff, Stream outbuff) {
+			
 		}
 	}
 }

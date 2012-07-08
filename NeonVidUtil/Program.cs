@@ -1,11 +1,16 @@
 using System;
 using NeonVidUtil.Core;
+using NeonVidUtil.Plugin.WAVFormatHandler;
 
 namespace NeonVidUtil {
 	public static class Program {
 		public static int Main() {
+			WAVData wd = new WAVData(System.IO.File.OpenRead("/home/john/Projects/audio.wav"));
+			WAVData.DataChunk dc = wd.ReadDataChunk();
+			
 			//string[] args = { "/media/PHANTOM/Videos/Shorts/Blender Open Movies/02 Big Buck Bunny.mkv", "test.flac" };
-			string[] args = { "/media/EXTRADATA4/Videos/MUMMYRETURNS/Main_Movie_t01.mkv", "test.vc1" };
+			//string[] args = { "/media/EXTRADATA4/Videos/MUMMYRETURNS/Main_Movie_t01.mkv", "test.vc1" };
+			string[] args = { "/media/EXTRADATA4/Videos/Megamind_3D/Megamind_3D_t00.mkv", "test.flac" };
 			
 			FormatType inft = EncodePath.AutoReadInfo(args[0]);
 			FormatType outft = EncodePath.AutoGenerateOutputType(args[1]);
@@ -25,6 +30,8 @@ namespace NeonVidUtil {
 			}*/
 			
 			path.Run(args[0], args[1]);
+			
+			FormatCodec.DeleteTempFiles();
 			
 			return 0;
 		}

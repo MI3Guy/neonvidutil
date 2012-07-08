@@ -8,42 +8,55 @@ namespace NeonVidUtil.Core {
 	public class EncodePath {
 		public EncodePath(FormatType input, FormatType output) {
 			steps = FindConvertPath(input, output);
-			formats = new FormatType[steps.Length + 1];
-			formats[0] = input;
-			for(int i = 0; i < steps.Length; ++i) {
-				formats[i + 1] = steps[i].Output;
-			}
 		}
 		
-		private EncodeStep[] steps;
-		private FormatType[] formats;
+		private FormatCodec[] steps;
 		
 		public int Length {
 			get { return steps.Length; }
 		}
 		
-		public EncodeStep this[int index] {
+		public FormatCodec this[int index] {
 			get { return steps[index]; }
 			set { steps[index] = value; }
 		}
 		
 		public void Run(string infile, string outfile) {
-			Stream[] streams = new Stream[steps.Length + 1];
-			streams[0] = File.OpenRead(infile);
-			streams[streams.Length - 1] = File.OpenWrite(outfile);
-			for(int i = 1; i < streams.Length - 1; ++i) {
-				streams[i] = new MemoryStream();
+			//Stream[] streams = new Stream[steps.Length + 1];
+			//streams[0] = File.OpenRead(infile);
+			//streams[streams.Length - 1] = File.OpenWrite(outfile);
+			
+			List<Stream> streams = new List<Stream>();
+			
+			List<Thread> threads = new List<Thread>();
+			
+			Stream lastStream = null;
+			FileStream inStream = File.OpenRead(infile);
+			streams.Add(inStream);
+			lastStream = inStream;
+			
+			for(int i = 0; i < steps.Length; ++i) {
+				Thread t = new Thread(new ParameterizedThreadStart(StepThreadCall));
+				threads.Add(t);
+				Stream s = steps[i].InitConvertData(lastStream, (i == steps.Length - 1) ? outfile : null);
+				streams.Add(s);
+				
+				t.Start(new EncodeStepHandler(lastStream, s, steps[i]));
+				lastStream = s;
 			}
 			
-			Thread[] threads = new Thread[steps.Length];
-			for(int i = 0; i < steps.Length; ++i) {
-				threads[i] = new Thread(new ParameterizedThreadStart(StepThreadCall));
-				FormatCodec codec = steps[i].Handler.ConvertStream(formats[i], formats[i + 1], null);
-				threads[i].Start(new EncodeStepHandler(streams[i], streams[i + 1], codec));
+			foreach(Thread t in threads) {
+				t.Join();
 			}
 			
-			for(int i = 0; i < steps.Length; ++i) {
-				threads[i].Join();
+			if(!(streams[streams.Count - 1] is FileStream)) {
+				using(FileStream fs = File.OpenWrite(outfile)) {
+					streams[streams.Count - 1].CopyTo(fs);
+				}
+			}
+			
+			foreach(Stream s in streams) {
+				s.Close();
 			}
 		}
 		
@@ -89,12 +102,31 @@ namespace NeonVidUtil.Core {
 			return null;
 		}
 		
-		private static EncodeStep[] FindConvertPath(FormatType input, FormatType output) {
-			Stack<EncodeStep> path = FindConvertPath(input, output, new List<FormatHandler>());
+		public static FormatHandler FindProcessor(FormatType input, string name, FormatType next) {
+			foreach(KeyValuePair<string, FormatHandler> kvp in FormatHandler.AllHandlers) {
+				if(kvp.Value.HandlesProcessing(input, name, next)) {
+					return kvp.Value;
+				}
+			}
+			return null;
+		}
+		
+		private static FormatCodec[] FindConvertPath(FormatType input, FormatType output) {
+			Stack<FormatCodec> path = FindConvertPath(input, output, new List<FormatHandler>());
 			return path == null ? null : path.ToArray();
 		}
 		
-		private static Stack<EncodeStep> FindConvertPath(FormatType input, FormatType output, List<FormatHandler> previous) {
+		private static Stack<FormatCodec> FindConvertPath(FormatType input, FormatType output, List<FormatHandler> previous) {
+			// Don't look for path if only processor is needed.
+			if(input.Equals(output)) {
+				FormatHandler processor = FindProcessor(input, null, null);
+				if(processor != null) {
+					Stack<FormatCodec> ret = new Stack<FormatCodec>();
+					ret.Push(processor.Process(input, null, null));
+				}
+				return null;
+			}
+			
 			foreach(KeyValuePair<string, FormatHandler> kvp in FormatHandler.AllHandlers) {
 				if(previous.IndexOf(kvp.Value) != -1) {
 					continue;
@@ -108,18 +140,38 @@ namespace NeonVidUtil.Core {
 				// Stop if path found.
 				foreach(FormatType outputType in outputTypes) {
 					if(outputType.Equals(output)) {
-						Stack<EncodeStep> ret = new Stack<EncodeStep>();
-						ret.Push(new EncodeStep(kvp.Value, output));
+						Stack<FormatCodec> ret = new Stack<FormatCodec>();
+						
+						// Last
+						FormatHandler processor = FindProcessor(output, null, null);
+						if(processor != null) {
+							ret.Push(processor.Process(output, null, null));
+						}
+						
+						ret.Push(kvp.Value.ConvertStream(input, output, null));
+						
+						// Before
+						processor = FindProcessor(input, null, output);
+						if(processor != null) {
+							ret.Push(processor.Process(input, null, outputType));
+						}
 						return ret;
 					}
 				}
 				// Recurse for path.
 				foreach(FormatType outputType in outputTypes) {
 					previous.Add(kvp.Value);
-					Stack<EncodeStep> subPath = FindConvertPath(outputType, output, previous);
+					Stack<FormatCodec> subPath = FindConvertPath(outputType, output, previous);
 					previous.Remove(kvp.Value);
 					if(subPath != null) {
-						subPath.Push(new EncodeStep(kvp.Value, outputType));
+						subPath.Push(kvp.Value.ConvertStream(input, outputType, null));
+						
+						// Happens before the conversion above
+						FormatHandler processor = FindProcessor(input, null, outputType);
+						if(processor != null) {
+							subPath.Push(processor.Process(input, null, outputType));
+						}
+						
 						return subPath;
 					}
 				}

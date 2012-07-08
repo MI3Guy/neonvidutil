@@ -21,8 +21,10 @@ namespace NeonVidUtil.Core {
 			/// </summary>
 			Custom,
 			
-			FLAC,
 			Matroska,
+			
+			
+			FLAC,
 			WAV
 			
 		}
@@ -37,9 +39,12 @@ namespace NeonVidUtil.Core {
 			VC1,
 			MPEG2,
 			
+			// Audio
 			FLAC,
 			PCM,
+			TrueHD,
 			
+			// Subtitles
 			SRT
 		}
 		

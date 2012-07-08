@@ -9,6 +9,14 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 			
 		}
 		
+		public override Stream InitConvertData(Stream inbuff, string outfile) {
+			if(outfile != null) {
+				return File.OpenWrite(outfile);
+			}
+			
+			return new MemoryStream();
+		}
+		
 		public override void ConvertData(Stream inbuff, Stream outbuff) {
 			using(WavReader wavReader = new WavReader(inbuff)) {
 				using(FlacWriter flacWriter = new FlacWriter(outbuff, wavReader.BitDepth, wavReader.Channels, wavReader.SampleRate)) {

@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VC1FormatHandler", "VC1Form
 EndProject
 Project("{2857B73E-F847-4B02-9238-064979017E93}") = "vc1conv", "vc1conv\vc1conv.cproj", "{84D1A34D-1F70-465B-968D-B74BAEE16774}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAVFormatHandler", "WAVFormatHandler\WAVFormatHandler.csproj", "{9E858649-F8E8-4917-A5CB-FF784D84BE75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFMpegFormatHandler", "FFMpegFormatHandler\FFMpegFormatHandler.csproj", "{4015AA68-8A25-4C4F-9399-A0118DF7F220}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -29,6 +33,10 @@ Global
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Debug|x86.Build.0 = Debug|x86
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Release|x86.ActiveCfg = Release|x86
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Release|x86.Build.0 = Release|x86
+		{4015AA68-8A25-4C4F-9399-A0118DF7F220}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4015AA68-8A25-4C4F-9399-A0118DF7F220}.Debug|x86.Build.0 = Debug|Any CPU
+		{4015AA68-8A25-4C4F-9399-A0118DF7F220}.Release|x86.ActiveCfg = Release|Any CPU
+		{4015AA68-8A25-4C4F-9399-A0118DF7F220}.Release|x86.Build.0 = Release|Any CPU
 		{510A298E-779D-49E5-831D-57EECE564DC1}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{510A298E-779D-49E5-831D-57EECE564DC1}.Debug|x86.Build.0 = Debug|Any CPU
 		{510A298E-779D-49E5-831D-57EECE564DC1}.Release|x86.ActiveCfg = Release|Any CPU
@@ -45,6 +53,10 @@ Global
 		{9DE451FF-3FA3-4E5C-821C-A110FF45E979}.Debug|x86.Build.0 = Debug|Any CPU
 		{9DE451FF-3FA3-4E5C-821C-A110FF45E979}.Release|x86.ActiveCfg = Release|Any CPU
 		{9DE451FF-3FA3-4E5C-821C-A110FF45E979}.Release|x86.Build.0 = Release|Any CPU
+		{9E858649-F8E8-4917-A5CB-FF784D84BE75}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9E858649-F8E8-4917-A5CB-FF784D84BE75}.Debug|x86.Build.0 = Debug|Any CPU
+		{9E858649-F8E8-4917-A5CB-FF784D84BE75}.Release|x86.ActiveCfg = Release|Any CPU
+		{9E858649-F8E8-4917-A5CB-FF784D84BE75}.Release|x86.Build.0 = Release|Any CPU
 		{B2F34AC2-61EC-4168-85C7-308D6D08DA40}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{B2F34AC2-61EC-4168-85C7-308D6D08DA40}.Debug|x86.Build.0 = Debug|Any CPU
 		{B2F34AC2-61EC-4168-85C7-308D6D08DA40}.Release|x86.ActiveCfg = Release|Any CPU
