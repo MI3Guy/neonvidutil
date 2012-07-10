@@ -8,12 +8,12 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 		}
 		
 		public override bool IsRawCodec(FormatType type) {
-			return (type.Container == FormatType.FormatContainer.FLAC || type.Container == FormatType.FormatContainer.None) && type.Codec == FormatType.FormatCodec.FLAC;
+			return (type.Container == FormatType.FormatContainer.FLAC || type.Container == FormatType.FormatContainer.None) && type.Codec == FormatType.FormatCodecType.FLAC;
 		}
 		
 		public override bool IsRawCodec(FormatType type, out FormatType outtype) {
 			if(IsRawCodec(type)) {
-				outtype = new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodec.FLAC);
+				outtype = new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC);
 				return true;
 			}
 			
@@ -26,15 +26,15 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 				return null;
 			}
 			
-			return new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodec.FLAC);
+			return new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC);
 		}
 		
 		public override FormatType[] OutputTypes(FormatType input) {
-			if(input.Container == FormatType.FormatContainer.FLAC && input.Codec == FormatType.FormatCodec.FLAC) {
-				return null;//new FormatType[] { new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodec.PCM) };
+			if(input.Container == FormatType.FormatContainer.FLAC && input.Codec == FormatType.FormatCodecType.FLAC) {
+				return null;//new FormatType[] { new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM) };
 			}
-			else if(input.Container == FormatType.FormatContainer.WAV && input.Codec == FormatType.FormatCodec.PCM) {
-					return new FormatType[] { new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodec.FLAC) };
+			else if(input.Container == FormatType.FormatContainer.WAV && input.Codec == FormatType.FormatCodecType.PCM) {
+					return new FormatType[] { new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC) };
 				}
 				else {
 					return null;
@@ -45,15 +45,15 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 			return
 				((
 					(input.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.WAV) &&
-					input.Codec == FormatType.FormatCodec.PCM &&
+					input.Codec == FormatType.FormatCodecType.PCM &&
 					output.Container == FormatType.FormatContainer.FLAC &&
-					output.Codec == FormatType.FormatCodec.FLAC
+					output.Codec == FormatType.FormatCodecType.FLAC
 				) ||
 				(
 					input.Container == FormatType.FormatContainer.FLAC &&
-					input.Codec == FormatType.FormatCodec.FLAC &&
+					input.Codec == FormatType.FormatCodecType.FLAC &&
 					(output.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.WAV) &&
-					output.Codec == FormatType.FormatCodec.PCM
+					output.Codec == FormatType.FormatCodecType.PCM
 				)) ? new object() : null;
 		}
 		

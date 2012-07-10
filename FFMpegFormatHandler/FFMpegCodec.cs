@@ -12,10 +12,10 @@ namespace NeonVidUtil.Plugin.FFMpegFormatHandler {
 		FFMpegSetting setting;
 		
 		public override Stream InitConvertData(Stream inbuff, string outfile) {
-			string fname = UseTempFile(inbuff, setting.inext);
+			string fname = UseTempFile(inbuff);
 			
 			if(outfile == null) {
-				outfile = CreateTempFileName(setting.outext);
+				outfile = CreateTempFileName();
 			}
 			
 			string cmd = string.Format(setting.cmdline, fname, outfile);

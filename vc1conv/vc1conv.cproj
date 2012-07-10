@@ -14,7 +14,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin\Debug\Plugins</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
     <OutputName>vc1conv</OutputName>
@@ -29,6 +29,6 @@
     <CompileTarget>SharedLibrary</CompileTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="vc1conv.cpp" />
+    <Compile Include="vc1conv.c" />
   </ItemGroup>
 </Project>

@@ -34,121 +34,118 @@ unsigned int	getbitptr = 0;
 unsigned int	putbitptr = 0;
 unsigned int	coded_frames = 0;
 
-typedef bool (*EndOfFile)();
-typedef int (*Read)(unsigned char* buffer, int start, int length);
-typedef bool (*Write)(unsigned char* buffer, int start, int length);
+int swrite(unsigned char* data, int length, unsigned char* outbuff, int size, int* outnum) {
+	if(length > size) {
+		return FALSE;
+	}
+	
+	for(int i = 0; i < length; ++i) {
+		outbuff[i] = data[i];
+	}
+	*outnum = length;
+	return TRUE;
+}
 
-bool RemoveVC1Pulldown(EndOfFile seof, Read sread, Write swrite)
+int RemoveVC1Pulldown(unsigned char input, unsigned char* outbuff, int size, int* outnum)
 {
-	static unsigned char	input_buffer[BUFFER_SIZE];
-	unsigned int	parse = 0xffffffff;
-	unsigned int	xfer = FALSE;
-	unsigned int	i, length, index, strip_length, stuff_length, process_length;
-	unsigned int	first_sequence_input = FALSE;
-	unsigned int	temp_time, hours, minutes;
-	long double		time;
-
+	static unsigned int		parse = 0xffffffff;
+	static unsigned int		xfer = FALSE;
+	static unsigned int		i, length, index, strip_length, stuff_length, process_length;
+	static unsigned int		first_sequence_input = FALSE;
+	static unsigned int		temp_time, hours, minutes;
+	static long double		time;
+	
+	
+	
 	printf("vc1conv VC-1 Elementary Stream Converter 0.4\n");
 
-	while(!seof())  {
-		length = sread(&input_buffer[0], 1, (BUFFER_SIZE));
-		for(i = 0; i < length; i++)  {
-			parse = (parse << 8) + input_buffer[i];
-			if (parse == 0x0000010f)  {
-				first_sequence_input = TRUE;
-				if (xfer == FALSE)  {
-					xfer = TRUE;
-					index = 0;
-					chunk_buffer[index++] = (parse >> 24) & 0xff;
-					chunk_buffer[index++] = (parse >> 16) & 0xff;
-					chunk_buffer[index++] = (parse >> 8) & 0xff;
-				}
-				else  {
-					strip_length = strip_chunk(index - 3);
-					strip_buffer[strip_length] = 0;
-					process_length = process_chunk(strip_length, (index - 3 - strip_length));
-					stuff_length = stuff_chunk(strip_length);
-					swrite(&output_buffer[0], 1, stuff_length);
-					index = 0;
-					chunk_buffer[index++] = (parse >> 24) & 0xff;
-					chunk_buffer[index++] = (parse >> 16) & 0xff;
-					chunk_buffer[index++] = (parse >> 8) & 0xff;
-				}
+	parse = (parse << 8) + input;
+	if (parse == 0x0000010f)  {
+		first_sequence_input = TRUE;
+		if (xfer == FALSE)  {
+			xfer = TRUE;
+			index = 0;
+			chunk_buffer[index++] = (parse >> 24) & 0xff;
+			chunk_buffer[index++] = (parse >> 16) & 0xff;
+			chunk_buffer[index++] = (parse >> 8) & 0xff;
+		}
+		else  {
+			strip_length = strip_chunk(index - 3);
+			strip_buffer[strip_length] = 0;
+			process_length = process_chunk(strip_length, (index - 3 - strip_length));
+			stuff_length = stuff_chunk(strip_length);
+			if(!swrite(&output_buffer[0], stuff_length, outbuff, size, outnum)) return FALSE;
+			index = 0;
+			chunk_buffer[index++] = (parse >> 24) & 0xff;
+			chunk_buffer[index++] = (parse >> 16) & 0xff;
+			chunk_buffer[index++] = (parse >> 8) & 0xff;
+		}
+	}
+	else if (parse == 0x0000010d)  {
+		if (first_sequence_input == TRUE)  {
+			if (xfer == FALSE)  {
+				xfer = TRUE;
+				index = 0;
 			}
-			else if (parse == 0x0000010d)  {
-				if (first_sequence_input == TRUE)  {
-					if (xfer == FALSE)  {
-						xfer = TRUE;
-						index = 0;
-					}
-					else  {
-						strip_length = strip_chunk(index - 3);
-						strip_buffer[strip_length] = 0;
-						process_length = process_chunk(strip_length, (index - 3 - strip_length));
-						stuff_length = stuff_chunk(strip_length);
-						swrite(&output_buffer[0], 1, stuff_length);
-						index = 0;
-						chunk_buffer[index++] = (parse >> 24) & 0xff;
-						chunk_buffer[index++] = (parse >> 16) & 0xff;
-						chunk_buffer[index++] = (parse >> 8) & 0xff;
-					}
-				}
-			}
-			else if (parse == 0x0000010e)  {
-				if (first_sequence_input == TRUE)  {
-					if (xfer == FALSE)  {
-						xfer = TRUE;
-						index = 0;
-					}
-					else  {
-						strip_length = strip_chunk(index - 3);
-						strip_buffer[strip_length] = 0;
-						process_length = process_chunk(strip_length, (index - 3 - strip_length));
-						stuff_length = stuff_chunk(strip_length);
-						swrite(&output_buffer[0], 1, stuff_length);
-						index = 0;
-						chunk_buffer[index++] = (parse >> 24) & 0xff;
-						chunk_buffer[index++] = (parse >> 16) & 0xff;
-						chunk_buffer[index++] = (parse >> 8) & 0xff;
-					}
-				}
-			}
-			else if (parse == 0x0000010a)  {
-				if (first_sequence_input == TRUE)  {
-					if (xfer == FALSE)  {
-						xfer = TRUE;
-						index = 0;
-					}
-					else  {
-						strip_length = strip_chunk(index - 3);
-						strip_buffer[strip_length] = 0;
-						process_length = process_chunk(strip_length, (index - 3 - strip_length));
-						stuff_length = stuff_chunk(strip_length);
-						swrite(&output_buffer[0], 1, stuff_length);
-						index = 0;
-						first_sequence_input = FALSE;
-						xfer = FALSE;
-					}
-				}
-			}
-			if (xfer == TRUE)  {
-				chunk_buffer[index++] = parse & 0xff;
-				if (index > (BUFFER_SIZE))  {
-					fprintf(stderr, "Picture bigger than 2 megabytes\n");
-					exit(-1);
-				}
+			else  {
+				strip_length = strip_chunk(index - 3);
+				strip_buffer[strip_length] = 0;
+				process_length = process_chunk(strip_length, (index - 3 - strip_length));
+				stuff_length = stuff_chunk(strip_length);
+				if(!swrite(&output_buffer[0], stuff_length, outbuff, size, outnum)) return FALSE;
+				index = 0;
+				chunk_buffer[index++] = (parse >> 24) & 0xff;
+				chunk_buffer[index++] = (parse >> 16) & 0xff;
+				chunk_buffer[index++] = (parse >> 8) & 0xff;
 			}
 		}
 	}
-	time = 1.001/24.0 * (long double)coded_frames;
-	temp_time = (long double)time;
-	hours = temp_time / 3600;
-	temp_time -= hours * 3600;
-	minutes = temp_time / 60;
-	temp_time -= minutes * 60;
-	time -= (long double)((minutes * 60) + (hours * 3600));
-	printf("\nframes = %d, running time = %d:%d:%f\n", coded_frames, hours, minutes, time);
-	return 0;
+	else if (parse == 0x0000010e)  {
+		if (first_sequence_input == TRUE)  {
+			if (xfer == FALSE)  {
+				xfer = TRUE;
+				index = 0;
+			}
+			else  {
+				strip_length = strip_chunk(index - 3);
+				strip_buffer[strip_length] = 0;
+				process_length = process_chunk(strip_length, (index - 3 - strip_length));
+				stuff_length = stuff_chunk(strip_length);
+				if(!swrite(&output_buffer[0], stuff_length, outbuff, size, outnum)) return FALSE;
+				index = 0;
+				chunk_buffer[index++] = (parse >> 24) & 0xff;
+				chunk_buffer[index++] = (parse >> 16) & 0xff;
+				chunk_buffer[index++] = (parse >> 8) & 0xff;
+			}
+		}
+	}
+	else if (parse == 0x0000010a)  {
+		if (first_sequence_input == TRUE)  {
+			if (xfer == FALSE)  {
+				xfer = TRUE;
+				index = 0;
+			}
+			else  {
+				strip_length = strip_chunk(index - 3);
+				strip_buffer[strip_length] = 0;
+				process_length = process_chunk(strip_length, (index - 3 - strip_length));
+				stuff_length = stuff_chunk(strip_length);
+				if(!swrite(&output_buffer[0], stuff_length, outbuff, size, outnum)) return FALSE;
+				index = 0;
+				first_sequence_input = FALSE;
+				xfer = FALSE;
+			}
+		}
+	}
+	if (xfer == TRUE)  {
+		chunk_buffer[index++] = parse & 0xff;
+		if (index > (BUFFER_SIZE))  {
+			fprintf(stderr, "Picture bigger than 2 megabytes\n");
+			return FALSE;
+		}
+	}
+	
+	return TRUE;
 }
 
 unsigned int getbits(unsigned int bits, unsigned int *ptr)
@@ -390,7 +387,7 @@ unsigned int stuff_chunk(unsigned int length)
 
 unsigned int process_chunk(unsigned int length, unsigned int stuffing)
 {
-	unsigned int	i, j;
+	unsigned int	i, j, k;
 	static unsigned int	parse = 0;
 	static unsigned int	first = TRUE;
 	static unsigned int	first_sequence = FALSE;
@@ -527,20 +524,20 @@ unsigned int process_chunk(unsigned int length, unsigned int stuffing)
 							windows = 1;
 						}
 					}
-				}
-				for (i = 0; i < windows; i++)  {
-					/* PS_HOFFSET */
-					num = getbits(18, &trash);
-					putbits(18, &trash);
-					/* PS_VOFFSET */
-					num = getbits(18, &trash);
-					putbits(18, &trash);
-					/* PS_WIDTH */
-					num = getbits(14, &trash);
-					putbits(14, &trash);
-					/* PS_HEIGHT */
-					num = getbits(14, &trash);
-					putbits(14, &trash);
+					for (k = 0; k < windows; k++)  {
+						/* PS_HOFFSET */
+						num = getbits(18, &trash);
+						putbits(18, &trash);
+						/* PS_VOFFSET */
+						num = getbits(18, &trash);
+						putbits(18, &trash);
+						/* PS_WIDTH */
+						num = getbits(14, &trash);
+						putbits(14, &trash);
+						/* PS_HEIGHT */
+						num = getbits(14, &trash);
+						putbits(14, &trash);
+					}
 				}
 			}
 			if (picture_type != SKIPPED)  {

@@ -9,7 +9,7 @@ namespace NeonVidUtil.Plugin.FFMpegFormatHandler {
 		public override FormatType GenerateOutputType(string file) {
 			switch(Path.GetExtension(file).ToUpper()) {
 				case ".THD":
-					return new FormatType(FormatType.FormatCodec.TrueHD);
+					return new FormatType(FormatType.FormatCodecType.TrueHD);
 			}
 			return null;
 		}
@@ -24,9 +24,9 @@ namespace NeonVidUtil.Plugin.FFMpegFormatHandler {
 		
 		private static readonly FFMpegSetting[] ffmpegSettings = new FFMpegSetting[] {
 			new FFMpegSetting {
-				inFormatType = new FormatType(FormatType.FormatCodec.TrueHD),
-				outFormatType = new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodec.PCM),
-				cmdline = "-fmt truehd -i \"{0}\" -y -acodec pcm_s24le -fmt wav \"{1}\"",
+				inFormatType = new FormatType(FormatType.FormatCodecType.TrueHD),
+				outFormatType = new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM),
+				cmdline = "-f truehd -i \"{0}\" -y -acodec pcm_s24le -f wav \"{1}\"",
 			}
 		};
 		

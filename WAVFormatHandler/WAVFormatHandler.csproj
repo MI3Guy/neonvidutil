@@ -37,16 +37,17 @@
     <Compile Include="WAVFormatHandler.cs" />
     <Compile Include="WAVStripBits.cs" />
     <Compile Include="WAVData.cs" />
+    <Compile Include="WAVRIFF.cs" />
+    <Compile Include="WAVConst.cs" />
+    <Compile Include="WAVFormatChunk.cs" />
+    <Compile Include="WAVDataChunk.cs" />
+    <Compile Include="WAVDataSample.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\NeonVidUtilCore\NeonVidUtilCore.csproj">
       <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
       <Name>NeonVidUtilCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FLACFormatHandler\FLACFormatHandler.csproj">
-      <Project>{09A283E5-B047-43FF-BFDE-056E697CC438}</Project>
-      <Name>FLACFormatHandler</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

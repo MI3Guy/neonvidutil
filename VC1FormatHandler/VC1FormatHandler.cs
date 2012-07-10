@@ -9,18 +9,18 @@ namespace NeonVidUtil.Plugin.VC1FormatHandler {
 				return null;
 			}
 			
-			return new FormatType(FormatType.FormatCodec.VC1);
+			return new FormatType(FormatType.FormatCodecType.VC1);
 		}
 		
 		public override bool HandlesProcessing(FormatType format, string name, FormatType next) {
-			if(format.Codec == FormatType.FormatCodec.VC1 && format.Container == FormatType.FormatContainer.None) {
+			if(format.Codec == FormatType.FormatCodecType.VC1 && format.Container == FormatType.FormatContainer.None) {
 				return name == null || name == "removepulldown";
 			}
 			return false;
 		}
 		
 		public override FormatCodec Process(FormatType input, string name, FormatType next) {
-			if(input.Codec == FormatType.FormatCodec.VC1 && input.Container == FormatType.FormatContainer.None) {
+			if(input.Codec == FormatType.FormatCodecType.VC1 && input.Container == FormatType.FormatContainer.None) {
 				switch(name) {
 					case null:
 					case "removepulldown":

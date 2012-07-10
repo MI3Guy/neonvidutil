@@ -9,7 +9,7 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 				return null;
 			}
 			
-			return new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodec.PCM);
+			return new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM);
 		}
 
 		public override bool HandlesProcessing(FormatType format, string name, FormatType next) {

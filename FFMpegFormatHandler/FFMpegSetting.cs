@@ -6,8 +6,6 @@ namespace NeonVidUtil.Plugin.FFMpegFormatHandler {
 		public FormatType inFormatType;
 		public FormatType outFormatType;
 		public string cmdline;
-		public string inext;
-		public string outext;
 	}
 }
 

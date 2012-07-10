@@ -3,11 +3,90 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Text;
 
 namespace NeonVidUtil.Core {
 	public class EncodePath {
 		public EncodePath(FormatType input, FormatType output) {
 			steps = FindConvertPath(input, output);
+		}
+		
+		public EncodePath(string path) {
+			List<FormatCodec> pathSteps = new List<FormatCodec>();
+			StringBuilder format;
+			StringBuilder pluginName;
+			StringBuilder arg;
+			
+			bool inPart = false;
+			bool inFormat = false;
+			bool inPluginName = false;
+			bool inArg = false;
+			foreach(char c in path) {
+				if(inPart) {
+					if(inFormat) {
+						switch(c) {
+							case '[':
+								inFormat = false;
+								inPluginName = true;
+								break;
+								
+							case '(':
+								inFormat = false;
+								inArg = true;
+								break;
+							
+							case ';':
+								// TODO: Use string
+								inFormat = false;
+								inPart = false;
+								break;
+								
+							default:
+								format.Append(c);
+								break;
+						}
+					}
+					else if(inPluginName) {
+						switch(c) {
+							case ']':
+								inPluginName = false;
+								break;
+								
+							default:
+								pluginName.Append(c);
+								break;
+						}
+					}
+					else if(inArg) {
+						switch(c) {
+							case ')':
+								break;
+								
+							default:
+								arg.Append(c);
+								break;
+						}
+					}
+					else {
+						switch(c) {
+							case ';':
+								break;
+								
+							case '(':
+								break;
+								
+							default:
+								throw new ArgumentException("Found unknown character. Expected ';' or '('.");
+						}
+					}
+				}
+				else {
+					switch(c) {
+						case '!':
+							break;
+					}
+				}
+			}
 		}
 		
 		private FormatCodec[] steps;

@@ -29,7 +29,7 @@ namespace NeonVidUtil.Core {
 			
 		}
 		
-		public enum FormatCodec {
+		public enum FormatCodecType {
 			Unknown,
 			
 			Custom,
@@ -48,10 +48,10 @@ namespace NeonVidUtil.Core {
 			SRT
 		}
 		
-		public FormatType(FormatCodec codec) : this(FormatContainer.None, codec) {
+		public FormatType(FormatCodecType codec) : this(FormatContainer.None, codec) {
 		}
 		
-		public FormatType(FormatContainer container, FormatCodec codec) {
+		public FormatType(FormatContainer container, FormatCodecType codec) {
 			Container = container;
 			Codec = codec;
 			Items = null;
@@ -66,7 +66,7 @@ namespace NeonVidUtil.Core {
 		public FormatType(string codec) : this(null, codec) {
 		}
 		
-		public FormatType(string container, string codec) : this(FormatContainer.Custom, FormatCodec.Custom) {
+		public FormatType(string container, string codec) : this(FormatContainer.Custom, FormatCodecType.Custom) {
 			containerString = container;
 			codecString = codec;
 			
@@ -85,8 +85,8 @@ namespace NeonVidUtil.Core {
 				}
 			}
 			
-			FormatCodec ecodec;
-			if(Enum.TryParse<FormatCodec>(codec.Replace("-", ""), out ecodec)) {
+			FormatCodecType ecodec;
+			if(Enum.TryParse<FormatCodecType>(codec.Replace("-", ""), out ecodec)) {
 				codecString = null;
 				Codec = ecodec;
 			}
@@ -127,7 +127,7 @@ namespace NeonVidUtil.Core {
 			}
 		}
 		
-		public FormatCodec? Codec {
+		public FormatCodecType? Codec {
 			get;
 			protected set;
 		}
@@ -139,11 +139,11 @@ namespace NeonVidUtil.Core {
 				if(Codec == null) {
 					return null;
 				}
-				else if(Codec == FormatCodec.Custom) {
+				else if(Codec == FormatCodecType.Custom) {
 						return codecString;
 					}
 					else {
-						return ((FormatCodec)Codec).ToString();
+						return ((FormatCodecType)Codec).ToString();
 					}
 			}
 		}
