@@ -19,7 +19,12 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 		private int numChannels;
 		
 		public WAVDataSample ReadSample() {
-			return new WAVDataSample(reader, bytesPerSample, numChannels);
+			try {
+				return new WAVDataSample(reader, bytesPerSample, numChannels);
+			}
+			catch(EndOfStreamException) {
+				return null;
+			}
 		}
 	}
 }

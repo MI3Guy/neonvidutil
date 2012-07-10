@@ -36,12 +36,13 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="WAVFormatHandler.cs" />
     <Compile Include="WAVStripBits.cs" />
-    <Compile Include="WAVData.cs" />
     <Compile Include="WAVRIFF.cs" />
     <Compile Include="WAVConst.cs" />
     <Compile Include="WAVFormatChunk.cs" />
     <Compile Include="WAVDataChunk.cs" />
     <Compile Include="WAVDataSample.cs" />
+    <Compile Include="WAVReader.cs" />
+    <Compile Include="WAVBitDepthDetector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

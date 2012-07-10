@@ -7,6 +7,9 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			BytesPerSample = bytesPerSample;
 			Channels = numChannels;
 			Data = reader.ReadBytes(BytesPerSample * Channels);
+			if(Data.Length < BytesPerSample * Channels) {
+				throw new EndOfStreamException();
+			}
 		}
 		
 		public byte[] Data {

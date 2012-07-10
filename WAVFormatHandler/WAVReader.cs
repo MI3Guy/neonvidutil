@@ -3,8 +3,8 @@ using System.IO;
 using System.Text;
 
 namespace NeonVidUtil.Plugin.WAVFormatHandler {
-	public class WAVData {
-		public WAVData(Stream stream) {
+	public class WAVReader {
+		public WAVReader(Stream stream) {
 			this.stream = stream;
 			reader = new BinaryReader(stream);
 			
@@ -45,6 +45,14 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 		
 		WAVRIFF wavRiff;
 		WAVFormatChunk formatChunk;
+		
+		public WAVRIFF WavRiff {
+			get { return wavRiff; }
+		}
+		
+		public WAVFormatChunk FormatChunk {
+			get { return formatChunk; }
+		}
 	}
 }
 
