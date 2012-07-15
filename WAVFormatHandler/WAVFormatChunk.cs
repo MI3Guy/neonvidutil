@@ -1,10 +1,11 @@
 using System;
 using System.IO;
+using System.Text;
 
 namespace NeonVidUtil.Plugin.WAVFormatHandler {
 	public class WAVFormatChunk {
 		public WAVFormatChunk(BinaryReader reader) {
-			uint cksize = reader.ReadUInt32();
+			cksize = reader.ReadUInt32();
 			long prev = reader.BaseStream.Position;
 			
 			wFormatTag = (WAVConst.FormatTag)reader.ReadUInt16();
@@ -23,6 +24,12 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			}
 			reader.BaseStream.Position = prev + cksize;
 		}
+		
+		public WAVFormatChunk() {
+			
+		}
+		
+		public uint cksize;
 		public WAVConst.FormatTag wFormatTag;
 		public ushort nChannels;
 		public uint nSamplesPerSec;
@@ -33,6 +40,26 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 		public ushort wValidBitsPerSample;
 		public uint dwChannelMask;
 		public Guid SubFormat;
+		
+		
+		public void WriteTo(BinaryWriter writer) {
+			writer.Write(Encoding.ASCII.GetBytes(WAVConst.ChunkIdFormat));
+			writer.Write(cksize);
+			writer.Write((ushort)wFormatTag);
+			writer.Write(nChannels);
+			writer.Write(nSamplesPerSec);
+			writer.Write(nAvgBytesPerSec);
+			writer.Write(nBlockAlign);
+			writer.Write(wBitsPerSample);
+			if(wFormatTag == WAVConst.FormatTag.EXTENSIBLE) {
+				writer.Write(cbSize);
+				if(cbSize > 0) {
+					writer.Write(wValidBitsPerSample);
+					writer.Write(dwChannelMask);
+					writer.Write(SubFormat.ToByteArray());
+				}
+			}
+		}
 	}
 }
 

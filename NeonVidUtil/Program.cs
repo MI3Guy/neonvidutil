@@ -6,10 +6,6 @@ using NeonVidUtil.Plugin.WAVFormatHandler;
 namespace NeonVidUtil {
 	public static class Program {
 		public static int Main() {
-			WAVBitDepthDetector detect = new WAVBitDepthDetector(System.IO.File.OpenRead("/home/john/Projects/audio.wav"));
-			
-			int bitDepth = detect.Check();
-			
 			//string[] args = { "/media/PHANTOM/Videos/Shorts/Blender Open Movies/02 Big Buck Bunny.mkv", "test.flac" };
 			//string[] args = { "/media/EXTRADATA4/Videos/MUMMYRETURNS/Main_Movie_t01.mkv", "test.vc1" };
 			string[] args = { "/media/EXTRADATA4/Videos/Megamind_3D/Megamind_3D_t00.mkv", "test.flac" };

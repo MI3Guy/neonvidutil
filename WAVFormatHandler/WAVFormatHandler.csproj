@@ -43,6 +43,7 @@
     <Compile Include="WAVDataSample.cs" />
     <Compile Include="WAVReader.cs" />
     <Compile Include="WAVBitDepthDetector.cs" />
+    <Compile Include="WAVWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
