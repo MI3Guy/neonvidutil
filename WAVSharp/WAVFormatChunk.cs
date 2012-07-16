@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace NeonVidUtil.Plugin.WAVFormatHandler {
+namespace WAVSharp {
 	public class WAVFormatChunk {
 		public WAVFormatChunk(BinaryReader reader) {
 			cksize = reader.ReadUInt32();
@@ -23,12 +23,31 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 				}
 			}
 			reader.BaseStream.Position = prev + cksize;
+			FileLength = reader.BaseStream.Length;
 		}
 		
 		public WAVFormatChunk() {
 			
 		}
 		
+		public WAVFormatChunk(WAVFormatChunk other, int bits) {
+			ushort BytesPerSample = (ushort)Math.Ceiling((double)bits / 8.0);
+			ushort bitsPerSample = (ushort)(8 * BytesPerSample);
+			
+			cksize = WAVConst.FormatChunkSizeExtensible;
+			wFormatTag = WAVConst.FormatTag.EXTENSIBLE;
+			nChannels = other.nChannels;
+			nSamplesPerSec = other.nSamplesPerSec;
+			nAvgBytesPerSec = (uint)((ulong)(other.nAvgBytesPerSec - other.cksize) * bitsPerSample / other.wBitsPerSample) + cksize;
+			nBlockAlign = (ushort)(BytesPerSample * nChannels);
+			wBitsPerSample = bitsPerSample;
+			cbSize = WAVConst.FormatChunkExtensibleExtSize;
+			wValidBitsPerSample = (ushort)bits;
+			dwChannelMask = other.dwChannelMask;
+			SubFormat = WAVConst.FormatSubtypePCM;
+		}
+		
+		public long FileLength;
 		public uint cksize;
 		public WAVConst.FormatTag wFormatTag;
 		public ushort nChannels;

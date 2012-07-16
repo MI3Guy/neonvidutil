@@ -36,20 +36,16 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="WAVFormatHandler.cs" />
     <Compile Include="WAVStripBits.cs" />
-    <Compile Include="WAVRIFF.cs" />
-    <Compile Include="WAVConst.cs" />
-    <Compile Include="WAVFormatChunk.cs" />
-    <Compile Include="WAVDataChunk.cs" />
-    <Compile Include="WAVDataSample.cs" />
-    <Compile Include="WAVReader.cs" />
-    <Compile Include="WAVBitDepthDetector.cs" />
-    <Compile Include="WAVWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\NeonVidUtilCore\NeonVidUtilCore.csproj">
       <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
       <Name>NeonVidUtilCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WAVSharp\WAVSharp.csproj">
+      <Project>{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}</Project>
+      <Name>WAVSharp</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

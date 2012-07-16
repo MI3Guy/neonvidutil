@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace NeonVidUtil.Plugin.WAVFormatHandler {
+namespace WAVSharp {
 	public class WAVBitDepthDetector {
 		public WAVBitDepthDetector(Stream instream) {
 			reader = new WAVReader(instream);

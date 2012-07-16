@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace NeonVidUtil.Plugin.WAVFormatHandler {
+namespace WAVSharp {
 	public class WAVReader {
 		public WAVReader(Stream stream) {
 			this.stream = stream;

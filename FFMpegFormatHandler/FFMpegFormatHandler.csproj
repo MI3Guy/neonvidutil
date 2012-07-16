@@ -37,6 +37,7 @@
     <Compile Include="FFMpegFormatHandler.cs" />
     <Compile Include="FFMpegCodec.cs" />
     <Compile Include="FFMpegSetting.cs" />
+    <Compile Include="FFmpegConvert.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

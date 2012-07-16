@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace NeonVidUtil.Plugin.WAVFormatHandler {
+namespace WAVSharp {
 	public class WAVRIFF {
 		public WAVRIFF(BinaryReader reader) {
 			ckID = Encoding.ASCII.GetString(reader.ReadBytes(4));

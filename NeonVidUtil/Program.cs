@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using NeonVidUtil.Core;
-using NeonVidUtil.Plugin.WAVFormatHandler;
 
 namespace NeonVidUtil {
 	public static class Program {
 		public static int Main() {
+			
+			FFMpegFormatHandler.FFmpegConvert.ConvertFFmpegFile("/home/john/Projects/audio.thd", "truehd", "test.wav", "wav", "pcm_s24le");
+			
 			//string[] args = { "/media/PHANTOM/Videos/Shorts/Blender Open Movies/02 Big Buck Bunny.mkv", "test.flac" };
 			//string[] args = { "/media/EXTRADATA4/Videos/MUMMYRETURNS/Main_Movie_t01.mkv", "test.vc1" };
 			string[] args = { "/media/EXTRADATA4/Videos/Megamind_3D/Megamind_3D_t00.mkv", "test.flac" };

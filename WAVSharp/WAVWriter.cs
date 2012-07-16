@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace NeonVidUtil.Plugin.WAVFormatHandler {
+namespace WAVSharp {
 	public class WAVWriter {
 		public WAVWriter(Stream outstream, WAVFormatChunk formatChunk, uint length) {
 			writer = new BinaryWriter(outstream);

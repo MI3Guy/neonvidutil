@@ -20,7 +20,7 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			switch(name) {
 				case null:
 				case "stripbits":
-					return new WAVStripBits(next);
+					return new WAVStripBits();
 			}
 			
 			return null;

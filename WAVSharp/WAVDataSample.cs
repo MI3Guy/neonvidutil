@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace NeonVidUtil.Plugin.WAVFormatHandler {
+namespace WAVSharp {
 	public class WAVDataSample {
 		public WAVDataSample(BinaryReader reader, int bytesPerSample, int bitsPerSample, int numChannels) {
 			BytesPerSample = bytesPerSample;

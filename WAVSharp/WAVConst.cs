@@ -1,6 +1,6 @@
 using System;
 
-namespace NeonVidUtil.Plugin.WAVFormatHandler {
+namespace WAVSharp {
 	public static class WAVConst {
 		public enum FormatTag : ushort {
 			PCM			= 0x0001,
@@ -9,6 +9,9 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			MULAW		= 0x0007,
 			EXTENSIBLE	= 0xFFFE
 		}
+		
+		public const int FormatChunkSizeExtensible = 40;
+		public const int FormatChunkExtensibleExtSize = 22;
 			
 		public enum Speaker {
 			None 				=	0x0,
@@ -36,7 +39,8 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			Quad				=	FrontLeft | FrontRight | BackLeft | BackRight,
 			Surround			=	FrontLeft | FrontRight | FrontCenter | BackCenter,
 			FivePointOne		=	FrontLeft | FrontRight | FrontCenter | LowFrequency | BackLeft | BackRight,
-			SevenPointOne		=	FrontLeft | FrontRight | FrontCenter | LowFrequency | BackLeft | BackRight | FrontLeftOfCenter | FrontRightOfCenter
+			SevenPointOne		=	FrontLeft | FrontRight | FrontCenter | LowFrequency | BackLeft | BackRight | FrontLeftOfCenter | FrontRightOfCenter,
+			SevenPointOneReal	=	FrontLeft | FrontRight | FrontCenter | LowFrequency | BackLeft | BackRight | SideLeft | SideRight
 		}
 		
 		public static readonly Guid FormatSubtypePCM = new Guid("00000001-0000-0010-8000-00aa00389b71");

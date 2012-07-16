@@ -5,17 +5,17 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{09A283E5-B047-43FF-BFDE-056E697CC438}</ProjectGuid>
+    <ProjectGuid>{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>FLACFormatHandler</RootNamespace>
-    <AssemblyName>FLACFormatHandler</AssemblyName>
+    <RootNamespace>WAVSharp</RootNamespace>
+    <AssemblyName>WAVSharp</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\Plugins</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -24,7 +24,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Release\Plugins</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -34,18 +34,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="FLACFormatEncoder.cs" />
-    <Compile Include="FLACFormatHandler.cs" />
+    <Compile Include="WAVConst.cs" />
+    <Compile Include="WAVDataChunk.cs" />
+    <Compile Include="WAVDataSample.cs" />
+    <Compile Include="WAVFormatChunk.cs" />
+    <Compile Include="WAVReader.cs" />
+    <Compile Include="WAVRIFF.cs" />
+    <Compile Include="WAVWriter.cs" />
+    <Compile Include="WAVBitDepthDetector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\NeonVidUtilCore\NeonVidUtilCore.csproj">
-      <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
-      <Name>NeonVidUtilCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Wav2Flac\Wav2Flac.csproj">
-      <Project>{A3C8B60C-0CA9-41EC-894E-E156198A3CFA}</Project>
-      <Name>Wav2Flac</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>
