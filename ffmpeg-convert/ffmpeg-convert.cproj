@@ -14,13 +14,18 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin\Debug\Plugins</OutputPath>
-    <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
+    <OutputPath>..\bin\Debug</OutputPath>
+    <DefineSymbols>DEBUG MONODEVELOP __STDC_CONSTANT_MACROS</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
     <OutputName>ffmpeg-convert</OutputName>
     <CompileTarget>SharedLibrary</CompileTarget>
-    <ExtraCompilerArguments>-D__STDC_CONSTANT_MACROS</ExtraCompilerArguments>
-    <ExtraLinkerArguments>-lavcodec -lavformat</ExtraLinkerArguments>
+    <Libs>
+      <Libs>
+        <Lib>avcodec</Lib>
+        <Lib>avformat</Lib>
+      </Libs>
+    </Libs>
+    <ExtraCompilerArguments>-g</ExtraCompilerArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>

@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 // Add function prototypes here
-bool ConvertFFmpegFile(char* inFile, char* inFormat, char* outFile, char* outFormat, char* codec);
+bool ConvertFFmpegFile(const char* inFile, const char* inFormat, const char* outFile, const char* outFormat, const char* codec);
 #ifdef __cplusplus
 }
 #endif
