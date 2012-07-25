@@ -17,18 +17,21 @@ extern "C" {
 #define LIBFUNC
 #endif
 
-typedef int (*FFmpegURLRead)(URLContext* h, unsigned char* buf, int size);
-typedef int (*FFmpegURLWrite)(URLContext* h, const unsigned char* buf, int size);
+typedef int (*FFmpegURLRead)(void* h, unsigned char* buf, int size);
+typedef int (*FFmpegURLWrite)(void* h, unsigned char* buf, int size);
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-	bool ConvertFFmpegFile(const char* inFile, const char* inFormatName,
-							const char* outFile, const char* outFormatName,
-							const char* codecName);
-	bool ConvertFFmpegStream(FFmpegURLRead inStreamRead, const char* inFormatName,
-							FFmpegURLWrite outStreamWrite, const char* outFormatName,
-							const char* codecName);
+	void InitFFmpeg();
+	bool ConvertFFmpegFileFile(const char* inFile, const char* inFormatName,
+	                           const char* outFile, const char* outFormatName,
+	                           const char* codecName);							
+	bool ConvertFFmpegStreamStream(FFmpegURLRead inStream, int inFid, const char* inFormatName,
+	                               FFmpegURLWrite outStream, int outFid, const char* outFormatName,
+	                               const char* codecName);
+	int FFmpegGetEOF();
 #ifdef __cplusplus
 }
 #endif

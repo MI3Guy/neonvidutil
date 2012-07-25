@@ -5,7 +5,12 @@ using NeonVidUtil.Core;
 namespace NeonVidUtil {
 	public static class Program {
 		public static int Main() {
-			//FFMpegFormatHandler.FFmpegConvert.ConvertFFmpegStream();
+			using(System.IO.FileStream ifs = System.IO.File.OpenRead("/home/john/Projects/audio.thd")) {
+				using(System.IO.FileStream ofs = System.IO.File.Open("test.wav", System.IO.FileMode.Create)) {
+					FFMpegFormatHandler.FFmpegConvert.ConvertFFmpeg(ifs, "truehd", ofs, "wav", "pcm_s24le");
+				}
+			}
+			//FFMpegFormatHandler.FFmpegConvert.ConvertFFmpeg("/home/john/Projects/audio.thd", "truehd", "test.wav", "wav", "pcm_s24le");
 			
 			//string[] args = { "/media/PHANTOM/Videos/Shorts/Blender Open Movies/02 Big Buck Bunny.mkv", "test.flac" };
 			//string[] args = { "/media/EXTRADATA4/Videos/MUMMYRETURNS/Main_Movie_t01.mkv", "test.vc1" };

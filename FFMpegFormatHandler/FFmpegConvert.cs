@@ -1,23 +1,85 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace FFMpegFormatHandler {
 	public static class FFmpegConvert {
-		//bool ConvertFFmpegFile(char* inFile, char* inFormat, char* outFile, char* outFormat, char* codec);
-		[DllImport("ffmpeg-convert")]
-		public static extern bool ConvertFFmpegFile(string inFile, string inFormatName,
-		                                            string outFile, string outFormat,
-		                                            string codecName);
+		static FFmpegConvert() {
+			InitFFmpeg();
+		}
 		
-		//typedef int (*FFmpegURLRead)(URLContext* h, unsigned char* buf, int size);
-		//typedef int (*FFmpegURLWrite)(URLContext* h, const unsigned char* buf, int size);
-		public delegate int FFmpegURLRead(IntPtr h, IntPtr buf, int size);
-		public delegate int FFmpegURLWrite(IntPtr h, IntPtr buf, int size);
+		private static Dictionary<int, Stream> VirtualFiles = new Dictionary<int, Stream>();
+		private static int AddVFileStream(Stream vfile) {
+			int attempts = 0;
+			int fid;
+			Random rand = new Random();
+			lock(VirtualFiles) {
+				do {
+					fid = rand.Next();
+					if(fid == 0) continue;
+					
+					if(++attempts > 10) {
+						throw new ApplicationException("Could not find virtual file name.");
+					}
+				} while(VirtualFiles.ContainsKey(fid) || fid == 0);
+				VirtualFiles.Add(fid, vfile);
+			}
+			return fid;
+		}
 		
 		[DllImport("ffmpeg-convert")]
-		public static extern bool ConvertFFmpegStream(FFmpegURLRead inStreamRead, string inFormatName,
-		                                              FFmpegURLWrite outStreamWrite, string outFormatName,
-		                                              string codecName);
+		private static extern void InitFFmpeg();
+		
+		[DllImport("ffmpeg-convert", EntryPoint = "ConvertFFmpegFileFile")]
+		public static extern bool ConvertFFmpeg(string inFile, string inFormatName, 
+		                                                string outFile, string outFormat,
+		                                                string codecName);
+		
+		
+		private delegate int FFmpegURLRead(IntPtr h, IntPtr buf, int size);
+		private delegate int FFmpegURLWrite(IntPtr h, IntPtr buf, int size);
+		
+		private static int FFmpegURLRead_Func(IntPtr h, IntPtr buf, int size) {
+			byte[] data = new byte[size];
+			int len = VirtualFiles[(int)h].Read(data, 0, size);
+			if(len == 0) {
+				return FFMpegFormatHandler.FFmpegConvert.FFmpegGetEOF();
+			}
+			System.Runtime.InteropServices.Marshal.Copy(data, 0, buf, size);
+			return len;
+		}
+		
+		private static int FFmpegURLWrite_Func(IntPtr h, IntPtr buf, int size) {
+			byte[] data = new byte[size];
+			System.Runtime.InteropServices.Marshal.Copy(buf, data, 0, size);
+			VirtualFiles[(int)h].Write(data, 0, size);
+			return size;
+		}
+		
+		[DllImport("ffmpeg-convert")]
+		private static extern bool ConvertFFmpegStreamStream(FFmpegURLRead inStreamRead, int inFid, string inFormatName,
+		                                                     FFmpegURLWrite outStreamWrite, int outFid, string outFormatName,
+		                                                     string codecName);
+		
+		public static bool ConvertFFmpeg(Stream inStream, string inFormatName,
+		                                             Stream outStream, string outFormatName,
+		                                             string codecName) {
+			int inStreamId = AddVFileStream(inStream);
+			int outStreamId = AddVFileStream(outStream);
+			Console.WriteLine("inStreamId: {0}, outStreamId: {1}", inStreamId, outStreamId);
+			bool ret = ConvertFFmpegStreamStream(FFmpegURLRead_Func, inStreamId, inFormatName, FFmpegURLWrite_Func, outStreamId, outFormatName, codecName);
+			
+			lock(VirtualFiles) {
+				VirtualFiles.Remove(inStreamId);
+				VirtualFiles.Remove(outStreamId);
+			}
+			
+			return ret;
+		}
+		
+		[DllImport("ffmpeg-convert")]
+		private static extern int FFmpegGetEOF();
 	}
 }
 

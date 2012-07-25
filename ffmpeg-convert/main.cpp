@@ -7,13 +7,19 @@ extern "C" {
 
 #include "main.h"
 
+const int BufferSize = 4*1024;
+
+// Helper Functions
 bool ConvertFFmpeg(AVFormatContext* inFmt, AVFormatContext* outFmt, int streamIndex, const char* codecName);
 bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCodec* inCodec, AVFormatContext* outFmt, AVStream* stream, AVCodec* outCodec, int streamIndex);
 
+
 extern "C" {
-	bool ConvertFFmpegFile(const char* inFile, const char* inFormatName, const char* outFile, const char* outFormatName, const char* codecName) {
+	void InitFFmpeg() {
 		av_register_all();
-		
+	}
+	
+	bool ConvertFFmpegFileFile(const char* inFile, const char* inFormatName, const char* outFile, const char* outFormatName, const char* codecName) {
 		AVInputFormat* inFmtStruct = av_find_input_format(inFormatName);
 		if(!inFmtStruct) {
 			std::cerr << "ffmpeg-convert: Could not find input format.\n";
@@ -26,7 +32,7 @@ extern "C" {
 			return false;
 		}
 		
-		AVFormatContext* outFmt;
+		AVFormatContext* outFmt = NULL;
 		int err = avformat_alloc_output_context2(&outFmt, NULL, outFormatName, outFile);
 		if(outFmt == NULL || err < 0) {
 			std::cerr << "ffmpeg-convert: Could not open output. Error: " << err << "\n";
@@ -52,8 +58,87 @@ extern "C" {
 		return true;
 	}
 	
-	bool ConvertFFmpegStream(FFmpegURLRead inStreamRead, const char* inFormat, FFmpegURLWrite outStreamWrite, const char* outFormat, const char* codec) {
+	bool ConvertFFmpegStreamStream(FFmpegURLRead inStreamRead, int inFid, const char* inFormatName, FFmpegURLWrite outStreamWrite, int outFid, const char* outFormatName, const char* codecName) {
+		std::cerr << inFormatName << "\n";
+		AVInputFormat* inFmtStruct = av_find_input_format(inFormatName);
+		if(!inFmtStruct) {
+			std::cerr << "ffmpeg-convert: Could not find input format.\n";
+			return false;
+		}
 		
+		AVFormatContext* inFmt = avformat_alloc_context();
+		if(inFmt == NULL) {
+			std::cerr << "ffmpeg-convert: Could not allocate input context.\n";
+			return false;
+		}
+		
+		unsigned char* inBuff = (unsigned char*)av_malloc(BufferSize);
+		if(inBuff == NULL) {
+			std::cerr << "ffmpeg-convert: Could not allocate input buffer.\n";
+			return false;
+		}
+		
+		inFmt->pb = avio_alloc_context(inBuff, BufferSize, 0, (void*)inFid, inStreamRead, NULL, NULL);
+		if(inFmt->pb == NULL) {
+			std::cerr << "ffmpeg-convert: Could not allocate input IO context.\n";
+			return false;
+		}
+		
+		if(avformat_open_input(&inFmt, "", inFmtStruct, NULL) != 0) {
+			std::cerr << "ffmpeg-convert: Could not open input.\n";
+			return false;
+		}
+		
+		AVFormatContext* outFmt = NULL;
+		int err = avformat_alloc_output_context2(&outFmt, NULL, outFormatName, NULL);
+		if(outFmt == NULL || err < 0) {
+			std::cerr << "ffmpeg-convert: Could not open output. Error: " << err << "\n";
+			avformat_close_input(&inFmt);
+			return false;
+		}
+		
+		unsigned char* outBuff = NULL;
+		outFmt->pb = NULL;
+		if(!(outFmt->oformat->flags & AVFMT_NOFILE)) {
+			outBuff = (unsigned char*)av_malloc(BufferSize);
+			if(outBuff == NULL) {
+				std::cerr << "ffmpeg-convert: Could not allocate output buffer.\n";
+				return false;
+			}		
+			
+			outFmt->pb = avio_alloc_context(outBuff, BufferSize, 1, (void*)outFid, NULL, outStreamWrite, NULL);
+			if(outFmt->pb == NULL) {
+				std::cerr << "ffmpeg-convert: Could not allocate output IO context.\n";
+				return false;
+			}
+		}
+		
+		// open the output file, if needed
+		/*if(!(outFmt->oformat->flags & AVFMT_NOFILE)) {
+			if(avio_open(&outFmt->pb, "", AVIO_FLAG_WRITE) < 0) {
+				std::cerr << "ffmpeg-convert: Could not open output file\n";
+				return false;
+			}
+		}*/
+		
+		if(!ConvertFFmpeg(inFmt, outFmt, -1, codecName)) {
+			return false;
+		}
+		
+		av_free(inBuff);
+		av_free(inFmt->pb);
+		avformat_close_input(&inFmt);
+		
+		if(outBuff) av_free(outBuff);
+		if(outFmt->pb) av_free(outFmt->pb);
+		av_free(outFmt);
+		
+		
+		return true;
+	}
+	
+	int FFmpegGetEOF() {
+		return AVERROR_EOF;
 	}
 }
 
@@ -94,16 +179,9 @@ bool ConvertFFmpeg(AVFormatContext* inFmt, AVFormatContext* outFmt, int streamIn
 		outStream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
 	}
 	
-	if(avformat_write_header(outFmt, NULL) != 0) {
-		std::cerr << "ffmpeg-convert: Could not write header.\n";
-		return false;
-	}
-	
 	if(!ConvertFFmpegAudio(inFmt, inCodecCtx, inCodec, outFmt, outStream, outCodec, realStreamIndex)) {
 		return false;
 	}
-	
-	av_write_trailer(outFmt);
 	
 	avcodec_close(inCodecCtx);
 	
@@ -129,6 +207,11 @@ bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCo
 	
 	if(avcodec_open2(audioStream->codec, outCodec, NULL) < 0) {
 		std::cerr << "ffmpeg-convert: Could not open output codec.\n";
+		return false;
+	}
+	
+	if(avformat_write_header(outFmt, NULL) != 0) {
+		std::cerr << "ffmpeg-convert: Could not write header.\n";
 		return false;
 	}
 	
@@ -177,13 +260,19 @@ bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCo
 			}
 		}
 	}
-	
 	av_free(frame);
+	
+	av_write_trailer(outFmt);
 	return true;
 }
 
-/*
-int main() {
-	ConvertFFmpegFile("/home/john/Projects/audio.thd", "truehd", "test.wav", "wav", "pcm_s24le");
+
+// URL Protocol Functions
+int memstream_open(URLContext *h, const char *url, int flags) {
+	h->is_streamed = 1;
+	return 0;
 }
-*/
+
+int64_t memstream_seek(URLContext *h, int64_t off, int whence) {
+	return -1;
+}
