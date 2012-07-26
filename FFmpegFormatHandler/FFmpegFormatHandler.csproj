@@ -5,16 +5,16 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9E858649-F8E8-4917-A5CB-FF784D84BE75}</ProjectGuid>
+    <ProjectGuid>{4015AA68-8A25-4C4F-9399-A0118DF7F220}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>WAVFormatHandler</RootNamespace>
-    <AssemblyName>WAVFormatHandler</AssemblyName>
+    <RootNamespace>FFMpegFormatHandler</RootNamespace>
+    <AssemblyName>FFMpegFormatHandler</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>..\bin\Debug\Plugins</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -23,7 +23,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>..\bin\Release\Plugins</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -33,18 +33,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="WAVFormatHandler.cs" />
-    <Compile Include="WAVStripBits.cs" />
+    <Compile Include="FFMpegFormatHandler.cs" />
+    <Compile Include="FFMpegCodec.cs" />
+    <Compile Include="FFMpegSetting.cs" />
+    <Compile Include="FFmpegConvert.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\NeonVidUtilCore\NeonVidUtilCore.csproj">
       <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
       <Name>NeonVidUtilCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WAVSharp\WAVSharp.csproj">
-      <Project>{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}</Project>
-      <Name>WAVSharp</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -19,136 +19,160 @@ VC-1 Elementary Stream converter
 
 #define	BUFFER_SIZE		0x200000
 
-unsigned int process_chunk(unsigned int length, unsigned int stuffing);
-unsigned int stuff_chunk(unsigned int length);
-unsigned int strip_chunk(unsigned int length);
-void putbits(unsigned int bits, unsigned int *ptr);
-unsigned int getbits(unsigned int bits, unsigned int *ptr);
-
-unsigned char	chunk_buffer[BUFFER_SIZE];
-unsigned char	strip_buffer[BUFFER_SIZE];
-unsigned char	process_buffer[BUFFER_SIZE];
-unsigned char	output_buffer[BUFFER_SIZE];
-
-unsigned int	getbitptr = 0;
-unsigned int	putbitptr = 0;
-unsigned int	coded_frames = 0;
-
-int swrite(unsigned char* data, int length, unsigned char* outbuff, int size, int* outnum) {
-	if(length > size) {
-		return FALSE;
-	}
+typedef struct {
+	unsigned char	chunk_buffer[BUFFER_SIZE];
+	unsigned char	strip_buffer[BUFFER_SIZE];
+	unsigned char	process_buffer[BUFFER_SIZE];
+	unsigned char	output_buffer[BUFFER_SIZE];
 	
-	for(int i = 0; i < length; ++i) {
-		outbuff[i] = data[i];
-	}
-	*outnum = length;
-	return TRUE;
-}
+	unsigned int	getbitptr;
+	unsigned int	putbitptr;
+	unsigned int	coded_frames;
+} Globals;
 
-int RemoveVC1Pulldown(unsigned char input, unsigned char* outbuff, int size, int* outnum)
+unsigned int process_chunk(Globals* globals, unsigned int length, unsigned int stuffing);
+unsigned int stuff_chunk(Globals* globals, unsigned int length);
+unsigned int strip_chunk(Globals* globals, unsigned int length);
+void putbits(Globals* globals, unsigned int bits, unsigned int *ptr);
+unsigned int getbits(Globals* globals, unsigned int bits, unsigned int *ptr);
+
+int VC1ConvRemovePulldown(const char* inFile, const char* outFile)
 {
-	static unsigned int		parse = 0xffffffff;
-	static unsigned int		xfer = FALSE;
-	static unsigned int		i, length, index, strip_length, stuff_length, process_length;
-	static unsigned int		first_sequence_input = FALSE;
-	static unsigned int		temp_time, hours, minutes;
-	static long double		time;
+	Globals globals;
 	
+	FILE	*fp, *fpout;
+	static unsigned char	input_buffer[BUFFER_SIZE];
+	unsigned int	parse = 0xffffffff;
+	unsigned int	xfer = FALSE;
+	unsigned int	i, length, index, strip_length, stuff_length, process_length;
+	unsigned int	first_sequence_input = FALSE;
+	unsigned int	temp_time, hours, minutes;
+	long double		time;
 	
-	
+	globals.getbitptr = 0;
+	globals.putbitptr = 0;
+	globals.coded_frames = 0;
+
+	/*--- open binary file (for parsing) ---*/
+	fp = fopen(inFile, "rb");
+	if (fp == 0) {
+		fprintf(stderr, "Cannot open bitstream file <%s>\n", inFile);
+		exit(-1);
+	}
+
+	/*--- open binary file (for parsing) ---*/
+	fpout = fopen(outFile, "wb");
+	if (fpout == 0) {
+		fprintf(stderr, "Cannot open bitstream file <%s>\n", outFile);
+		exit(-1);
+	}
+
 	printf("vc1conv VC-1 Elementary Stream Converter 0.4\n");
 
-	parse = (parse << 8) + input;
-	if (parse == 0x0000010f)  {
-		first_sequence_input = TRUE;
-		if (xfer == FALSE)  {
-			xfer = TRUE;
-			index = 0;
-			chunk_buffer[index++] = (parse >> 24) & 0xff;
-			chunk_buffer[index++] = (parse >> 16) & 0xff;
-			chunk_buffer[index++] = (parse >> 8) & 0xff;
-		}
-		else  {
-			strip_length = strip_chunk(index - 3);
-			strip_buffer[strip_length] = 0;
-			process_length = process_chunk(strip_length, (index - 3 - strip_length));
-			stuff_length = stuff_chunk(strip_length);
-			if(!swrite(&output_buffer[0], stuff_length, outbuff, size, outnum)) return FALSE;
-			index = 0;
-			chunk_buffer[index++] = (parse >> 24) & 0xff;
-			chunk_buffer[index++] = (parse >> 16) & 0xff;
-			chunk_buffer[index++] = (parse >> 8) & 0xff;
+	while(!feof(fp))  {
+		length = fread(&input_buffer[0], 1, (BUFFER_SIZE), fp);
+		for(i = 0; i < length; i++)  {
+			parse = (parse << 8) + input_buffer[i];
+			if (parse == 0x0000010f)  {
+				first_sequence_input = TRUE;
+				if (xfer == FALSE)  {
+					xfer = TRUE;
+					index = 0;
+					globals.chunk_buffer[index++] = (parse >> 24) & 0xff;
+					globals.chunk_buffer[index++] = (parse >> 16) & 0xff;
+					globals.chunk_buffer[index++] = (parse >> 8) & 0xff;
+				}
+				else  {
+					strip_length = strip_chunk(&globals, index - 3);
+					globals.strip_buffer[strip_length] = 0;
+					process_length = process_chunk(&globals, strip_length, (index - 3 - strip_length));
+					stuff_length = stuff_chunk(&globals, strip_length);
+					fwrite(&globals.output_buffer[0], 1, stuff_length, fpout);
+					index = 0;
+					globals.chunk_buffer[index++] = (parse >> 24) & 0xff;
+					globals.chunk_buffer[index++] = (parse >> 16) & 0xff;
+					globals.chunk_buffer[index++] = (parse >> 8) & 0xff;
+				}
+			}
+			else if (parse == 0x0000010d)  {
+				if (first_sequence_input == TRUE)  {
+					if (xfer == FALSE)  {
+						xfer = TRUE;
+						index = 0;
+					}
+					else  {
+						strip_length = strip_chunk(&globals, index - 3);
+						globals.strip_buffer[strip_length] = 0;
+						process_length = process_chunk(&globals, strip_length, (index - 3 - strip_length));
+						stuff_length = stuff_chunk(&globals, strip_length);
+						fwrite(&globals.output_buffer[0], 1, stuff_length, fpout);
+						index = 0;
+						globals.chunk_buffer[index++] = (parse >> 24) & 0xff;
+						globals.chunk_buffer[index++] = (parse >> 16) & 0xff;
+						globals.chunk_buffer[index++] = (parse >> 8) & 0xff;
+					}
+				}
+			}
+			else if (parse == 0x0000010e)  {
+				if (first_sequence_input == TRUE)  {
+					if (xfer == FALSE)  {
+						xfer = TRUE;
+						index = 0;
+					}
+					else  {
+						strip_length = strip_chunk(&globals, index - 3);
+						globals.strip_buffer[strip_length] = 0;
+						process_length = process_chunk(&globals, strip_length, (index - 3 - strip_length));
+						stuff_length = stuff_chunk(&globals, strip_length);
+						fwrite(&globals.output_buffer[0], 1, stuff_length, fpout);
+						index = 0;
+						globals.chunk_buffer[index++] = (parse >> 24) & 0xff;
+						globals.chunk_buffer[index++] = (parse >> 16) & 0xff;
+						globals.chunk_buffer[index++] = (parse >> 8) & 0xff;
+					}
+				}
+			}
+			else if (parse == 0x0000010a)  {
+				if (first_sequence_input == TRUE)  {
+					if (xfer == FALSE)  {
+						xfer = TRUE;
+						index = 0;
+					}
+					else  {
+						strip_length = strip_chunk(&globals, index - 3);
+						globals.strip_buffer[strip_length] = 0;
+						process_length = process_chunk(&globals, strip_length, (index - 3 - strip_length));
+						stuff_length = stuff_chunk(&globals, strip_length);
+						fwrite(&globals.output_buffer[0], 1, stuff_length, fpout);
+						index = 0;
+						first_sequence_input = FALSE;
+						xfer = FALSE;
+					}
+				}
+			}
+			if (xfer == TRUE)  {
+				globals.chunk_buffer[index++] = parse & 0xff;
+				if (index > (BUFFER_SIZE))  {
+					fprintf(stderr, "Picture bigger than 2 megabytes\n");
+					exit(-1);
+				}
+			}
 		}
 	}
-	else if (parse == 0x0000010d)  {
-		if (first_sequence_input == TRUE)  {
-			if (xfer == FALSE)  {
-				xfer = TRUE;
-				index = 0;
-			}
-			else  {
-				strip_length = strip_chunk(index - 3);
-				strip_buffer[strip_length] = 0;
-				process_length = process_chunk(strip_length, (index - 3 - strip_length));
-				stuff_length = stuff_chunk(strip_length);
-				if(!swrite(&output_buffer[0], stuff_length, outbuff, size, outnum)) return FALSE;
-				index = 0;
-				chunk_buffer[index++] = (parse >> 24) & 0xff;
-				chunk_buffer[index++] = (parse >> 16) & 0xff;
-				chunk_buffer[index++] = (parse >> 8) & 0xff;
-			}
-		}
-	}
-	else if (parse == 0x0000010e)  {
-		if (first_sequence_input == TRUE)  {
-			if (xfer == FALSE)  {
-				xfer = TRUE;
-				index = 0;
-			}
-			else  {
-				strip_length = strip_chunk(index - 3);
-				strip_buffer[strip_length] = 0;
-				process_length = process_chunk(strip_length, (index - 3 - strip_length));
-				stuff_length = stuff_chunk(strip_length);
-				if(!swrite(&output_buffer[0], stuff_length, outbuff, size, outnum)) return FALSE;
-				index = 0;
-				chunk_buffer[index++] = (parse >> 24) & 0xff;
-				chunk_buffer[index++] = (parse >> 16) & 0xff;
-				chunk_buffer[index++] = (parse >> 8) & 0xff;
-			}
-		}
-	}
-	else if (parse == 0x0000010a)  {
-		if (first_sequence_input == TRUE)  {
-			if (xfer == FALSE)  {
-				xfer = TRUE;
-				index = 0;
-			}
-			else  {
-				strip_length = strip_chunk(index - 3);
-				strip_buffer[strip_length] = 0;
-				process_length = process_chunk(strip_length, (index - 3 - strip_length));
-				stuff_length = stuff_chunk(strip_length);
-				if(!swrite(&output_buffer[0], stuff_length, outbuff, size, outnum)) return FALSE;
-				index = 0;
-				first_sequence_input = FALSE;
-				xfer = FALSE;
-			}
-		}
-	}
-	if (xfer == TRUE)  {
-		chunk_buffer[index++] = parse & 0xff;
-		if (index > (BUFFER_SIZE))  {
-			fprintf(stderr, "Picture bigger than 2 megabytes\n");
-			return FALSE;
-		}
-	}
-	
-	return TRUE;
+	time = 1.001/24.0 * (long double)globals.coded_frames;
+	temp_time = (long double)time;
+	hours = temp_time / 3600;
+	temp_time -= hours * 3600;
+	minutes = temp_time / 60;
+	temp_time -= minutes * 60;
+	time -= (long double)((minutes * 60) + (hours * 3600));
+	printf("\nframes = %d, running time = %d:%d:%f\n", globals.coded_frames, hours, minutes, time);
+	fclose(fpout);
+	fclose(fp);
+	return 0;
 }
 
-unsigned int getbits(unsigned int bits, unsigned int *ptr)
+unsigned int getbits(Globals* globals, unsigned int bits, unsigned int *ptr)
 {
 	static unsigned int	mask[33] = {0x0, 0x1, 0x3, 0x7, 0xf,
 							0x1f, 0x3f, 0x7f, 0xff,
@@ -161,58 +185,58 @@ unsigned int getbits(unsigned int bits, unsigned int *ptr)
 	unsigned int	temp, index, offset;
 
 	if (bits == 0)  {
-		bits = 8 - (getbitptr % 8);
+		bits = 8 - (globals->getbitptr % 8);
 		if (bits == 8)  {
 			bits = 0;
 		}
 	}
-	index = getbitptr / 8;
-	offset = getbitptr % 8;
+	index = globals->getbitptr / 8;
+	offset = globals->getbitptr % 8;
 	if (bits > 24)  {
-		temp = (strip_buffer[index++] << 24) & 0xff000000;
-		temp |= (strip_buffer[index++] << 16) & 0xff0000;
-		temp |= (strip_buffer[index++] << 8) & 0xff00;
-		temp |= strip_buffer[index++] & 0xff;
+		temp = (globals->strip_buffer[index++] << 24) & 0xff000000;
+		temp |= (globals->strip_buffer[index++] << 16) & 0xff0000;
+		temp |= (globals->strip_buffer[index++] << 8) & 0xff00;
+		temp |= globals->strip_buffer[index++] & 0xff;
 		if (offset != 0)  {
 			temp = temp << offset;
-			temp |= (strip_buffer[index++] >> (8 - offset)) & mask[offset];
+			temp |= (globals->strip_buffer[index++] >> (8 - offset)) & mask[offset];
 		}
 		temp = temp >> (32 - bits);
 	}
 	else if (bits > 16)  {
-		temp = (strip_buffer[index++] << 16) & 0xff0000;
-		temp |= (strip_buffer[index++] << 8) & 0xff00;
-		temp |= strip_buffer[index++] & 0xff;
+		temp = (globals->strip_buffer[index++] << 16) & 0xff0000;
+		temp |= (globals->strip_buffer[index++] << 8) & 0xff00;
+		temp |= globals->strip_buffer[index++] & 0xff;
 		if (offset != 0)  {
 			temp = temp << offset;
-			temp |= (strip_buffer[index++] >> (8 - offset)) & mask[offset];
+			temp |= (globals->strip_buffer[index++] >> (8 - offset)) & mask[offset];
 		}
 		temp = temp >> (24 - bits);
 	}
 	else if (bits > 8)  {
-		temp = (strip_buffer[index++] << 8) & 0xff00;
-		temp |= strip_buffer[index++] & 0xff;
+		temp = (globals->strip_buffer[index++] << 8) & 0xff00;
+		temp |= globals->strip_buffer[index++] & 0xff;
 		if (offset != 0)  {
 			temp = temp << offset;
-			temp |= (strip_buffer[index++] >> (8 - offset)) & mask[offset];
+			temp |= (globals->strip_buffer[index++] >> (8 - offset)) & mask[offset];
 		}
 		temp = temp >> (16 - bits);
 	}
 	else if (bits > 0)  {
-		temp = strip_buffer[index++] & 0xff;
+		temp = globals->strip_buffer[index++] & 0xff;
 		if (offset != 0)  {
 			temp = temp << offset;
-			temp |= (strip_buffer[index++] >> (8 - offset)) & mask[offset];
+			temp |= (globals->strip_buffer[index++] >> (8 - offset)) & mask[offset];
 		}
 		temp = temp >> (8 - bits);
 	}
 	temp = temp & mask[bits];
-	getbitptr = getbitptr + bits;
+	globals->getbitptr = globals->getbitptr + bits;
 	*ptr = temp;
 	return (bits);
 }
 
-void putbits(unsigned int bits, unsigned int *ptr)
+void putbits(Globals* globals, unsigned int bits, unsigned int *ptr)
 {
 	static unsigned int	mask[33] = {0x0, 0x1, 0x3, 0x7, 0xf,
 							0x1f, 0x3f, 0x7f, 0xff,
@@ -224,12 +248,12 @@ void putbits(unsigned int bits, unsigned int *ptr)
 							0x1fffffff, 0x3fffffff, 0x7fffffff, 0xffffffff};
 	unsigned int	temp, index, offset, prev, total_bits;
 
-	index = putbitptr / 8;
-	offset = putbitptr % 8;
+	index = globals->putbitptr / 8;
+	offset = globals->putbitptr % 8;
 	total_bits = bits + offset;
 	if (bits > 24)  {
 		if (offset != 0)  {
-			prev = process_buffer[index];
+			prev = globals->process_buffer[index];
 			if (total_bits > 32)  {
 				temp = (*ptr << (40 - offset - bits)) | (prev << 32);
 			}
@@ -241,22 +265,22 @@ void putbits(unsigned int bits, unsigned int *ptr)
 			temp = *ptr << (32 - bits);
 		}
 		if (total_bits > 24)  {
-			process_buffer[index++] = (temp >> 32) & 0xff;
-			process_buffer[index++] = (temp >> 24) & 0xff;
-			process_buffer[index++] = (temp >> 16) & 0xff;
-			process_buffer[index++] = (temp >> 8) & 0xff;
-			process_buffer[index++] = temp & 0xff;
+			globals->process_buffer[index++] = (temp >> 32) & 0xff;
+			globals->process_buffer[index++] = (temp >> 24) & 0xff;
+			globals->process_buffer[index++] = (temp >> 16) & 0xff;
+			globals->process_buffer[index++] = (temp >> 8) & 0xff;
+			globals->process_buffer[index++] = temp & 0xff;
 		}
 		else  {
-			process_buffer[index++] = (temp >> 24) & 0xff;
-			process_buffer[index++] = (temp >> 16) & 0xff;
-			process_buffer[index++] = (temp >> 8) & 0xff;
-			process_buffer[index++] = temp & 0xff;
+			globals->process_buffer[index++] = (temp >> 24) & 0xff;
+			globals->process_buffer[index++] = (temp >> 16) & 0xff;
+			globals->process_buffer[index++] = (temp >> 8) & 0xff;
+			globals->process_buffer[index++] = temp & 0xff;
 		}
 	}
 	else if (bits > 16)  {
 		if (offset != 0)  {
-			prev = process_buffer[index];
+			prev = globals->process_buffer[index];
 			if (total_bits > 24)  {
 				temp = (*ptr << (32 - offset - bits)) | (prev << 24);
 			}
@@ -268,20 +292,20 @@ void putbits(unsigned int bits, unsigned int *ptr)
 			temp = *ptr << (24 - bits);
 		}
 		if (total_bits > 24)  {
-			process_buffer[index++] = (temp >> 24) & 0xff;
-			process_buffer[index++] = (temp >> 16) & 0xff;
-			process_buffer[index++] = (temp >> 8) & 0xff;
-			process_buffer[index++] = temp & 0xff;
+			globals->process_buffer[index++] = (temp >> 24) & 0xff;
+			globals->process_buffer[index++] = (temp >> 16) & 0xff;
+			globals->process_buffer[index++] = (temp >> 8) & 0xff;
+			globals->process_buffer[index++] = temp & 0xff;
 		}
 		else  {
-			process_buffer[index++] = (temp >> 16) & 0xff;
-			process_buffer[index++] = (temp >> 8) & 0xff;
-			process_buffer[index++] = temp & 0xff;
+			globals->process_buffer[index++] = (temp >> 16) & 0xff;
+			globals->process_buffer[index++] = (temp >> 8) & 0xff;
+			globals->process_buffer[index++] = temp & 0xff;
 		}
 	}
 	else if (bits > 8)  {
 		if (offset != 0)  {
-			prev = process_buffer[index];
+			prev = globals->process_buffer[index];
 			if (total_bits > 16)  {
 				temp = (*ptr << (24 - offset - bits)) | (prev << 16);
 			}
@@ -293,18 +317,18 @@ void putbits(unsigned int bits, unsigned int *ptr)
 			temp = *ptr << (16 - bits);
 		}
 		if (total_bits > 16)  {
-			process_buffer[index++] = (temp >> 16) & 0xff;
-			process_buffer[index++] = (temp >> 8) & 0xff;
-			process_buffer[index++] = temp & 0xff;
+			globals->process_buffer[index++] = (temp >> 16) & 0xff;
+			globals->process_buffer[index++] = (temp >> 8) & 0xff;
+			globals->process_buffer[index++] = temp & 0xff;
 		}
 		else  {
-			process_buffer[index++] = (temp >> 8) & 0xff;
-			process_buffer[index++] = temp & 0xff;
+			globals->process_buffer[index++] = (temp >> 8) & 0xff;
+			globals->process_buffer[index++] = temp & 0xff;
 		}
 	}
 	else if (bits > 0)  {
 		if (offset != 0)  {
-			prev = process_buffer[index];
+			prev = globals->process_buffer[index];
 			if (total_bits > 8)  {
 				temp = (*ptr << (16 - offset - bits)) | (prev << 8);
 			}
@@ -316,78 +340,78 @@ void putbits(unsigned int bits, unsigned int *ptr)
 			temp = *ptr << (8 - bits);
 		}
 		if (total_bits > 8)  {
-			process_buffer[index++] = (temp >> 8) & 0xff;
-			process_buffer[index++] = temp & 0xff;
+			globals->process_buffer[index++] = (temp >> 8) & 0xff;
+			globals->process_buffer[index++] = temp & 0xff;
 		}
 		else  {
-			process_buffer[index++] = temp;
+			globals->process_buffer[index++] = temp;
 		}
 	}
-	putbitptr = putbitptr + bits;
+	globals->putbitptr = globals->putbitptr + bits;
 }
 
-unsigned int strip_chunk(unsigned int length)
+unsigned int strip_chunk(Globals* globals, unsigned int length)
 {
 	unsigned int	i, parse = 0xffffffff;
 	unsigned int	bits;
 	unsigned int	index = 0;
 
 	for (i = 0; i < length;)  {
-		bits = chunk_buffer[i++];
+		bits = globals->chunk_buffer[i++];
 		parse = (parse << 8) + bits;
 		if ((parse & 0xffffff) == 0x000003)  {
-			bits = chunk_buffer[i++];
+			bits = globals->chunk_buffer[i++];
 			parse = (parse << 8) + bits;
 			if (parse == 0x00000300 || parse == 0x00000301 || parse == 0x00000302 || parse == 0x00000303)  {
-				strip_buffer[index++] = bits;
+				globals->strip_buffer[index++] = bits;
 			}
 			else  {
-				strip_buffer[index++] = 0x3;
-				strip_buffer[index++] = bits;
+				globals->strip_buffer[index++] = 0x3;
+				globals->strip_buffer[index++] = bits;
 			}
 		}
 		else  {
-			strip_buffer[index++] = bits;
+			globals->strip_buffer[index++] = bits;
 		}
 	}
 	return (index);
 }
 
-unsigned int stuff_chunk(unsigned int length)
+unsigned int stuff_chunk(Globals* globals, unsigned int length)
 {
 	unsigned int	i, parse = 0xffffffff;
 	unsigned int	bits;
 	unsigned int	index = 0;
 
 	for (i = 0; i < length;)  {
-		bits = process_buffer[i++];
+		bits = globals->process_buffer[i++];
 		parse = (parse << 8) + bits;
 		if ((parse & 0xffffff) == 0x000000)  {
-			output_buffer[index++] = 0x3;
+			globals->output_buffer[index++] = 0x3;
 			parse = 0xffffff00;
 		}
 		else if ((parse & 0xffffff) == 0x000001)  {
 			if (i > 3)  {
-				output_buffer[index++] = 0x3;
+				globals->output_buffer[index++] = 0x3;
 			}
 			parse = 0xffffff01;
 		}
 		else if ((parse & 0xffffff) == 0x000002)  {
-			output_buffer[index++] = 0x3;
+			globals->output_buffer[index++] = 0x3;
 			parse = 0xffffff02;
 		}
 		else if ((parse & 0xffffff) == 0x000003)  {
-			output_buffer[index++] = 0x3;
+			globals->output_buffer[index++] = 0x3;
 			parse = 0xffffff03;
 		}
-		output_buffer[index++] = bits;
+		globals->output_buffer[index++] = bits;
 	}
 	return (index);
 }
 
-unsigned int process_chunk(unsigned int length, unsigned int stuffing)
+unsigned int process_chunk(Globals* globals, unsigned int length, unsigned int stuffing)
 {
-	unsigned int	i, j, k;
+	unsigned int	i, j;
 	static unsigned int	parse = 0;
 	static unsigned int	first = TRUE;
 	static unsigned int	first_sequence = FALSE;
@@ -419,29 +443,29 @@ unsigned int process_chunk(unsigned int length, unsigned int stuffing)
 	static unsigned int	trash, header, panscan, quantizer, ps, zero = 0;
 	static unsigned int	windows, rff, rptfrm, finter, pqindex, one = 1;
 
-	getbitptr = 0;
-	putbitptr = 0;
+	globals->getbitptr = 0;
+	globals->putbitptr = 0;
 	for (i = 0; i < length; i++)  {
-		num = getbits(8, &bits);
+		num = getbits(globals, 8, &bits);
 		if (first_sequence == TRUE)  {
-			putbits(8, &bits);
+			putbits(globals, 8, &bits);
 		}
 		parse = (parse << 8) + bits;
 		if (parse == 0x0000010d && i == 3)  {
 			picture_count++;
 			if (first_sequence == TRUE)  {
-				coded_frames++;
+				globals->coded_frames++;
 			}
 			if (interlace == 1)  {
 				/* FCM */
-				num = getbits(1, &fcm);
+				num = getbits(globals, 1, &fcm);
 #ifdef CONVERT
 				/* delete */
 #else
 				putbits(1, &fcm);
 #endif
 				if (fcm)  {
-					num = getbits(1, &fcm);
+					num = getbits(globals, 1, &fcm);
 #ifdef CONVERT
 					/* delete */
 #else
@@ -451,17 +475,17 @@ unsigned int process_chunk(unsigned int length, unsigned int stuffing)
 				}
 			}
 			/* PTYPE */
-			num = getbits(1, &ptype);
-			putbits(1, &ptype);
+			num = getbits(globals, 1, &ptype);
+			putbits(globals, 1, &ptype);
 			if (ptype)  {
-				num = getbits(1, &ptype);
-				putbits(1, &ptype);
+				num = getbits(globals, 1, &ptype);
+				putbits(globals, 1, &ptype);
 				if (ptype)  {
-					num = getbits(1, &ptype);
-					putbits(1, &ptype);
+					num = getbits(globals, 1, &ptype);
+					putbits(globals, 1, &ptype);
 					if (ptype)  {
-						num = getbits(1, &ptype);
-						putbits(1, &ptype);
+						num = getbits(globals, 1, &ptype);
+						putbits(globals, 1, &ptype);
 						if (ptype)  {
 							picture_type = SKIPPED;
 						}
@@ -482,19 +506,19 @@ unsigned int process_chunk(unsigned int length, unsigned int stuffing)
 			}
 			if (tfcntrflag)  {
 				/* TFCNTR */
-				num = getbits(8, &trash);
-				putbits(8, &trash);
+				num = getbits(globals, 8, &trash);
+				putbits(globals, 8, &trash);
 			}
 #if 0
 			printf("picture_type = %d\n", picture_type);
 #endif
 			if(pulldown == 1)  {
 				/* RPTFRM, TFF, RFF */
-				num = getbits(2, &temp_flags);
+				num = getbits(globals, 2, &temp_flags);
 #ifdef CONVERT
-				putbits(2, &zero);
+				putbits(globals, 2, &zero);
 #else
-				putbits(2, &temp_flags);
+				putbits(globals, 2, &temp_flags);
 #endif
 				if (interlace == 0 || psf == 1)  {
 					rptfrm = temp_flags;
@@ -505,8 +529,8 @@ unsigned int process_chunk(unsigned int length, unsigned int stuffing)
 			}
 			if (panscan)  {
 				/* PS_PRESENT */
-				num = getbits(1, &ps);
-				putbits(1, &ps);
+				num = getbits(globals, 1, &ps);
+				putbits(globals, 1, &ps);
 				if (ps)  {
 					if (interlace == 1 && psf == 0)  {
 						if (pulldown == 1)  {
@@ -524,29 +548,29 @@ unsigned int process_chunk(unsigned int length, unsigned int stuffing)
 							windows = 1;
 						}
 					}
-					for (k = 0; k < windows; k++)  {
-						/* PS_HOFFSET */
-						num = getbits(18, &trash);
-						putbits(18, &trash);
-						/* PS_VOFFSET */
-						num = getbits(18, &trash);
-						putbits(18, &trash);
-						/* PS_WIDTH */
-						num = getbits(14, &trash);
-						putbits(14, &trash);
-						/* PS_HEIGHT */
-						num = getbits(14, &trash);
-						putbits(14, &trash);
-					}
+				}
+				for (i = 0; i < windows; i++)  {
+					/* PS_HOFFSET */
+					num = getbits(globals, 18, &trash);
+					putbits(globals, 18, &trash);
+					/* PS_VOFFSET */
+					num = getbits(globals, 18, &trash);
+					putbits(globals, 18, &trash);
+					/* PS_WIDTH */
+					num = getbits(globals, 14, &trash);
+					putbits(globals, 14, &trash);
+					/* PS_HEIGHT */
+					num = getbits(globals, 14, &trash);
+					putbits(globals, 14, &trash);
 				}
 			}
 			if (picture_type != SKIPPED)  {
 				/* RNDCTRL */
-				num = getbits(1, &trash);
-				putbits(1, &trash);
+				num = getbits(globals, 1, &trash);
+				putbits(globals, 1, &trash);
 				if (interlace)  {
 					/* UVSAMP */
-					num = getbits(1, &trash);
+					num = getbits(globals, 1, &trash);
 #ifdef CONVERT
 					/* delete */
 #else
@@ -555,31 +579,31 @@ unsigned int process_chunk(unsigned int length, unsigned int stuffing)
 				}
 				if (finter)  {
 					/* INTRPFRM */
-					num = getbits(1, &trash);
-					putbits(1, &trash);
+					num = getbits(globals, 1, &trash);
+					putbits(globals, 1, &trash);
 				}
 				if (picture_type == B)  {
 					/* BFRACTION */
-					num = getbits(3, &trash);
-					putbits(3, &trash);
+					num = getbits(globals, 3, &trash);
+					putbits(globals, 3, &trash);
 					if (trash == 0x7)  {
 						/* BFRACTION */
-						num = getbits(4, &trash);
-						putbits(4, &trash);
+						num = getbits(globals, 4, &trash);
+						putbits(globals, 4, &trash);
 					}
 				}
 				/* PQINDEX */
-				num = getbits(5, &pqindex);
-				putbits(5, &pqindex);
+				num = getbits(globals, 5, &pqindex);
+				putbits(globals, 5, &pqindex);
 				if (pqindex <= 8)  {
 					/* HALFQP */
-					num = getbits(1, &trash);
-					putbits(1, &trash);
+					num = getbits(globals, 1, &trash);
+					putbits(globals, 1, &trash);
 				}
 				if (quantizer == 1)  {
 					/* PQUANTIZER */
-					num = getbits(1, &trash);
-					putbits(1, &trash);
+					num = getbits(globals, 1, &trash);
+					putbits(globals, 1, &trash);
 				}
 			}
 			if(interlace == 1)  {
@@ -651,107 +675,107 @@ unsigned int process_chunk(unsigned int length, unsigned int stuffing)
 			if (first_sequence == FALSE)  {
 				printf("%d frames before first I-frame\n", picture_count);
 				header = (parse >> 24) & 0xff;
-				putbits(8, &header);
+				putbits(globals, 8, &header);
 				header = (parse >> 16) & 0xff;
-				putbits(8, &header);
+				putbits(globals, 8, &header);
 				header = (parse >> 8) & 0xff;
-				putbits(8, &header);
+				putbits(globals, 8, &header);
 				header = parse & 0xff;
-				putbits(8, &header);
+				putbits(globals, 8, &header);
 				first_sequence = TRUE;
 			}
 			/* PROFILE */
-			num = getbits(2, &profile);
-			putbits(2, &profile);
+			num = getbits(globals, 2, &profile);
+			putbits(globals, 2, &profile);
 			/* LEVEL */
-			num = getbits(3, &level);
-			putbits(3, &level);
+			num = getbits(globals, 3, &level);
+			putbits(globals, 3, &level);
 			/* COLORDIFF_FORMAT */
-			num = getbits(2, &format);
-			putbits(2, &format);
+			num = getbits(globals, 2, &format);
+			putbits(globals, 2, &format);
 			/* FRMRTQ_POSTPROC, BITRTQ_POSTPROC */
-			num = getbits(8, &trash);
-			putbits(8, &trash);
+			num = getbits(globals, 8, &trash);
+			putbits(globals, 8, &trash);
 			/* POSTPROCFLAG */
-			num = getbits(1, &trash);
-			putbits(1, &trash);
+			num = getbits(globals, 1, &trash);
+			putbits(globals, 1, &trash);
 			/* MAX_CODED_WIDTH */
-			num = getbits(12, &width);
-			putbits(12, &width);
+			num = getbits(globals, 12, &width);
+			putbits(globals, 12, &width);
 			/* MAX_CODED_HEIGHT */
-			num = getbits(12, &height);
-			putbits(12, &height);
+			num = getbits(globals, 12, &height);
+			putbits(globals, 12, &height);
 			/* PULLDOWN */
-			num = getbits(1, &pulldown);
-			putbits(1, &pulldown);
+			num = getbits(globals, 1, &pulldown);
+			putbits(globals, 1, &pulldown);
 			/* INTERLACE */
-			num = getbits(1, &interlace);
+			num = getbits(globals, 1, &interlace);
 #ifdef CONVERT
-			putbits(1, &zero);
+			putbits(globals, 1, &zero);
 #else
-			putbits(1, &interlace);
+			putbits(globals, 1, &interlace);
 #endif
 			/* TFCNTRFLAG */
-			num = getbits(1, &tfcntrflag);
-			putbits(1, &tfcntrflag);
+			num = getbits(globals, 1, &tfcntrflag);
+			putbits(globals, 1, &tfcntrflag);
 			/* FINTERFLAG */
-			num = getbits(1, &finter);
-			putbits(1, &finter);
+			num = getbits(globals, 1, &finter);
+			putbits(globals, 1, &finter);
 			/* RESERVED */
-			num = getbits(1, &trash);
-			putbits(1, &trash);
+			num = getbits(globals, 1, &trash);
+			putbits(globals, 1, &trash);
 			/* PSF */
-			num = getbits(1, &psf);
-			putbits(1, &psf);
+			num = getbits(globals, 1, &psf);
+			putbits(globals, 1, &psf);
 			/* DISPLAY_EXT */
-			num = getbits(1, &display);
-			putbits(1, &display);
+			num = getbits(globals, 1, &display);
+			putbits(globals, 1, &display);
 			if (display == 1)  {
 				/* DISPLAY_HORIZ_SIZE */
-				num = getbits(14, &horz);
-				putbits(14, &horz);
+				num = getbits(globals, 14, &horz);
+				putbits(globals, 14, &horz);
 				/* DISPLAY_VERT_SIZE */
-				num = getbits(14, &vert);
-				putbits(14, &vert);
+				num = getbits(globals, 14, &vert);
+				putbits(globals, 14, &vert);
 				/* ASPECT_RATIO_FLAG */
-				num = getbits(1, &trash);
-				putbits(1, &trash);
+				num = getbits(globals, 1, &trash);
+				putbits(globals, 1, &trash);
 				if (trash == 1)  {
 					/* ASPECT_RATIO */
-					num = getbits(4, &aspect);
-					putbits(4, &aspect);
+					num = getbits(globals, 4, &aspect);
+					putbits(globals, 4, &aspect);
 					if (aspect == 15)  {
 						/* ASPECT_HORIZ_SIZE, ASPECT_VERT_SIZE */
-						num = getbits(16, &trash);
-						putbits(16, &trash);
+						num = getbits(globals, 16, &trash);
+						putbits(globals, 16, &trash);
 					}
 				}
 				else  {
 					aspect = 0;
 				}
 				/* FRAMERATE_FLAG */
-				num = getbits(1, &trash);
-				putbits(1, &trash);
+				num = getbits(globals, 1, &trash);
+				putbits(globals, 1, &trash);
 				if (trash == 1)  {
 					/* FRAMERATEIND */
-					num = getbits(1, &framerateind);
-					putbits(1, &framerateind);
+					num = getbits(globals, 1, &framerateind);
+					putbits(globals, 1, &framerateind);
 					if (framerateind == 0)  {
 						/* FRAMERATENR */
-						num = getbits(8, &frameratenr_int);
+						num = getbits(globals, 8, &frameratenr_int);
 #ifdef CONVERT
-						putbits(8, &one);
+						putbits(globals, 8, &one);
 #else
-						putbits(8, &frameratenr_int);
+						putbits(globals, 8, &frameratenr_int);
 #endif
 						/* FRAMERATEDR */
-						num = getbits(4, &frameratedr_int);
-						putbits(4, &frameratedr_int);
+						num = getbits(globals, 4, &frameratedr_int);
+						putbits(globals, 4, &frameratedr_int);
 					}
 					else  {
 						/* FRAMERATEEXP */
-						num = getbits(16, &framerateexp);
-						putbits(16, &framerateexp);
+						num = getbits(globals, 16, &framerateexp);
+						putbits(globals, 16, &framerateexp);
 					}
 				}
 			}
@@ -890,23 +914,23 @@ unsigned int process_chunk(unsigned int length, unsigned int stuffing)
 		}
 		else if (parse == 0x0000010e && i == 3)  {
 			/* BROKEN LINK, CLOSED_ENTRY */
-			num = getbits(2, &trash);
-			putbits(2, &trash);
+			num = getbits(globals, 2, &trash);
+			putbits(globals, 2, &trash);
 			/* PANSCAN_FLAG */
-			num = getbits(1, &panscan);
-			putbits(1, &panscan);
+			num = getbits(globals, 1, &panscan);
+			putbits(globals, 1, &panscan);
 			/* REFDIST_FLAG, LOOPFILTER, FASTUVMC, EXTENDED_MV, DQUANT, VTRANSFORM, OVERLAP */
-			num = getbits(8, &trash);
-			putbits(8, &trash);
+			num = getbits(globals, 8, &trash);
+			putbits(globals, 8, &trash);
 			/* QUANTIZER */
-			num = getbits(2, &quantizer);
-			putbits(2, &quantizer);
+			num = getbits(globals, 2, &quantizer);
+			putbits(globals, 2, &quantizer);
 			if (first == FALSE)  {
 				entry_size = length + stuffing;
 			}
 		}
 	}
-	num = getbits(0, &trash);
-	putbits(num, &trash);
+	num = getbits(globals, 0, &trash);
+	putbits(globals, num, &trash);
 	return (0);
 }

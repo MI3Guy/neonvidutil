@@ -27,7 +27,13 @@ extern "C" {
 	void InitFFmpeg();
 	bool ConvertFFmpegFileFile(const char* inFile, const char* inFormatName,
 	                           const char* outFile, const char* outFormatName,
-	                           const char* codecName);							
+	                           const char* codecName);
+	bool ConvertFFmpegFileStream(const char* inFile, const char* inFormatName,
+	                             FFmpegURLWrite outStreamWrite, int outFid, const char* outFormatName,
+	                             const char* codecName);
+	bool ConvertFFmpegStreamFile(FFmpegURLRead inStreamRead, int inFid, const char* inFormatName,
+	                             const char* outFile, const char* outFormatName,
+	                             const char* codecName);
 	bool ConvertFFmpegStreamStream(FFmpegURLRead inStream, int inFid, const char* inFormatName,
 	                               FFmpegURLWrite outStream, int outFid, const char* outFormatName,
 	                               const char* codecName);

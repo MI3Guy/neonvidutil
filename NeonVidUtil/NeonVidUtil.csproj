@@ -46,10 +46,6 @@
       <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
       <Name>NeonVidUtilCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FFMpegFormatHandler\FFMpegFormatHandler.csproj">
-      <Project>{4015AA68-8A25-4C4F-9399-A0118DF7F220}</Project>
-      <Name>FFMpegFormatHandler</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="..\" />

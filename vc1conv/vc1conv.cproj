@@ -7,14 +7,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{84D1A34D-1F70-465B-968D-B74BAEE16774}</ProjectGuid>
     <Target>Bin</Target>
-    <Language>CPP</Language>
+    <Language>C</Language>
     <Compiler>
-      <Compiler ctype="GppCompiler" />
+      <Compiler ctype="GccCompiler" />
     </Compiler>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\Debug\Plugins\</OutputPath>
     <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
     <OutputName>vc1conv</OutputName>

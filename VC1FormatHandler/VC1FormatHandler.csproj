@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>VC1FormatHandler</RootNamespace>
     <AssemblyName>VC1FormatHandler</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

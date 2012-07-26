@@ -17,13 +17,13 @@ Project("{2857B73E-F847-4B02-9238-064979017E93}") = "vc1conv", "vc1conv\vc1conv.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAVFormatHandler", "WAVFormatHandler\WAVFormatHandler.csproj", "{9E858649-F8E8-4917-A5CB-FF784D84BE75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFMpegFormatHandler", "FFMpegFormatHandler\FFMpegFormatHandler.csproj", "{4015AA68-8A25-4C4F-9399-A0118DF7F220}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAVSharp", "WAVSharp\WAVSharp.csproj", "{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}"
 EndProject
 Project("{2857B73E-F847-4B02-9238-064979017E93}") = "ffmpeg-convert", "ffmpeg-convert\ffmpeg-convert.cproj", "{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wav2Flac", "Wav2Flac\Wav2Flac.csproj", "{A3C8B60C-0CA9-41EC-894E-E156198A3CFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFmpegFormatHandler", "FFmpegFormatHandler\FFmpegFormatHandler.csproj", "{4015AA68-8A25-4C4F-9399-A0118DF7F220}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
