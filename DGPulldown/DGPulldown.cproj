@@ -5,19 +5,19 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{84D1A34D-1F70-465B-968D-B74BAEE16774}</ProjectGuid>
+    <ProjectGuid>{D0AEC428-160A-4C3A-A7BD-82777A2F0084}</ProjectGuid>
     <Target>Bin</Target>
-    <Language>C</Language>
+    <Language>CPP</Language>
     <Compiler>
-      <Compiler ctype="GccCompiler" />
+      <Compiler ctype="GppCompiler" />
     </Compiler>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\bin\Debug</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <DefineSymbols>DEBUG MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
-    <OutputName>vc1conv</OutputName>
+    <OutputName>DGPulldown</OutputName>
     <CompileTarget>SharedLibrary</CompileTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -25,10 +25,13 @@
     <DefineSymbols>MONODEVELOP</DefineSymbols>
     <SourceDirectory>.</SourceDirectory>
     <OptimizationLevel>3</OptimizationLevel>
-    <OutputName>vc1conv</OutputName>
+    <OutputName>DGPulldown</OutputName>
     <CompileTarget>SharedLibrary</CompileTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="vc1conv.c" />
+    <None Include="DGPulldown.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DGPulldown.cpp" />
   </ItemGroup>
 </Project>

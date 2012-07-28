@@ -5,16 +5,19 @@ using NeonVidUtil.Core;
 namespace NeonVidUtil {
 	public static class Program {
 		public static int Main() {
-			/*using(System.IO.FileStream ifs = System.IO.File.OpenRead("/home/john/Projects/audio.thd")) {
-				using(System.IO.FileStream ofs = System.IO.File.Open("test.wav", System.IO.FileMode.Create)) {
-					FFMpegFormatHandler.FFmpegConvert.ConvertFFmpeg(ifs, "truehd", ofs, "wav", "pcm_s24le");
+			using(System.IO.FileStream ifs = System.IO.File.OpenRead("/home/john/Videos/Main_Movie_t01.mkv")) {
+				using(System.IO.FileStream ofs = System.IO.File.Open("test.vc1", System.IO.FileMode.Create)) {
+					//FFMpegFormatHandler.FFmpegConvert.ConvertFFmpeg(ifs, "truehd", ofs, "wav", "pcm_s24le");
+					VC1FormatHandler.VC1Conv.VC1ConvRemovePulldown(ifs, ofs);
 				}
-			}*/
+			}
 			//FFMpegFormatHandler.FFmpegConvert.ConvertFFmpeg("/home/john/Projects/audio.thd", "truehd", "test.wav", "wav", "pcm_s24le");
+			
+			
 			
 			//string[] args = { "/media/PHANTOM/Videos/Shorts/Blender Open Movies/02 Big Buck Bunny.mkv", "test.flac" };
 			//string[] args = { "/media/EXTRADATA4/Videos/MUMMYRETURNS/Main_Movie_t01.mkv", "test.vc1" };
-			string[] args = { "/media/EXTRADATA4/Videos/Megamind_3D/Megamind_3D_t00.mkv", "test.flac" };
+			string[] args = { "/home/john/Videos/vid2.mkv", "test.flac" };
 			
 			
 			FormatType inft = EncodePath.AutoReadInfo(args[0]);
