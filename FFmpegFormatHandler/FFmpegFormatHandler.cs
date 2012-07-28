@@ -5,8 +5,8 @@ using System.Linq;
 using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
-	public class FFMpegFormatHandler : FormatHandler {
-		public override FormatType GenerateOutputType(string file) {
+	public class FFmpegFormatHandler : FormatHandler {
+		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
 			switch(Path.GetExtension(file).ToUpper()) {
 				case ".THD":
 					return new FormatType(FormatType.FormatCodecType.TrueHD);
@@ -14,7 +14,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			return null;
 		}
 		
-		public override FormatType[] OutputTypes(FormatType input) {
+		public override FormatType[] OutputTypes(FormatType input, NeonOptions settings) {
 			IEnumerable<FormatType> ret = from setting in ffmpegSettings
 					where setting.inFormatType.Equals(input)
 					select setting.outFormatType;
@@ -30,7 +30,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			}
 		};
 		
-		public override object HandlesConversion(FormatType input, FormatType output, string option) {
+		public override object HandlesConversion(FormatType input, FormatType output, NeonOptions settings) {
 			foreach(FFMpegSetting setting in ffmpegSettings) {
 				if(setting.inFormatType.Equals(input) && setting.outFormatType.Equals(output)) {
 					return setting;
@@ -39,8 +39,8 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			return null;
 		}
 		
-		public override FormatCodec ConvertStream(FormatType input, FormatType output, string option) {
-			FFMpegSetting setting = (FFMpegSetting)HandlesConversion(input, output, option);
+		public override FormatCodec ConvertStream(FormatType input, FormatType output, NeonOptions settings) {
+			FFMpegSetting setting = (FFMpegSetting)HandlesConversion(input, output, settings);
 			if(setting == null) {
 				return null;
 			}

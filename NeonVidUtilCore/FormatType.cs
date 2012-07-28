@@ -55,12 +55,16 @@ namespace NeonVidUtil.Core {
 			Container = container;
 			Codec = codec;
 			Items = null;
+			Index = -1;
+			ID = -1;
 		}
 		
 		public FormatType(FormatContainer container, FormatType[] items) {
 			Container = container;
 			Codec = null;
 			Items = items;
+			Index = -1;
+			ID = -1;
 		}
 		
 		public FormatType(string codec) : this(null, codec) {
@@ -97,12 +101,12 @@ namespace NeonVidUtil.Core {
 		}
 		
 		public bool IsRawContainer() {
-			return Container == FormatContainer.None || FormatHandler.AutoIsRawCodec(this);
+			return Container == FormatContainer.None || PluginHelper.AutoIsRawCodec(this);
 		}
 		
 		public FormatType IsRawCodec() {
 			FormatType outtype;
-			bool res = FormatHandler.AutoIsRawCodec(this, out outtype);
+			bool res = PluginHelper.AutoIsRawCodec(this, out outtype);
 			if(res) {
 				return outtype;
 			}
@@ -153,7 +157,12 @@ namespace NeonVidUtil.Core {
 			protected set;
 		}
 		
-		public object Param {
+		public int Index {
+			get;
+			set;
+		}
+		
+		public int ID {
 			get;
 			set;
 		}
@@ -172,7 +181,12 @@ namespace NeonVidUtil.Core {
 			}
 			
 			return this.ContainerString == other.ContainerString &&
-				this.CodecString == other.CodecString;
+				this.CodecString == other.CodecString &&
+				this.Index == other.Index;
+		}
+		
+		public override int GetHashCode() {
+			return 3*ContainerString.GetHashCode() + 29*CodecString.GetHashCode() + (Items == null ? 0 : 31*Items.GetHashCode()) + 41*Index.GetHashCode();
 		}
 	}
 }

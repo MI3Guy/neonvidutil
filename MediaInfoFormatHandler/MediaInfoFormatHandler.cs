@@ -12,7 +12,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 		
 		protected MediaInfo MI;
 		
-		public override FormatType ReadInfo(string file) {
+		public override FormatType ReadInfo(string file, NeonOptions settings) {
 			MI.Open(file);
 			//Console.WriteLine(MI.Inform());
 			
@@ -29,7 +29,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 						ft = tmpft;
 					}
 					try {
-						ft.Param = int.Parse(MI.Get(StreamKind.Video, i, "ID"));
+						ft.ID = int.Parse(MI.Get(StreamKind.Video, i, "ID"));
 					}
 					catch {}
 					items.Add(ft);
@@ -44,7 +44,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 						ft = tmpft;
 					}
 					try {
-						ft.Param = int.Parse(MI.Get(StreamKind.Audio, i, "ID"));
+						ft.ID = int.Parse(MI.Get(StreamKind.Audio, i, "ID"));
 					}
 					catch {}
 					items.Add(ft);
@@ -59,7 +59,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 						ft = tmpft;
 					}
 					try {
-						ft.Param = int.Parse(MI.Get(StreamKind.Text, i, "ID"));
+						ft.ID = int.Parse(MI.Get(StreamKind.Text, i, "ID"));
 					}
 					catch {}
 					items.Add(ft);
@@ -71,7 +71,11 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 			
 			MI.Close();
 			
-			return new FormatType(container, items.ToArray());
+			int idx = -1;
+			int.TryParse(settings["Core", "streamindex"], out idx);
+			
+			items.Sort(new FormatTypeComparer());
+			return new FormatType(container, items.ToArray()) { Index = idx };
 		}
 	}
 }

@@ -7,86 +7,12 @@ using System.Text;
 
 namespace NeonVidUtil.Core {
 	public class EncodePath {
-		public EncodePath(FormatType input, FormatType output) {
-			steps = FindConvertPath(input, output);
+		public EncodePath(FormatType input, FormatType output, NeonOptions settings) {
+			steps = FindConvertPath(input, output, settings);
 		}
 		
 		public EncodePath(string path) {
-			List<FormatCodec> pathSteps = new List<FormatCodec>();
-			StringBuilder format;
-			StringBuilder pluginName;
-			StringBuilder arg;
 			
-			bool inPart = false;
-			bool inFormat = false;
-			bool inPluginName = false;
-			bool inArg = false;
-			foreach(char c in path) {
-				if(inPart) {
-					if(inFormat) {
-						switch(c) {
-							case '[':
-								inFormat = false;
-								inPluginName = true;
-								break;
-								
-							case '(':
-								inFormat = false;
-								inArg = true;
-								break;
-							
-							case ';':
-								// TODO: Use string
-								inFormat = false;
-								inPart = false;
-								break;
-								
-							default:
-								format.Append(c);
-								break;
-						}
-					}
-					else if(inPluginName) {
-						switch(c) {
-							case ']':
-								inPluginName = false;
-								break;
-								
-							default:
-								pluginName.Append(c);
-								break;
-						}
-					}
-					else if(inArg) {
-						switch(c) {
-							case ')':
-								break;
-								
-							default:
-								arg.Append(c);
-								break;
-						}
-					}
-					else {
-						switch(c) {
-							case ';':
-								break;
-								
-							case '(':
-								break;
-								
-							default:
-								throw new ArgumentException("Found unknown character. Expected ';' or '('.");
-						}
-					}
-				}
-				else {
-					switch(c) {
-						case '!':
-							break;
-					}
-				}
-			}
 		}
 		
 		private FormatCodec[] steps;
@@ -147,58 +73,15 @@ namespace NeonVidUtil.Core {
 		
 		
 		
-		
-		
-		
-		
-		public static FormatType AutoReadInfo(string file) {
-			foreach(KeyValuePair<string, FormatHandler> kvp in FormatHandler.AllHandlers) {
-				FormatType type = kvp.Value.ReadInfo(file);
-				if(type != null) {
-					return type;
-				}
-			}
-			return null;
-		}
-		
-		public static FormatType AutoGenerateOutputType(string file) {
-			foreach(KeyValuePair<string, FormatHandler> kvp in FormatHandler.AllHandlers) {
-				FormatType type = kvp.Value.GenerateOutputType(file);
-				if(type != null) {
-					return type;
-				}
-			}
-			return null;
-		}
-		
-		public static FormatHandler FindConverter(FormatType input, FormatType output, string option) {
-			foreach(KeyValuePair<string, FormatHandler> kvp in FormatHandler.AllHandlers) {
-				object testparam = kvp.Value.HandlesConversion(input, output, option);
-				if(testparam != null) {
-					return kvp.Value;
-				}
-			}
-			return null;
-		}
-		
-		public static FormatHandler FindProcessor(FormatType input, string name, FormatType next) {
-			foreach(KeyValuePair<string, FormatHandler> kvp in FormatHandler.AllHandlers) {
-				if(kvp.Value.HandlesProcessing(input, name, next)) {
-					return kvp.Value;
-				}
-			}
-			return null;
-		}
-		
-		private static FormatCodec[] FindConvertPath(FormatType input, FormatType output) {
-			Stack<FormatCodec> path = FindConvertPath(input, output, new List<FormatHandler>());
+		private static FormatCodec[] FindConvertPath(FormatType input, FormatType output, NeonOptions settings) {
+			Stack<FormatCodec> path = FindConvertPath(input, output, new List<FormatHandler>(), settings);
 			return path == null ? null : path.ToArray();
 		}
 		
-		private static Stack<FormatCodec> FindConvertPath(FormatType input, FormatType output, List<FormatHandler> previous) {
+		private static Stack<FormatCodec> FindConvertPath(FormatType input, FormatType output, List<FormatHandler> previous, NeonOptions settings) {
 			// Don't look for path if only processor is needed.
 			if(input.Equals(output)) {
-				FormatHandler processor = FindProcessor(input, null, null);
+				FormatHandler processor = PluginHelper.FindProcessor(input, null, null);
 				if(processor != null) {
 					Stack<FormatCodec> ret = new Stack<FormatCodec>();
 					ret.Push(processor.Process(input, null, null));
@@ -206,12 +89,12 @@ namespace NeonVidUtil.Core {
 				return null;
 			}
 			
-			foreach(KeyValuePair<string, FormatHandler> kvp in FormatHandler.AllHandlers) {
+			foreach(KeyValuePair<string, FormatHandler> kvp in PluginHelper.AllHandlers) {
 				if(previous.IndexOf(kvp.Value) != -1) {
 					continue;
 				} // Prevent infinite recursion via conversion back and forth.
 				
-				FormatType[] outputTypes = kvp.Value.OutputTypes(input);
+				FormatType[] outputTypes = kvp.Value.OutputTypes(input, settings);
 				if(outputTypes == null) {
 					continue;
 				}
@@ -222,7 +105,7 @@ namespace NeonVidUtil.Core {
 						Stack<FormatCodec> ret = new Stack<FormatCodec>();
 						
 						// Last
-						FormatHandler processor = FindProcessor(output, null, null);
+						FormatHandler processor = PluginHelper.FindProcessor(output, null, null);
 						if(processor != null) {
 							ret.Push(processor.Process(output, null, null));
 						}
@@ -230,7 +113,7 @@ namespace NeonVidUtil.Core {
 						ret.Push(kvp.Value.ConvertStream(input, output, null));
 						
 						// Before
-						processor = FindProcessor(input, null, output);
+						processor = PluginHelper.FindProcessor(input, null, output);
 						if(processor != null) {
 							ret.Push(processor.Process(input, null, outputType));
 						}
@@ -240,13 +123,13 @@ namespace NeonVidUtil.Core {
 				// Recurse for path.
 				foreach(FormatType outputType in outputTypes) {
 					previous.Add(kvp.Value);
-					Stack<FormatCodec> subPath = FindConvertPath(outputType, output, previous);
+					Stack<FormatCodec> subPath = FindConvertPath(outputType, output, previous, settings);
 					previous.Remove(kvp.Value);
 					if(subPath != null) {
 						subPath.Push(kvp.Value.ConvertStream(input, outputType, null));
 						
 						// Happens before the conversion above
-						FormatHandler processor = FindProcessor(input, null, outputType);
+						FormatHandler processor = PluginHelper.FindProcessor(input, null, outputType);
 						if(processor != null) {
 							subPath.Push(processor.Process(input, null, outputType));
 						}

@@ -4,30 +4,31 @@ using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.VC1FormatHandler {
 	public class VC1FormatHandler : FormatHandler {
-		public override FormatType GenerateOutputType(string file) {
+		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
 			if(Path.GetExtension(file).ToUpper() != ".VC1") {
 				return null;
 			}
-			
-			return new FormatType(FormatType.FormatCodecType.VC1);
+			else {
+				return new FormatType(FormatType.FormatCodecType.VC1);
+			}
 		}
 		
-		public override bool HandlesProcessing(FormatType format, string name, FormatType next) {
+		public override bool HandlesProcessing(FormatType format, NeonOptions settings, FormatType next) {
 			if(format.Codec == FormatType.FormatCodecType.VC1 && format.Container == FormatType.FormatContainer.None) {
-				return name == null || name == "removepulldown";
+				return NeonOptions.GetBoolValue(settings[this, "removepulldown"]);
 			}
-			return false;
+			else {
+				return false;
+			}
 		}
 		
-		public override FormatCodec Process(FormatType input, string name, FormatType next) {
-			if(input.Codec == FormatType.FormatCodecType.VC1 && input.Container == FormatType.FormatContainer.None) {
-				switch(name) {
-					case null:
-					case "removepulldown":
-						return new VC1PulldownRemover();
-				}
+		public override FormatCodec Process(FormatType input, NeonOptions settings, FormatType next) {
+			if(HandlesProcessing(input, settings, next)) {
+				return new VC1PulldownRemover();
 			}
-			return null;
+			else {
+				return null;
+			}
 		}
 	}
 }

@@ -7,24 +7,16 @@ namespace NeonVidUtil.Plugin.MKVFormatHandler {
 			
 		}
 		
-		public override object HandlesConversion(FormatType input, FormatType output, string option) {
+		public override object HandlesConversion(FormatType input, FormatType output, NeonOptions settings) {
 			if(input.Container != FormatType.FormatContainer.Matroska || !output.IsRawContainer()) {
 				return false;
-			}
-			
-			int? index;
-			try {
-				index = int.Parse(option);
-			}
-			catch {
-				
 			}
 			
 			for(int i = 0; i < input.Items.Length; ++i) {
 				if(input.Items[i].Codec == output.Codec) {
 					try {
-						if(index == null || (int)index == (int)input.Items[i].Param) {
-							return input.Items[i].Param;
+						if(input.Index == -1 || input.Index == input.Items[i].ID) {
+							return input.Items[i].ID;
 						}
 					}
 					catch {
@@ -34,12 +26,17 @@ namespace NeonVidUtil.Plugin.MKVFormatHandler {
 			return null;
 		}
 		
-		public override FormatType[] OutputTypes(FormatType input) {
-			return input.Items;
+		public override FormatType[] OutputTypes(FormatType inputID, NeonOptions settings) {
+			if(inputID.Index == -1) {
+				return inputID.Items;
+			}
+			else {
+				return new FormatType[] { inputID.Items[inputID.Index] };
+			}
 		}
 		
-		public override FormatCodec ConvertStream(FormatType input, FormatType output, string option) {
-			object param = HandlesConversion(input, output, option);
+		public override FormatCodec ConvertStream(FormatType input, FormatType output, NeonOptions settings) {
+			object param = HandlesConversion(input, output, settings);
 			if(!(param is int)) {
 				return null;
 			}

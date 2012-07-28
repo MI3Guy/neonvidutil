@@ -38,6 +38,9 @@
     <Compile Include="FormatType.cs" />
     <Compile Include="EncodePath.cs" />
     <Compile Include="EncodeStepHandler.cs" />
+    <Compile Include="NeonOptions.cs" />
+    <Compile Include="PluginHelper.cs" />
+    <Compile Include="FormatTypeComparer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

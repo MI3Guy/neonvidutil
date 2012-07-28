@@ -21,7 +21,7 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 			return false;
 		}
 		
-		public override FormatType GenerateOutputType(string file) {
+		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
 			if(Path.GetExtension(file).ToUpper() != ".FLAC") {
 				return null;
 			}
@@ -29,7 +29,7 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 			return new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC);
 		}
 		
-		public override FormatType[] OutputTypes(FormatType input) {
+		public override FormatType[] OutputTypes(FormatType input, NeonOptions settings) {
 			if(input.Container == FormatType.FormatContainer.FLAC && input.Codec == FormatType.FormatCodecType.FLAC) {
 				return null;//new FormatType[] { new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM) };
 			}
@@ -41,7 +41,7 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 				}
 		}
 		
-		public override object HandlesConversion(FormatType input, FormatType output, string option) {
+		public override object HandlesConversion(FormatType input, FormatType output, NeonOptions settings) {
 			return
 				((
 					(input.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.WAV) &&
@@ -57,7 +57,7 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 				)) ? new object() : null;
 		}
 		
-		public override FormatCodec ConvertStream(FormatType input, FormatType output, string option) {
+		public override FormatCodec ConvertStream(FormatType input, FormatType output, NeonOptions settings) {
 			return new FLACFormatEncoder();
 		}
 	}

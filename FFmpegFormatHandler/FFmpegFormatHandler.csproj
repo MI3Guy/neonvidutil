@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4015AA68-8A25-4C4F-9399-A0118DF7F220}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>FFMpegFormatHandler</RootNamespace>
-    <AssemblyName>FFMpegFormatHandler</AssemblyName>
+    <RootNamespace>NeonVidUtil.Plugin.FFmpegFormatHandler</RootNamespace>
+    <AssemblyName>FFmpegFormatHandler</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,10 +33,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="FFMpegFormatHandler.cs" />
     <Compile Include="FFMpegCodec.cs" />
     <Compile Include="FFMpegSetting.cs" />
     <Compile Include="FFmpegConvert.cs" />
+    <Compile Include="FFmpegFormatHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
