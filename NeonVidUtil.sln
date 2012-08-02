@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFmpegFormatHandler", "FFmp
 EndProject
 Project("{2857B73E-F847-4B02-9238-064979017E93}") = "DGPulldown", "DGPulldown\DGPulldown.cproj", "{D0AEC428-160A-4C3A-A7BD-82777A2F0084}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{17066766-0966-4BEB-A289-54B57BB1A000}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -37,6 +39,10 @@ Global
 		{09A283E5-B047-43FF-BFDE-056E697CC438}.Debug|x86.Build.0 = Debug|Any CPU
 		{09A283E5-B047-43FF-BFDE-056E697CC438}.Release|x86.ActiveCfg = Release|Any CPU
 		{09A283E5-B047-43FF-BFDE-056E697CC438}.Release|x86.Build.0 = Release|Any CPU
+		{17066766-0966-4BEB-A289-54B57BB1A000}.Debug|x86.ActiveCfg = Debug|x86
+		{17066766-0966-4BEB-A289-54B57BB1A000}.Debug|x86.Build.0 = Debug|x86
+		{17066766-0966-4BEB-A289-54B57BB1A000}.Release|x86.ActiveCfg = Release|x86
+		{17066766-0966-4BEB-A289-54B57BB1A000}.Release|x86.Build.0 = Release|x86
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Debug|x86.ActiveCfg = Debug|x86
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Debug|x86.Build.0 = Debug|x86
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Release|x86.ActiveCfg = Release|x86

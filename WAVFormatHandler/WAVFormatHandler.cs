@@ -14,7 +14,18 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 		}
 
 		public override bool HandlesProcessing(FormatType format, NeonOptions settings, FormatType next) {
-			return false;//return name == null || name == "stripbits";
+			if(new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM).Equals(format)) {
+				string depth = settings[this, "bitdepth"];
+				if(depth.ToUpper() == "AUTO") {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
 		}
 		
 		public override FormatCodec Process(FormatType input, NeonOptions settings, FormatType next) {

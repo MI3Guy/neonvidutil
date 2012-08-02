@@ -41,6 +41,7 @@
     <Compile Include="NeonOptions.cs" />
     <Compile Include="PluginHelper.cs" />
     <Compile Include="FormatTypeComparer.cs" />
+    <Compile Include="CircularStream.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

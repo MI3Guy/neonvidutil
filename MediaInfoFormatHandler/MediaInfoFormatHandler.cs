@@ -16,7 +16,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 			MI.Open(file);
 			//Console.WriteLine(MI.Inform());
 			
-			FormatType.FormatContainer container = (FormatType.FormatContainer)Enum.Parse(typeof(FormatType.FormatContainer), MI.Get(StreamKind.General, 0, "Format"));
+			string container = MI.Get(StreamKind.General, 0, "Format");
 			List<FormatType> items = new List<FormatType>();//[MI.Count_Get(StreamKind.Video) + MI.Count_Get(StreamKind.Audio) + MI.Count_Get(StreamKind.Text)];
 			
 			try {
@@ -71,11 +71,18 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 			
 			MI.Close();
 			
-			int idx = -1;
-			int.TryParse(settings["Core", "streamindex"], out idx);
+			int idx;
+			if(!int.TryParse(settings["Core", "streamindex"], out idx)) {
+				idx = -1;
+			}
 			
-			items.Sort(new FormatTypeComparer());
-			return new FormatType(container, items.ToArray()) { Index = idx };
+			if(items.Count != 1) {
+				items.Sort(new FormatTypeComparer());
+				return new FormatType(container, items.ToArray()) { Index = idx };
+			}
+			else {
+				return new FormatType(container, items[0].CodecString);
+			}
 		}
 	}
 }

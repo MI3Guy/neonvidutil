@@ -14,7 +14,8 @@ namespace NeonVidUtil {
 			}*/
 			//FFMpegFormatHandler.FFmpegConvert.ConvertFFmpeg("/home/john/Projects/audio.thd", "truehd", "test.wav", "wav", "pcm_s24le");
 			
-			string[] args = { "/home/john/Videos/vid2.mkv", "test.flac" };
+			//string[] args = { "/home/john/Videos/vid2.mkv", "test.flac" };
+			string[] args = { "/home/john/Projects/audio.thd", "test.flac" };
 			
 			NeonOptions Settings = new NeonOptions();
 			
@@ -87,9 +88,8 @@ namespace NeonVidUtil {
 				return 0;
 			}
 			
-			return 0;
-			FormatType inft = PluginHelper.AutoReadInfo(args[0], Settings);
-			FormatType outft = PluginHelper.AutoGenerateOutputType(args[1], Settings);
+			FormatType inft = PluginHelper.AutoReadInfo(inFileName, Settings);
+			FormatType outft = PluginHelper.AutoGenerateOutputType(outFileName, Settings);
 			
 			/*FormatHandler handler = FormatHandler.FindConverter(inft, outft, null);
 			

@@ -54,11 +54,11 @@ namespace NeonVidUtil.Core {
 				t.Join();
 			}
 			
-			if(!(streams[streams.Count - 1] is FileStream)) {
+			/*if(!(streams[streams.Count - 1] is FileStream)) {
 				using(FileStream fs = File.OpenWrite(outfile)) {
 					streams[streams.Count - 1].CopyTo(fs);
 				}
-			}
+			}*/
 			
 			foreach(Stream s in streams) {
 				s.Close();
@@ -73,72 +73,101 @@ namespace NeonVidUtil.Core {
 		
 		
 		
-		private static FormatCodec[] FindConvertPath(FormatType input, FormatType output, NeonOptions settings) {
+		/*private static FormatCodec[] FindConvertPath(FormatType input, FormatType output, NeonOptions settings) {
 			Stack<FormatCodec> path = FindConvertPath(input, output, new List<FormatHandler>(), settings);
 			return path == null ? null : path.ToArray();
-		}
+		}*/
 		
-		private static Stack<FormatCodec> FindConvertPath(FormatType input, FormatType output, List<FormatHandler> previous, NeonOptions settings) {
-			// Don't look for path if only processor is needed.
-			if(input.Equals(output)) {
-				FormatHandler processor = PluginHelper.FindProcessor(input, null, null);
-				if(processor != null) {
-					Stack<FormatCodec> ret = new Stack<FormatCodec>();
-					ret.Push(processor.Process(input, null, null));
+		private static FormatCodec[] FindConvertPath(FormatType input, FormatType output, NeonOptions settings) {
+			Dictionary<FormatType, EncodeNode> graph = new Dictionary<FormatType, EncodeNode>(new FormatTypeComparer());
+			graph.Add(input, new EncodeNode { Cost = 0, Previous = null, Using = null });
+			bool hasUpdated = true;
+			
+			while(hasUpdated) {
+				hasUpdated = false;
+				
+				Dictionary<FormatType, EncodeNode> NewItems = new Dictionary<FormatType, EncodeNode>();
+				
+				foreach(KeyValuePair<FormatType, EncodeNode> graphItem in graph) {
+					foreach(KeyValuePair<string, FormatHandler> handler in PluginHelper.AllHandlers) {
+						
+						FormatType[] formatOutputTypes = handler.Value.OutputTypes(graphItem.Key, settings);
+						if(formatOutputTypes != null) {
+							foreach(FormatType formatOutputType in formatOutputTypes) {
+								EncodeNode node = new EncodeNode { Cost = graphItem.Value.Cost + 1, Previous = graphItem.Key, Using = handler.Value };
+								if(!NewItems.ContainsKey(formatOutputType) && (!graph.ContainsKey(formatOutputType) || graph[formatOutputType].Cost > node.Cost + 1)) {
+									NewItems.Add(formatOutputType, node);
+									hasUpdated = true;
+								}
+								else {
+									if(!graph.ContainsKey(formatOutputType) && NewItems[formatOutputType].Cost > node.Cost + 1) {
+										NewItems[formatOutputType] = node;
+										hasUpdated = true;
+									}
+								}
+							}
+						}
+						
+						
+					}
 				}
-				return null;
+				
+				foreach(KeyValuePair<FormatType, EncodeNode> updItem in NewItems) {
+					if(!graph.ContainsKey(updItem.Key)) {
+						graph.Add(updItem.Key, updItem.Value);
+					}
+					else {
+						graph[updItem.Key] = updItem.Value;
+					}
+				}
+				
 			}
 			
-			foreach(KeyValuePair<string, FormatHandler> kvp in PluginHelper.AllHandlers) {
-				if(previous.IndexOf(kvp.Value) != -1) {
-					continue;
-				} // Prevent infinite recursion via conversion back and forth.
+			
+			if(graph.ContainsKey(output)) {
+				Stack<FormatCodec> path = new Stack<FormatCodec>();
 				
-				FormatType[] outputTypes = kvp.Value.OutputTypes(input, settings);
-				if(outputTypes == null) {
-					continue;
+				FormatType next = null;
+				FormatType curr = output;
+				FormatHandler processor;
+				while(graph[curr].Previous != null) {
+					processor = PluginHelper.FindProcessor(curr, settings, next);
+					if(processor != null) {
+						path.Push(processor.Process(curr, settings, next));
+					}
+					
+					path.Push(graph[curr].Using.ConvertStream(graph[curr].Previous, curr, settings));
+					next = curr;
+					curr = graph[curr].Previous;
 				}
 				
-				// Stop if path found.
-				foreach(FormatType outputType in outputTypes) {
-					if(outputType.Equals(output)) {
-						Stack<FormatCodec> ret = new Stack<FormatCodec>();
-						
-						// Last
-						FormatHandler processor = PluginHelper.FindProcessor(output, null, null);
-						if(processor != null) {
-							ret.Push(processor.Process(output, null, null));
-						}
-						
-						ret.Push(kvp.Value.ConvertStream(input, output, null));
-						
-						// Before
-						processor = PluginHelper.FindProcessor(input, null, output);
-						if(processor != null) {
-							ret.Push(processor.Process(input, null, outputType));
-						}
-						return ret;
-					}
+				processor = PluginHelper.FindProcessor(curr, settings, next);
+				if(processor != null) {
+					path.Push(processor.Process(curr, settings, next));
 				}
-				// Recurse for path.
-				foreach(FormatType outputType in outputTypes) {
-					previous.Add(kvp.Value);
-					Stack<FormatCodec> subPath = FindConvertPath(outputType, output, previous, settings);
-					previous.Remove(kvp.Value);
-					if(subPath != null) {
-						subPath.Push(kvp.Value.ConvertStream(input, outputType, null));
-						
-						// Happens before the conversion above
-						FormatHandler processor = PluginHelper.FindProcessor(input, null, outputType);
-						if(processor != null) {
-							subPath.Push(processor.Process(input, null, outputType));
-						}
-						
-						return subPath;
-					}
-				}
+				
+				return path.ToArray();
 			}
-			return null;
+			else {
+				return null;
+			}
+		}
+		
+		private class EncodeNode {
+			public int Cost {
+				get;
+				set;
+			}
+			
+			public FormatType Previous {
+				get;
+				set;
+			}
+			
+			public FormatHandler Using {
+				get;
+				set;
+			}
 		}
 	}
 }

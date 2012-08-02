@@ -102,8 +102,8 @@ namespace Wav2Flac
             BinaryReader reader = new BinaryReader(input);
 
             // Ensure there are enough bytes to read
-            if (input.Length < Marshal.SizeOf(typeof(WaveFormat)))
-                throw new ApplicationException("Input stream is too short (< wave header size)!");
+            //if (input.Length < Marshal.SizeOf(typeof(WaveFormat)))
+            //    throw new ApplicationException("Input stream is too short (< wave header size)!");
 
             this.input = input;
 

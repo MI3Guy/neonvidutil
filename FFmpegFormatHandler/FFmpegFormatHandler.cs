@@ -10,8 +10,15 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			switch(Path.GetExtension(file).ToUpper()) {
 				case ".THD":
 					return new FormatType(FormatType.FormatCodecType.TrueHD);
+				case ".VC1":
+					return new FormatType(FormatType.FormatCodecType.VC1);
 			}
 			return null;
+		}
+		
+		public override bool IsRawCodec (FormatType type)
+		{
+			return new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD).Equals(type);
 		}
 		
 		public override FormatType[] OutputTypes(FormatType input, NeonOptions settings) {
@@ -24,7 +31,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		
 		private static readonly FFMpegSetting[] ffmpegSettings = new FFMpegSetting[] {
 			new FFMpegSetting {
-				inFormatType = new FormatType(FormatType.FormatCodecType.TrueHD),
+				inFormatType = new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD),
 				outFormatType = new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM),
 				inFormatName = "truehd", outFormatName = "wav", codecName = "pcm_s24le"
 			}

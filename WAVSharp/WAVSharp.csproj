@@ -41,6 +41,8 @@
     <Compile Include="WAVRIFF.cs" />
     <Compile Include="WAVWriter.cs" />
     <Compile Include="WAVBitDepthDetector.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="WAVDataStream.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

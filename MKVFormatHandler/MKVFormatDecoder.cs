@@ -6,7 +6,7 @@ using NeonVidUtil.Core;
 namespace NeonVidUtil.Plugin.MKVFormatHandler {
 	public class MKVFormatDecoder : FormatCodec {
 		public MKVFormatDecoder(int index) {
-			this.index = index - 1; // Handle mkvextract using odd index.
+			this.index = index;
 		}
 		
 		private int index;

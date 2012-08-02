@@ -6,7 +6,8 @@ namespace WAVSharp {
 	public class WAVFormatChunk {
 		public WAVFormatChunk(BinaryReader reader) {
 			cksize = reader.ReadUInt32();
-			long prev = reader.BaseStream.Position;
+			
+			uint numRead = expectedSizeSimple;
 			
 			wFormatTag = (WAVConst.FormatTag)reader.ReadUInt16();
 			nChannels = reader.ReadUInt16();
@@ -16,15 +17,26 @@ namespace WAVSharp {
 			wBitsPerSample = reader.ReadUInt16();
 			if(wFormatTag == WAVConst.FormatTag.EXTENSIBLE) {
 				cbSize = reader.ReadUInt16();
+				numRead = expectedSizeMore;
 				if(cbSize > 0) {
 					wValidBitsPerSample = reader.ReadUInt16();
 					dwChannelMask = reader.ReadUInt32();
 					SubFormat = new Guid(reader.ReadBytes(16));
+					numRead = expectedSizeFull;
 				}
 			}
-			reader.BaseStream.Position = prev + cksize;
-			FileLength = reader.BaseStream.Length;
+			
+			if(cksize > numRead) {
+				reader.ReadBytesIgnoreUInt(cksize - numRead);
+			}
+			else if(numRead > cksize) {
+				throw new ApplicationException("More bytes were read than were in the header.");
+			}
+			
 		}
+		const uint expectedSizeSimple = 2 + 2 + 4 + 4 + 2 + 2;
+		const uint expectedSizeMore = expectedSizeSimple + 2;
+		const uint expectedSizeFull = expectedSizeMore + 2 + 4 + 16;
 		
 		public WAVFormatChunk() {
 			

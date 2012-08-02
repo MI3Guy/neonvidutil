@@ -5,18 +5,20 @@ namespace NeonVidUtil.Core {
 	public class NeonOptions {
 		public NeonOptions() {
 			dict = new Dictionary<SettingItem, string>();
+			
+			this["WAV", "bitdepth"] = "auto";
 		}
 		
 		private Dictionary<SettingItem, string> dict;
 		
 		public string this[SettingItem item] {
-			get { return dict[item]; }
+			get { try { return dict[item]; } catch { return null; } }
 			set { AddOrSet(item, value); }
 		}
 		
 		public string this[string plugin, string name] {
-			get { return dict[new SettingItem(plugin, name)]; }
-			set { AddOrSet(new SettingItem(plugin, name), value); }
+			get { return this[new SettingItem(plugin, name)]; }
+			set { this[new SettingItem(plugin, name)] = value; }
 		}
 		
 		public string this[FormatHandler plugin, string name] {

@@ -66,7 +66,7 @@ extern "C" {
 		}
 		
 		AVFormatContext* inFmt = NULL;
-		if(avformat_open_input(&inFmt, "", inFmtStruct, NULL) != 0) {
+		if(avformat_open_input(&inFmt, inFile, inFmtStruct, NULL) != 0) {
 			std::cerr << "ffmpeg-convert: Could not open input.\n";
 			return false;
 		}

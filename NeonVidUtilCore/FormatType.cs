@@ -25,6 +25,7 @@ namespace NeonVidUtil.Core {
 			
 			
 			FLAC,
+			TrueHD,
 			WAV
 			
 		}
@@ -106,6 +107,7 @@ namespace NeonVidUtil.Core {
 		
 		public FormatType IsRawCodec() {
 			FormatType outtype;
+			if(ContainerString == null) return this;
 			bool res = PluginHelper.AutoIsRawCodec(this, out outtype);
 			if(res) {
 				return outtype;
@@ -173,7 +175,7 @@ namespace NeonVidUtil.Core {
 			}
 			FormatType other = (FormatType)obj;
 			
-			if((this.Items == null && other.Items != null) || (this.Items != null && other.Items != null)) {
+			if((this.Items == null && other.Items != null) || (this.Items != null && other.Items == null)) {
 				return false;
 			}
 			else if(this.Items != null && other.Items != null) {
@@ -186,7 +188,7 @@ namespace NeonVidUtil.Core {
 		}
 		
 		public override int GetHashCode() {
-			return 3*ContainerString.GetHashCode() + 29*CodecString.GetHashCode() + (Items == null ? 0 : 31*Items.GetHashCode()) + 41*Index.GetHashCode();
+			return 3*ContainerString.GetHashCode() + (CodecString == null ? 0 : 29*CodecString.GetHashCode()) + (Items == null ? 0 : 31*Items.GetHashCode()) + 41*Index.GetHashCode();
 		}
 	}
 }

@@ -58,16 +58,52 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		}
 		
 		[DllImport("ffmpeg-convert")]
+		private static extern bool ConvertFFmpegFileStream(string inFile, string inFormatName,
+		                                                   FFmpegURLWrite outStreamWrite, int outFid, string outFormatName,
+		                                                   string codecName);
+		
+		public static bool ConvertFFmpeg(string inFile, string inFormatName,
+		                                 Stream outStream, string outFormatName,
+		                                 string codecName) {
+			int outStreamId = AddVFileStream(outStream);
+			bool ret = ConvertFFmpegFileStream(inFile, inFormatName, FFmpegURLWrite_Func, outStreamId, outFormatName, codecName);
+			
+			lock(VirtualFiles) {
+				VirtualFiles.Remove(outStreamId);
+			}
+			
+			return ret;
+		}
+		
+		[DllImport("ffmpeg-convert")]
+		private static extern bool ConvertFFmpegStreamFile(FFmpegURLRead inStreamRead, int inFid, string inFormatName,
+		                                                   string outFile, string outFormatName,
+		                                                   string codecName);
+		
+		
+		public static bool ConvertFFmpeg(Stream inStream, string inFormatName,
+		                                 string outFile, string outFormatName,
+		                                 string codecName) {
+			int inStreamId = AddVFileStream(inStream);
+			bool ret = ConvertFFmpegStreamFile(FFmpegURLRead_Func, inStreamId, inFormatName, outFile, outFormatName, codecName);
+			
+			lock(VirtualFiles) {
+				VirtualFiles.Remove(inStreamId);
+			}
+			
+			return ret;
+		}
+		
+		[DllImport("ffmpeg-convert")]
 		private static extern bool ConvertFFmpegStreamStream(FFmpegURLRead inStreamRead, int inFid, string inFormatName,
 		                                                     FFmpegURLWrite outStreamWrite, int outFid, string outFormatName,
 		                                                     string codecName);
 		
 		public static bool ConvertFFmpeg(Stream inStream, string inFormatName,
-		                                             Stream outStream, string outFormatName,
-		                                             string codecName) {
+		                                 Stream outStream, string outFormatName,
+		                                 string codecName) {
 			int inStreamId = AddVFileStream(inStream);
 			int outStreamId = AddVFileStream(outStream);
-			Console.WriteLine("inStreamId: {0}, outStreamId: {1}", inStreamId, outStreamId);
 			bool ret = ConvertFFmpegStreamStream(FFmpegURLRead_Func, inStreamId, inFormatName, FFmpegURLWrite_Func, outStreamId, outFormatName, codecName);
 			
 			lock(VirtualFiles) {

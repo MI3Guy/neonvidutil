@@ -13,7 +13,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		
 		public override Stream InitConvertData(Stream inbuff, string outfile) {
 			if(outfile == null) {
-				return new MemoryStream();
+				return new CircularStream();
 			}
 			else {
 				return File.OpenRead(outfile);
@@ -39,13 +39,17 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				FFmpegConvert.ConvertFFmpeg(inbuff, setting.inFormatName, outbuff, setting.outFormatName, setting.codecName);
 			}
 			else if(inFileName == null /* && outFileName != null */) {
-				
+				FFmpegConvert.ConvertFFmpeg(inbuff, setting.inFormatName, outFileName, setting.outFormatName, setting.codecName);
 			}
 			else if(/*inFileName != null && */outFileName == null) {
-				
+				FFmpegConvert.ConvertFFmpeg(inFileName, setting.inFormatName, outbuff, setting.outFormatName, setting.codecName);
 			}
 			else /*if(inFileName != null && outFileName != null)*/ {
 				FFmpegConvert.ConvertFFmpeg(inFileName, setting.inFormatName, outFileName, setting.outFormatName, setting.codecName);
+			}
+			
+			if(outbuff is CircularStream) {
+				((CircularStream)outbuff).MarkEnd();
 			}
 		}
 	}

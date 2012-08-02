@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Wav2Flac;
+using WAVSharp;
 using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.FLACFormatHandler {
@@ -14,20 +15,28 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 				return File.OpenWrite(outfile);
 			}
 			
-			return new MemoryStream();
+			return new CircularStream();
 		}
 		
 		public override void ConvertData(Stream inbuff, Stream outbuff) {
-			using(WavReader wavReader = new WavReader(inbuff)) {
-				using(FlacWriter flacWriter = new FlacWriter(outbuff, wavReader.BitDepth, wavReader.Channels, wavReader.SampleRate)) {
-					byte[] buffer = new byte[wavReader.Bitrate / 8];
-					int bytesRead;
-					
-					do {
-						bytesRead = wavReader.InputStream.Read(buffer, 0, buffer.Length);
-						flacWriter.Write(buffer, 0, buffer.Length);
-					} while(bytesRead > 0);
-				}
+			WAVReader wavReader = new WAVReader(inbuff);
+			WAVDataChunk dataChunk = wavReader.ReadDataChunk();
+			
+			using(FlacWriter flacWriter = new FlacWriter(outbuff, wavReader.FormatChunk.wBitsPerSample, wavReader.FormatChunk.nChannels, (int)wavReader.FormatChunk.nSamplesPerSec)) {
+				byte[] buffer = new byte[wavReader.FormatChunk.wBitsPerSample * wavReader.FormatChunk.nChannels * wavReader.FormatChunk.nSamplesPerSec];
+				int bytesRead;
+				
+				
+				WAVDataStream stream = dataChunk.GetPCMStream();
+				
+				do {
+					bytesRead = stream.Read(buffer, 0, buffer.Length);
+					flacWriter.Write(buffer, 0, bytesRead);
+				} while(bytesRead > 0);
+			}
+			
+			if(outbuff is CircularStream) {
+				((CircularStream)outbuff).MarkEnd();
 			}
 		}
 	}

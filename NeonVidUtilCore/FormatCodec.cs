@@ -88,7 +88,12 @@ namespace NeonVidUtil.Core {
 			}
 			else {
 				using(FileStream fs = CreateTempFile(ext)) {
-					inbuff.CopyTo(fs);
+					//inbuff.CopyTo(fs);
+					byte[] buff = new byte[1024*4];
+					int len = 0;
+					while((len = inbuff.Read(buff, 0, buff.Length)) != 0) {
+						fs.Write(buff, 0, len);
+					}
 					fname = fs.Name;
 				}
 			}

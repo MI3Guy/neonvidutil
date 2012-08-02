@@ -27,6 +27,9 @@ namespace NeonVidUtil.Plugin.MKVFormatHandler {
 		}
 		
 		public override FormatType[] OutputTypes(FormatType inputID, NeonOptions settings) {
+			if(inputID.Container != FormatType.FormatContainer.Matroska) {
+				return null;
+			}
 			if(inputID.Index == -1) {
 				return inputID.Items;
 			}

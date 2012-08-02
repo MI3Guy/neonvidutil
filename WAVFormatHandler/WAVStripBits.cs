@@ -9,7 +9,6 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			
 		}
 		
-		MemoryStream outStream;
 		string fname;
 		
 		public override Stream InitConvertData(Stream inbuff, string outfile) {
@@ -17,7 +16,7 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			
 			if(!File.Exists(fname)) throw new FileNotFoundException("Temp/original file could not be found", fname);
 			
-			return (outStream = new MemoryStream());
+			return new CircularStream();
 		}
 		
 		public override void ConvertData(Stream inbuff, Stream outbuff) {
@@ -30,11 +29,21 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			
 			using(FileStream fs = File.OpenRead(fname)) {
 				WAVReader reader = new WAVReader(fs);
-				WAVFormatChunk fmtChunk = reader.FormatChunk;
 				WAVDataChunk dataChunk = reader.ReadDataChunk();
+				WAVFormatChunk fmtChunk = reader.FormatChunk;
 				
 				WAVFormatChunk fmtChunk2 = new WAVFormatChunk(fmtChunk, depth);
 				
+				WAVWriter writer = new WAVWriter(outbuff, fmtChunk2, (uint)dataChunk.CalcLength());
+				
+				WAVDataSample sample;
+				while((sample = dataChunk.ReadSample()) != null) {
+					writer.WriteSample(sample);
+				}
+			}
+			
+			if(outbuff is CircularStream) {
+				((CircularStream)outbuff).MarkEnd();
 			}
 		}
 	}

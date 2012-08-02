@@ -34,11 +34,11 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 				return null;//new FormatType[] { new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM) };
 			}
 			else if(input.Container == FormatType.FormatContainer.WAV && input.Codec == FormatType.FormatCodecType.PCM) {
-					return new FormatType[] { new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC) };
-				}
-				else {
-					return null;
-				}
+				return new FormatType[] { new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC) };
+			}
+			else {
+				return null;
+			}
 		}
 		
 		public override object HandlesConversion(FormatType input, FormatType output, NeonOptions settings) {

@@ -16,28 +16,33 @@ namespace WAVSharp {
 		}
 		
 		public WAVDataChunk ReadDataChunk() {
-			while(reader.BaseStream.Position < reader.BaseStream.Length) {
-				string ckID = Encoding.ASCII.GetString(reader.ReadBytes(4));
-				switch(ckID) {
-					case WAVConst.ChunkIdFormat:
-						formatChunk = new WAVFormatChunk(reader);
-						
-						if(formatChunk.wFormatTag != WAVConst.FormatTag.PCM &&
-							(formatChunk.wFormatTag != WAVConst.FormatTag.EXTENSIBLE && formatChunk.SubFormat != WAVConst.FormatSubtypePCM)) {
-							throw new ApplicationException("WAV does not contain PCM data.");
-						}
-						break;
-						
-					case WAVConst.ChunkIdData:
-						return new WAVDataChunk(reader, formatChunk);
-						
-					default:
-						uint size = reader.ReadUInt32();
-						reader.BaseStream.Position += size;
-						break;
+			try {
+				while(true) {
+					string ckID = Encoding.ASCII.GetString(reader.ReadBytes(4));
+					switch(ckID) {
+						case WAVConst.ChunkIdFormat:
+							formatChunk = new WAVFormatChunk(reader);
+							
+							if(formatChunk.wFormatTag != WAVConst.FormatTag.PCM &&
+								(formatChunk.wFormatTag != WAVConst.FormatTag.EXTENSIBLE && formatChunk.SubFormat != WAVConst.FormatSubtypePCM)) {
+								throw new ApplicationException("WAV does not contain PCM data.");
+							}
+							break;
+							
+						case WAVConst.ChunkIdData:
+							return new WAVDataChunk(reader, formatChunk);
+							
+						default:
+							uint size = reader.ReadUInt32();
+							reader.ReadBytesIgnoreUInt(size);
+							break;
+					}
 				}
 			}
-			return null;
+			catch(EndOfStreamException) {
+				Console.WriteLine("Hit end of stream whlie looking for data chunk.");
+				throw;
+			}
 		}
 		
 		private Stream stream;
@@ -53,6 +58,8 @@ namespace WAVSharp {
 		public WAVFormatChunk FormatChunk {
 			get { return formatChunk; }
 		}
+		
+		
 	}
 }
 

@@ -13,8 +13,8 @@ namespace WAVSharp {
 			bytesPerSample = formatChunk.wBitsPerSample / 8;
 			numChannels = formatChunk.nChannels;
 			
-			useStartPos = reader.BaseStream.Length <= uint.MaxValue;
-			startPos = reader.BaseStream.Position;
+			useStartPos = reader.BaseStream is FileStream && reader.BaseStream.Length <= uint.MaxValue && cksize != 0;
+			if(useStartPos) startPos = reader.BaseStream.Position;
 		}
 		
 		public WAVDataChunk() {
@@ -33,9 +33,6 @@ namespace WAVSharp {
 		
 		public WAVDataSample ReadSample() {
 			try {
-				if(reader.BaseStream.Position >= startPos + cksize - 10) {
-					Console.WriteLine("Here");
-				}
 				WAVDataSample sample = new WAVDataSample(reader, bytesPerSample, (formatChunk.cbSize > 0) ? formatChunk.wValidBitsPerSample : formatChunk.wBitsPerSample, numChannels);
 				if(useStartPos && reader.BaseStream.Position > startPos + cksize) {
 					return null;
@@ -47,13 +44,17 @@ namespace WAVSharp {
 			}
 		}
 		
+		public WAVDataStream GetPCMStream() {
+			return new WAVDataStream(this, formatChunk);
+		}
+		
 		public void WriteTo(BinaryWriter writer) {
 			writer.Write(Encoding.ASCII.GetBytes(WAVConst.ChunkIdData));
 			writer.Write(cksize);
 		}
 		
 		public long CalcLength() {
-			if(useStartPos) {
+			if(!useStartPos) {
 				return cksize;
 			}
 			else {

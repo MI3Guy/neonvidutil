@@ -46,5 +46,9 @@
       <Project>{A3C8B60C-0CA9-41EC-894E-E156198A3CFA}</Project>
       <Name>Wav2Flac</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WAVSharp\WAVSharp.csproj">
+      <Project>{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}</Project>
+      <Name>WAVSharp</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
