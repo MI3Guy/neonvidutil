@@ -32,7 +32,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		private static readonly FFMpegSetting[] ffmpegSettings = new FFMpegSetting[] {
 			new FFMpegSetting {
 				inFormatType = new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD),
-				outFormatType = new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM),
+				outFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
 				inFormatName = "truehd", outFormatName = "wav", codecName = "pcm_s24le"
 			}
 		};

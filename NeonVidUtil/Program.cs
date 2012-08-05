@@ -2,20 +2,41 @@ using System;
 using System.Collections.Generic;
 using NeonVidUtil.Core;
 using NDesk.Options;
+using System.Threading;
 
 namespace NeonVidUtil {
 	public static class Program {
 		public static int Main() {
-			/*using(System.IO.FileStream ifs = System.IO.File.OpenRead("/home/john/Videos/Main_Movie_t01.mkv")) {
-				using(System.IO.FileStream ofs = System.IO.File.Open("test.vc1", System.IO.FileMode.Create)) {
+			/*using(System.IO.FileStream ifs = System.IO.File.OpenRead("/home/john/Projects/tmp4c280100.tmp")) {
+				using(System.IO.FileStream ofs = System.IO.File.Open("test.wav", System.IO.FileMode.Create)) {
 					//FFMpegFormatHandler.FFmpegConvert.ConvertFFmpeg(ifs, "truehd", ofs, "wav", "pcm_s24le");
-					ret = VC1FormatHandler.VC1Conv.VC1ConvRemovePulldown(ifs, ofs);
+					//ret = VC1FormatHandler.VC1Conv.VC1ConvRemovePulldown(ifs, ofs);
+					CircularStream stream = new CircularStream();
+					Thread t1 = new Thread(delegate() {
+						ifs.CopyTo(stream);
+						stream.MarkEnd();
+					});
+					
+					Thread t2 = new Thread(delegate() {
+						stream.CopyTo(ofs);
+					});
+					
+					t1.Start();
+					t2.Start();
+					
+					t1.Join();
+					t2.Join();
 				}
 			}*/
 			//FFMpegFormatHandler.FFmpegConvert.ConvertFFmpeg("/home/john/Projects/audio.thd", "truehd", "test.wav", "wav", "pcm_s24le");
 			
 			//string[] args = { "/home/john/Videos/vid2.mkv", "test.flac" };
-			string[] args = { "/home/john/Projects/audio.thd", "test.flac" };
+			//string[] args = { "/home/john/Projects/audio.thd", "test.flac" };
+			string[] args = { "/home/john/Projects/tmp4c280100.tmp", "test.wav" };
+			
+			
+			Console.WriteLine("Neon VidUtil pre relase test");
+			Console.WriteLine(Environment.Version);
 			
 			NeonOptions Settings = new NeonOptions();
 			

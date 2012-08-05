@@ -40,6 +40,9 @@ namespace Wav2Flac
 
         [DllImport(Dll)]
         static extern bool FLAC__stream_encoder_process_interleaved(IntPtr context, IntPtr buffer, int samples);
+		
+		[DllImport("libFLAC")]
+		static extern bool FLAC__stream_encoder_set_verify(IntPtr encoder, bool value);
 
         // Callbacks
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -86,7 +89,9 @@ namespace Wav2Flac
 
             if (context == IntPtr.Zero)
                 throw new ApplicationException("FLAC: Could not initialize stream encoder!");
-
+			
+			FLAC__stream_encoder_set_verify(context, true);
+			
             Check(
                 FLAC__stream_encoder_set_channels(context, channels),
                 "set channels");

@@ -140,7 +140,7 @@ namespace NeonVidUtil.Core {
 		}
 		
 		public override int Read(byte[] buffer, int offset, int count) {
-			Console.WriteLine("emptySemValue = {0}, fillSemValue = {1}", emptySemValue, fillSemValue);
+			//Console.WriteLine("emptySemValue = {0}, fillSemValue = {1}", emptySemValue, fillSemValue);
 			//if(emptySemValue + fillSemValue != 20 && emptySemValue + fillSemValue != 19) throw new ApplicationException("Out of sync!!");
 			if(eof) {
 				
@@ -158,13 +158,13 @@ namespace NeonVidUtil.Core {
 			
 			if(readIndex >= buffSizes[readBuff]) {
 				if(!NextReadBuff(BlockNext: !readDoneWriting, ReleaseOther: false)) {
-					Console.WriteLine("Final: emptySemValue = {0}, fillSemValue = {1}", emptySemValue, fillSemValue);
+					//Console.WriteLine("Final: emptySemValue = {0}, fillSemValue = {1}", emptySemValue, fillSemValue);
 					eof = true; // Continue with function to output data.
 				}
 			}
 			
 			if(count < buffSizes[readBuff] - readIndex) {
-				Array.Copy(buffs[readBuff], readIndex, buffer, offset, count);
+				Buffer.BlockCopy(buffs[readBuff], readIndex, buffer, offset, count);
 				readIndex += count;
 				ret = count;
 			}
@@ -174,7 +174,7 @@ namespace NeonVidUtil.Core {
 					int next = buffSizes[readBuff] - readIndex;
 					if(next > count) next = count;
 					
-					Array.Copy(buffs[readBuff], readIndex, buffer, offset, next);
+					Buffer.BlockCopy(buffs[readBuff], readIndex, buffer, offset, next);
 					readIndex += next;
 					
 					total += next;
@@ -184,7 +184,7 @@ namespace NeonVidUtil.Core {
 					if(readIndex >= buffSizes[readBuff]) {
 						if(!NextReadBuff(BlockNext: total == 0 && !readDoneWriting)) {
 							if(total == 0) {
-								Console.WriteLine("Final: emptySemValue = {0}, fillSemValue = {1}", emptySemValue, fillSemValue);
+								//Console.WriteLine("Final: emptySemValue = {0}, fillSemValue = {1}", emptySemValue, fillSemValue);
 								eof = true;
 							}
 							break;
@@ -208,13 +208,13 @@ namespace NeonVidUtil.Core {
 		}
 		
 		public override void Write(byte[] buffer, int offset, int count) {
-			Console.WriteLine("emptySemValue = {0}, fillSemValue = {1}", emptySemValue, fillSemValue);
+			//Console.WriteLine("emptySemValue = {0}, fillSemValue = {1}", emptySemValue, fillSemValue);
 			//if(emptySemValue + fillSemValue != 20 && emptySemValue + fillSemValue != 19) throw new ApplicationException("Out of sync!!");
 			//lock(key) {
 				emptySem.WaitOne();
 				lock(key) { --emptySemValue; }
 				if(count < buffs[writeBuff].Length - buffSizes[writeBuff]) {
-					Array.Copy(buffer, offset, buffs[writeBuff], buffSizes[writeBuff], count);
+					Buffer.BlockCopy(buffer, offset, buffs[writeBuff], buffSizes[writeBuff], count);
 					buffSizes[writeBuff] += count;
 				}
 				else {
@@ -222,7 +222,7 @@ namespace NeonVidUtil.Core {
 						int next = buffs[writeBuff].Length - buffSizes[writeBuff];
 						if(next > count) next = count;
 						
-						Array.Copy(buffer, offset, buffs[writeBuff], buffSizes[writeBuff], next);
+						Buffer.BlockCopy(buffer, offset, buffs[writeBuff], buffSizes[writeBuff], next);
 						buffSizes[writeBuff] += next;
 						
 						offset += next;

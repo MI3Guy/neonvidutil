@@ -86,7 +86,7 @@ extern "C" {
 			if(outBuff == NULL) {
 				std::cerr << "ffmpeg-convert: Could not allocate output buffer.\n";
 				return false;
-			}		
+			}
 			
 			outFmt->pb = avio_alloc_context(outBuff, BufferSize, 1, (void*)outFid, NULL, outStreamWrite, NULL);
 			if(outFmt->pb == NULL) {
@@ -366,15 +366,4 @@ bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCo
 	
 	av_write_trailer(outFmt);
 	return true;
-}
-
-
-// URL Protocol Functions
-int memstream_open(URLContext *h, const char *url, int flags) {
-	h->is_streamed = 1;
-	return 0;
-}
-
-int64_t memstream_seek(URLContext *h, int64_t off, int whence) {
-	return -1;
 }

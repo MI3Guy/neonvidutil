@@ -16,7 +16,12 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			
 			if(!File.Exists(fname)) throw new FileNotFoundException("Temp/original file could not be found", fname);
 			
-			return new CircularStream();
+			if(outfile == null) {
+				return new CircularStream();
+			}
+			else {
+				return File.Create(outfile);
+			}
 		}
 		
 		public override void ConvertData(Stream inbuff, Stream outbuff) {

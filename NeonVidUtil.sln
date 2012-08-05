@@ -29,6 +29,8 @@ Project("{2857B73E-F847-4B02-9238-064979017E93}") = "DGPulldown", "DGPulldown\DG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{17066766-0966-4BEB-A289-54B57BB1A000}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLACSharp", "FLACSharp\FLACSharp.csproj", "{3CF46602-3954-46BA-AA74-75171A026769}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -47,6 +49,10 @@ Global
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Debug|x86.Build.0 = Debug|x86
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Release|x86.ActiveCfg = Release|x86
 		{2A288B86-B932-444B-B669-F9FB19AC9C79}.Release|x86.Build.0 = Release|x86
+		{3CF46602-3954-46BA-AA74-75171A026769}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3CF46602-3954-46BA-AA74-75171A026769}.Debug|x86.Build.0 = Debug|Any CPU
+		{3CF46602-3954-46BA-AA74-75171A026769}.Release|x86.ActiveCfg = Release|Any CPU
+		{3CF46602-3954-46BA-AA74-75171A026769}.Release|x86.Build.0 = Release|Any CPU
 		{4015AA68-8A25-4C4F-9399-A0118DF7F220}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{4015AA68-8A25-4C4F-9399-A0118DF7F220}.Debug|x86.Build.0 = Debug|Any CPU
 		{4015AA68-8A25-4C4F-9399-A0118DF7F220}.Release|x86.ActiveCfg = Release|Any CPU
@@ -93,7 +99,7 @@ Global
 		{D0AEC428-160A-4C3A-A7BD-82777A2F0084}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = NeonVidUtil\NeonVidUtil.csproj
+		StartupItem = UnitTests\UnitTests.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = None

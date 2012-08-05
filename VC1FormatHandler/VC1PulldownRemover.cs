@@ -19,7 +19,13 @@ namespace NeonVidUtil.Plugin.VC1FormatHandler {
 			proc.WaitForExit();
 			
 			return File.OpenRead(outfile);
+			
+			if(outfile != null) {
+				file = outfile;
+			}
 		}
+		
+		string file;
 		
 		public override void ConvertData(System.IO.Stream inbuff, System.IO.Stream outbuff) {
 			

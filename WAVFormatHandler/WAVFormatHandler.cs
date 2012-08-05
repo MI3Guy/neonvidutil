@@ -9,12 +9,12 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 				return null;
 			}
 			else {
-				return new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM);
+				return new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM);
 			}
 		}
 
 		public override bool HandlesProcessing(FormatType format, NeonOptions settings, FormatType next) {
-			if(new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM).Equals(format)) {
+			if(new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM).Equals(format)) {
 				string depth = settings[this, "bitdepth"];
 				if(depth.ToUpper() == "AUTO") {
 					return true;

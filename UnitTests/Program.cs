@@ -4,8 +4,9 @@ namespace UnitTests {
 	public static class Program {
 		
 		public static void Main() {
-			NeonVidUtilCore.CircularStreamTests t = new NeonVidUtilCore.CircularStreamTests();
-			t.TestData();
+			//Wav2FlacTests tests = new Wav2FlacTests();
+			FLACSharpTests tests = new FLACSharpTests();
+			tests.Encode();
 		}
 		
 	}

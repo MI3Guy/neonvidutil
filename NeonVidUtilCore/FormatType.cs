@@ -26,7 +26,7 @@ namespace NeonVidUtil.Core {
 			
 			FLAC,
 			TrueHD,
-			WAV
+			Wave
 			
 		}
 		

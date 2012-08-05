@@ -33,7 +33,7 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 			if(input.Container == FormatType.FormatContainer.FLAC && input.Codec == FormatType.FormatCodecType.FLAC) {
 				return null;//new FormatType[] { new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM) };
 			}
-			else if(input.Container == FormatType.FormatContainer.WAV && input.Codec == FormatType.FormatCodecType.PCM) {
+			else if(input.Container == FormatType.FormatContainer.Wave && input.Codec == FormatType.FormatCodecType.PCM) {
 				return new FormatType[] { new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC) };
 			}
 			else {
@@ -44,7 +44,7 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 		public override object HandlesConversion(FormatType input, FormatType output, NeonOptions settings) {
 			return
 				((
-					(input.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.WAV) &&
+					(input.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.Wave) &&
 					input.Codec == FormatType.FormatCodecType.PCM &&
 					output.Container == FormatType.FormatContainer.FLAC &&
 					output.Codec == FormatType.FormatCodecType.FLAC
@@ -52,7 +52,7 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 				(
 					input.Container == FormatType.FormatContainer.FLAC &&
 					input.Codec == FormatType.FormatCodecType.FLAC &&
-					(output.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.WAV) &&
+					(output.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.Wave) &&
 					output.Codec == FormatType.FormatCodecType.PCM
 				)) ? new object() : null;
 		}

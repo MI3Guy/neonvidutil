@@ -83,6 +83,35 @@ namespace WAVSharp {
 			return BitConverter.ToUInt32(barr, 0);
 		}
 		
+		public int GetSampleForChannel2(int n) {
+			if(n >= Channels || n < 0) {
+				throw new ArgumentException();
+			}
+			
+			int dataoffset = BytesPerSample*n;
+			switch(BytesPerSample) {
+				case 1:
+					return (sbyte)Data[dataoffset];
+				case 2:
+					return BitConverter.ToInt16(Data, dataoffset);
+				case 3:{
+					byte[] sample = new byte[sizeof(int)];
+					for(int i = 0; i < BytesPerSample; ++i) {
+						sample[i] = Data[i + dataoffset];
+					}
+					bool positive = (sample[2] & 0x80) == 0;
+					if(!positive) { // Convert negative 24 bit number to negative 32 bit number
+						sample[3] = 0xFF;
+					}
+					return BitConverter.ToInt32(sample, 0);
+					}
+				case 4:
+					return BitConverter.ToInt32(Data, dataoffset);
+				default:
+					throw new ApplicationException("Unsupported Bit Depth");
+			}
+		}
+		
 		public void WriteTo(BinaryWriter writer) {
 			writer.Write(Data);
 		}
