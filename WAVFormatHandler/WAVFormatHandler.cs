@@ -4,6 +4,11 @@ using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.WAVFormatHandler {
 	public class WAVFormatHandler : FormatHandler {
+		public override void OutputHandlerInfo() {
+			NeAPI.Output("Supported Processing");
+			NeAPI.Output("\tWAV\t:\tChange Bit Depth");
+		}
+		
 		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
 			if(Path.GetExtension(file).ToUpper() != ".WAV") {
 				return null;

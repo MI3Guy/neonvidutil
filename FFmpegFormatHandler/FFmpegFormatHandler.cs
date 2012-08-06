@@ -6,6 +6,11 @@ using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 	public class FFmpegFormatHandler : FormatHandler {
+		public override void OutputHandlerInfo() {
+			NeAPI.Output("Supported Conversions");
+			NeAPI.Output("\tTrueHD\t=>\tWAV");
+		}
+		
 		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
 			switch(Path.GetExtension(file).ToUpper()) {
 				case ".THD":

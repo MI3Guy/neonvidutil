@@ -42,6 +42,7 @@
     <Compile Include="PluginHelper.cs" />
     <Compile Include="FormatTypeComparer.cs" />
     <Compile Include="CircularStream.cs" />
+    <Compile Include="NeAPI.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -239,6 +239,62 @@ extern "C" {
 		return true;
 	}
 	
+	bool FFmpegDemuxFileFile(const char* inFormatName, const char* inFile, const char* outFile, int streamIndex) {
+		AVInputFormat* inFmtStruct = av_find_input_format(inFormatName);
+		if(!inFmtStruct) {
+			std::cerr << "ffmpeg-convert: Could not find input format " << inFormatName << ".\n";
+			return false;
+		}
+		
+		AVFormatContext* inFmt = NULL;
+		if(avformat_open_input(&inFmt, inFile, inFmtStruct, NULL) != 0) {
+			std::cerr << "ffmpeg-convert: Could not open input.\n";
+			return false;
+		}
+		
+		
+		// Prepare inFmt
+		if(avformat_find_stream_info(inFmt, NULL) < 0) {
+			std::cerr << "ffmpeg-convert: Could not find stream info.\n";
+			return false;
+		}
+		
+		av_dump_format(inFmt, -1, "", 0);
+		
+		// Prepare inCodec
+		int realStreamIndex = av_find_best_stream(inFmt, AVMEDIA_TYPE_VIDEO, streamIndex, -1, NULL, 0);
+		
+		if(realStreamIndex < 0) {
+			std::cerr << "ffmpeg-convert: Could not find input stream.\n";
+			return false;
+		}
+		
+		FILE* fp = fopen(outFile, "wb");
+		if(fp == NULL) {
+			std::cerr << "ffmpeg-convert: Could not open output file.\n";
+			return false;
+		}
+		
+		AVPacket inPacket;
+		av_init_packet(&inPacket);
+		
+		while(av_read_frame(inFmt, &inPacket) == 0) {
+			std::cerr << "index = " << inPacket.stream_index << ", " << streamIndex << "\n";
+			if(inPacket.stream_index == streamIndex) {
+				fwrite(inPacket.data, 1, inPacket.size, fp);
+			}
+			
+			av_free_packet(&inPacket);
+		}
+		
+		fclose(fp);
+		
+		
+		avformat_close_input(&inFmt);
+		
+		return true;
+	}
+	
 	int FFmpegGetEOF() {
 		return AVERROR_EOF;
 	}
@@ -344,6 +400,7 @@ bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCo
 				}
 			}
 			
+			av_free_packet(&inPacket);
 			
 			AVPacket outPacket = { 0 };
 			av_init_packet(&outPacket);
@@ -367,3 +424,12 @@ bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCo
 	av_write_trailer(outFmt);
 	return true;
 }
+
+int main() {
+	InitFFmpeg();
+	FFmpegDemuxFileFile("matroska,webm", "/home/john/Videos/Main_Movie_t01.mkv", "test.vc1", 0);
+	
+	return 0;
+}
+
+

@@ -11,23 +11,32 @@ namespace NeonVidUtil.Core {
 			foreach(FileInfo file in files) {
 				Console.WriteLine("Loading Plugin: {0}", file.Name);
 				string className = Path.GetFileNameWithoutExtension(file.Name);
-				//try {
+				try {
 					Assembly assembly = Assembly.LoadFrom(file.FullName);
 					Type type = assembly.GetType("NeonVidUtil.Plugin." + className + "." + className);
 
 					FormatHandler instance = (FormatHandler)Activator.CreateInstance(type);
 					allHandlers.Add(instance.GetType().Name, instance);
-				/*}
+				}
 				catch(Exception ex) {
-					Console.WriteLine("Error loading plugin: {0}", ex);
-					throw;
-				}*/
+					Console.WriteLine("Error loading plugin {0}: {1}", file.Name, ex.Message);
+				}
 			}
+			
+			Console.WriteLine();
+			Console.WriteLine();
 		}
 		
 		private static Dictionary<string,FormatHandler> allHandlers = new Dictionary<string,FormatHandler>();
 		public static IEnumerable<KeyValuePair<string, FormatHandler>> AllHandlers {
 			get { return allHandlers; }
+		}
+		
+		public static void AutoOutputHandlerInfo() {
+			foreach(KeyValuePair<string, FormatHandler> kvp in AllHandlers) {
+				NeAPI.Output(kvp.Key);
+				kvp.Value.OutputHandlerInfo();
+			}
 		}
 		
 		public static FormatType AutoReadInfo(string file, NeonOptions settings) {

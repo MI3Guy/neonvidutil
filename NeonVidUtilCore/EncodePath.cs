@@ -9,6 +9,9 @@ namespace NeonVidUtil.Core {
 	public class EncodePath {
 		public EncodePath(FormatType input, FormatType output, NeonOptions settings) {
 			steps = FindConvertPath(input, output, settings);
+			if(steps == null) {
+				throw new ApplicationException("No conversion was found between the source and output.");
+			}
 		}
 		
 		public EncodePath(string path) {
@@ -27,10 +30,6 @@ namespace NeonVidUtil.Core {
 		}
 		
 		public void Run(string infile, string outfile) {
-			//Stream[] streams = new Stream[steps.Length + 1];
-			//streams[0] = File.OpenRead(infile);
-			//streams[streams.Length - 1] = File.OpenWrite(outfile);
-			
 			List<Stream> streams = new List<Stream>();
 			
 			List<Thread> threads = new List<Thread>();
@@ -53,12 +52,6 @@ namespace NeonVidUtil.Core {
 			foreach(Thread t in threads) {
 				t.Join();
 			}
-			
-			/*if(!(streams[streams.Count - 1] is FileStream)) {
-				using(FileStream fs = File.OpenWrite(outfile)) {
-					streams[streams.Count - 1].CopyTo(fs);
-				}
-			}*/
 			
 			foreach(Stream s in streams) {
 				s.Close();
@@ -168,6 +161,14 @@ namespace NeonVidUtil.Core {
 				get;
 				set;
 			}
+		}
+		
+		public override string ToString() {
+			StringBuilder sb = new StringBuilder();
+			foreach(FormatCodec codec in steps) {
+				sb.AppendLine(codec.GetType().Name);
+			}
+			return sb.ToString();
 		}
 	}
 }

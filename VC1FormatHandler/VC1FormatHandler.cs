@@ -4,6 +4,11 @@ using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.VC1FormatHandler {
 	public class VC1FormatHandler : FormatHandler {
+		public override void OutputHandlerInfo() {
+			NeAPI.Output("Supported Processing");
+			NeAPI.Output("\tVC1\t:\tPulldown Removal");
+		}
+		
 		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
 			if(Path.GetExtension(file).ToUpper() != ".VC1") {
 				return null;

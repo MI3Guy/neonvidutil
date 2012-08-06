@@ -5,6 +5,7 @@ using System.Reflection;
 
 namespace NeonVidUtil.Core {
 	public abstract class FormatHandler {
+		public abstract void OutputHandlerInfo();
 		
 		public virtual bool IsRawCodec(FormatType type) {
 			return false;

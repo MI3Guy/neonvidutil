@@ -42,13 +42,13 @@
       <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
       <Name>NeonVidUtilCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Wav2Flac\Wav2Flac.csproj">
-      <Project>{A3C8B60C-0CA9-41EC-894E-E156198A3CFA}</Project>
-      <Name>Wav2Flac</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WAVSharp\WAVSharp.csproj">
       <Project>{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}</Project>
       <Name>WAVSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FLACSharp\FLACSharp.csproj">
+      <Project>{3CF46602-3954-46BA-AA74-75171A026769}</Project>
+      <Name>FLACSharp</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

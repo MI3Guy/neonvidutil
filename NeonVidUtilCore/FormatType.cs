@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace NeonVidUtil.Core {
 	public class FormatType {
@@ -169,6 +170,11 @@ namespace NeonVidUtil.Core {
 			set;
 		}
 		
+		public string ExtraInfo {
+			get;
+			set;
+		}
+		
 		public override bool Equals(object obj) {
 			if(!(obj is FormatType)) {
 				return false;
@@ -179,7 +185,12 @@ namespace NeonVidUtil.Core {
 				return false;
 			}
 			else if(this.Items != null && other.Items != null) {
-				
+				if(Items.Length != other.Items.Length) return false;
+				for(int i = 0; i < Items.Length; ++i) {
+					if(!Items[i].Equals(other.Items[i])) {
+						return false;
+					}
+				}
 			}
 			
 			return this.ContainerString == other.ContainerString &&
@@ -189,6 +200,24 @@ namespace NeonVidUtil.Core {
 		
 		public override int GetHashCode() {
 			return 3*ContainerString.GetHashCode() + (CodecString == null ? 0 : 29*CodecString.GetHashCode()) + (Items == null ? 0 : 31*Items.GetHashCode()) + 41*Index.GetHashCode();
+		}
+		
+		public override string ToString() {
+			StringBuilder sb = new StringBuilder();
+			if(!IsRawContainer()) sb.AppendLine(ContainerString);
+			if(CodecString != null) {
+				sb.Append(ID);
+				sb.Append("\t");
+				sb.AppendLine(CodecString);
+				sb.Append("\t");
+				sb.AppendLine(ExtraInfo);
+			}
+			else {
+				foreach(FormatType ft in Items) {
+					sb.AppendLine(ft.ToString());
+				}
+			}
+			return sb.ToString();
 		}
 	}
 }

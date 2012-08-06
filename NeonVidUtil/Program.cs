@@ -32,11 +32,18 @@ namespace NeonVidUtil {
 			
 			//string[] args = { "/home/john/Videos/vid2.mkv", "test.flac" };
 			//string[] args = { "/home/john/Projects/audio.thd", "test.flac" };
-			string[] args = { "/home/john/Projects/tmp4c280100.tmp", "test.wav" };
+			string[] args = { "/home/john/Projects/tmp4c280100.tmp", "test.flac" };
+			//string[] args = { "/home/john/Videos/vid2.mkv" };
 			
 			
 			Console.WriteLine("Neon VidUtil pre relase test");
-			Console.WriteLine(Environment.Version);
+			if(Type.GetType("Mono.Runtime") != null) {
+				Console.WriteLine("Detected .NET Runtime: Mono {0}", Environment.Version);
+			}
+			else {
+				Console.WriteLine("Unknown .NET Runtime: Version {0}", Environment.Version);
+				Console.WriteLine("Probably Microsoft.NET");
+			}
 			
 			NeonOptions Settings = new NeonOptions();
 			
@@ -103,19 +110,30 @@ namespace NeonVidUtil {
 			List<string> rest = options.Parse(args);
 			
 			if(show_help) {
-				Console.WriteLine("Usage: NeonVidUtil [Options] inputfile outputfile");
+				Console.WriteLine("Usage: NeonVidUtil.exe [Options] inputfile outputfile");
 				Console.WriteLine("Options:");
 				options.WriteOptionDescriptions(Console.Out);
 				return 0;
 			}
 			
+			if(inFileName == null) {
+				PluginHelper.AutoOutputHandlerInfo();
+				return 0;
+			}
+			
 			FormatType inft = PluginHelper.AutoReadInfo(inFileName, Settings);
+			Console.WriteLine(inft);
+			
+			if(outFileName == null) {
+				return 0;
+			}
+			
 			FormatType outft = PluginHelper.AutoGenerateOutputType(outFileName, Settings);
 			
 			/*FormatHandler handler = FormatHandler.FindConverter(inft, outft, null);
 			
 			System.IO.FileStream infs = System.IO.File.OpenRead(args[0]);
-			System.IO.FileStream outfs = System.IO.File.OpenWrite(args[1]);
+			System.IO.FileStream outfs = System.IO.File.Create(args[1]);
 			FormatCodec dec = handler.ConvertStream(inft, outft, null);
 			dec.ConvertData(infs, outfs);*/
 			
@@ -125,6 +143,9 @@ namespace NeonVidUtil {
 			/*foreach(FormatHandler handler in handlers) {
 				//handler.ConvertStream(
 			}*/
+			
+			Console.WriteLine("Conversion Path:");
+			Console.WriteLine(path.ToString());
 			
 			path.Run(args[0], args[1]);
 			

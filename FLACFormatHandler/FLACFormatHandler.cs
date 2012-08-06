@@ -7,6 +7,11 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 		public FLACFormatHandler() {
 		}
 		
+		public override void OutputHandlerInfo() {
+			NeAPI.Output("Supported Conversions");
+			NeAPI.Output("\tWAV\t=>\tFLAC");
+		}
+		
 		public override bool IsRawCodec(FormatType type) {
 			return (type.Container == FormatType.FormatContainer.FLAC || type.Container == FormatType.FormatContainer.None) && type.Codec == FormatType.FormatCodecType.FLAC;
 		}

@@ -99,7 +99,7 @@ Global
 		{D0AEC428-160A-4C3A-A7BD-82777A2F0084}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = UnitTests\UnitTests.csproj
+		StartupItem = NeonVidUtil\NeonVidUtil.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = None

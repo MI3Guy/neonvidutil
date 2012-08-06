@@ -41,7 +41,7 @@ namespace NeonVidUtil.Core {
 		}
 		
 		public static FileStream CreateTempFile(string ext) {
-			return File.OpenWrite(CreateTempFileName(ext));
+			return File.Create(CreateTempFileName(ext));
 		}
 		
 		public static string CreateTempFileName() {

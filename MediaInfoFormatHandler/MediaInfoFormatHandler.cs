@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using MediaInfoLib;
 using NeonVidUtil.Core;
@@ -11,6 +12,10 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 		}
 		
 		protected MediaInfo MI;
+		
+		public override void OutputHandlerInfo() {
+			
+		}
 		
 		public override FormatType ReadInfo(string file, NeonOptions settings) {
 			MI.Open(file);
@@ -32,6 +37,11 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 						ft.ID = int.Parse(MI.Get(StreamKind.Video, i, "ID"));
 					}
 					catch {}
+					string[] values = { "FrameRate/String", "ScanType/String", "BitRate/String" };
+					ft.ExtraInfo =
+						string.Join(", ", from y in
+							from x in values select MI.Get(StreamKind.Video, i, x)
+							where !string.IsNullOrEmpty(y) select y);
 					items.Add(ft);
 				}
 				
@@ -47,6 +57,11 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 						ft.ID = int.Parse(MI.Get(StreamKind.Audio, i, "ID"));
 					}
 					catch {}
+					string[] values = { "Channel(s)/String", "SamplingRate/String", "BitDepth/String", "BitRate/String" };
+					ft.ExtraInfo =
+						string.Join(", ", from y in
+							from x in values select MI.Get(StreamKind.Audio, i, x)
+							where !string.IsNullOrEmpty(y) select y);
 					items.Add(ft);
 				}
 				
@@ -81,7 +96,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 				return new FormatType(container, items.ToArray()) { Index = idx };
 			}
 			else {
-				return new FormatType(container, items[0].CodecString);
+				return new FormatType(container, items[0].CodecString) { ExtraInfo = items[0].ExtraInfo };
 			}
 		}
 	}

@@ -989,7 +989,9 @@ unsigned int process_chunk(unsigned int length, unsigned int stuffing)
 	return (0);
 }
 
+/*
 int main() {
 	VC1ConvRemovePulldownFileFile("/home/john/Videos/Main_Movie_t01.vc1", "test.vc1");
 	return 0;
 }
+*/
