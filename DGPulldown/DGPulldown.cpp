@@ -56,7 +56,8 @@ Version 1.0.4 : Repaired broken source frame rate edit box
 #include <math.h>
 #include <inttypes.h>
 #include <cstring>
-#include <boost/thread.hpp>
+#include <iostream>
+//#include <boost/thread.hpp>
 
 /*BOOL*/bool check_options(void);
 
@@ -92,12 +93,15 @@ unsigned int DropFrames = 2;
 unsigned int StartTime = 0;
 char HH[255] = {0}, MM[255] = {0}, SS[255] = {0}, FF[255] = {0};
 unsigned int Debug = 0;
-int inplace = 0;
+//int inplace = 0;
 int tff = 1;
 static int output_m2v = 1;
 
 class DGPFinishedException {};
 class DGPErrorException {};
+
+typedef int (*IOReadFunction)(void* buff, int count);
+typedef void (*IOWriteFunction)(void* buff, int count);
 
 /*static void HandleDrop(HDROP drop)
 {
@@ -460,7 +464,7 @@ int main(int argc, char** argv) {
 	Rate = CONVERT_CUSTOM;
 	strcpy(InputRate, "23.976");
 	strcpy(OutputRate, "23.976");
-	strncpy(input_file, "/media/EXTRADATA4/Videos/MISSING_SEASON_1_DISC_1/title00.mkv", sizeof(input_file));
+	strncpy(input_file, "/media/EXTRADATA4/Videos/MISSING_SEASON_1_DISC_1/missingvid.mpeg", sizeof(input_file));
 	// default output file
 	strcpy(output_file, input_file);
 	strcat(output_file, ".pulldown.m2v");
@@ -486,10 +490,12 @@ int main(int argc, char** argv) {
 
 FILE *fp,*wfp,*dfp;
 int fd, wfd;
+IOReadFunction readFunc;
+IOWriteFunction writeFunc;
 
 #define BUFFER_SIZE 32768
-unsigned char buffer[BUFFER_SIZE];
-unsigned char *Rdptr;
+//unsigned char buffer[BUFFER_SIZE];
+//unsigned char *Rdptr;
 int Read;
 
 void determine_stream_type(void);
@@ -502,7 +508,7 @@ unsigned char bff_flags[MAX_PATTERN_LENGTH];
 unsigned char tff_flags[MAX_PATTERN_LENGTH];
 
 // For progress bar.
-int64_t size;
+//int64_t size;
 int64_t data_count;
 
 static int state, found;
@@ -525,7 +531,7 @@ void KillThread(bool ok)
 {
 	if (CliActive)
 		fprintf(stderr, "Done.\n");
-	else
+	/*else
 	{
 		Now = time(NULL);
 		if (Now >= Start)
@@ -538,7 +544,7 @@ void KillThread(bool ok)
 		strcat(done, stats);
 		//SetDlgItemText(hWnd, IDC_STATUS, done);
 		printf("%s\n", stats);
-	}
+	}*/
 	//ExitThread(0);
 	if(ok) {
 		throw DGPFinishedException();
@@ -560,7 +566,7 @@ void process()
 	Start = time(NULL);
 
 	// Open the input file.
-	if (inplace)
+	/*if (inplace)
 	{
 		if (input_file[0] == 0 || (wfd = open(input_file, O_BINARY | O_RDWR)) == -1)
 		{
@@ -573,7 +579,7 @@ void process()
 		Rdptr = buffer - 1;
 	}
 	else
-	{
+	{*/
 		if (input_file[0] == 0 || (fp = fopen(input_file, "rb")) == NULL)
 		{
 			//MessageBox(hWnd, "Could not open the input file!", "Error", MB_OK);
@@ -581,7 +587,7 @@ void process()
 			KillThread(false);
 		}
 		setvbuf(fp, NULL, _IOFBF, 0);
-	}
+	//}
 
 	// Determine the stream type: ES or program.
 	determine_stream_type();
@@ -593,7 +599,7 @@ void process()
 	}
 
 	// Re-open the input file.
-	if (inplace)
+	/*if (inplace)
 	{
 		close(wfd);
 		wfd = open(input_file, O_BINARY | O_RDWR);
@@ -607,7 +613,7 @@ void process()
 		Rdptr = buffer - 1;
 	}
 	else
-	{
+	{*/
 		fclose(fp);
 		fp = fopen(input_file, "rb");
 		if (fp == NULL)
@@ -617,12 +623,12 @@ void process()
 			KillThread(false);
 		}
 		setvbuf(fp, NULL, _IOFBF, 0);
-	}
+	//}
 
 	// Get the file size.
-	fd = open(input_file, O_RDONLY | O_BINARY);
-	size = lseek64(fd, 0, SEEK_END);
-	close(fd);
+	//fd = open(input_file, O_RDONLY | O_BINARY);
+	//size = lseek64(fd, 0, SEEK_END);
+	//close(fd);
 
 	// Make sure all the options are ok
 	if (!check_options()) 
@@ -631,7 +637,7 @@ void process()
 	}
 
 	// Open the output file.
-	if (output_m2v && !inplace)
+	if (output_m2v/* && !inplace*/)
 	{
 		wfp = fopen(output_file, "wb");
 		if (wfp == NULL)
@@ -685,7 +691,7 @@ inline void put_byte(int offset, unsigned char val)
 {
 	int64_t save, backup;
 
-	if (inplace)
+	/*if (inplace)
 	{
 		// Save the file position.
 		save = lseek64(wfd, 0, SEEK_CUR);
@@ -701,9 +707,9 @@ inline void put_byte(int offset, unsigned char val)
 		lseek64(wfd, save, SEEK_SET);
 	}
 	else
-	{
+	{*/
 		fwrite(&val, 1, 1, wfp);
-	}
+	//}
 }
 
 // Get a byte from the stream. We do our own buffering
@@ -713,7 +719,7 @@ inline unsigned char get_byte(void)
 {
 	unsigned char val;
 
-	if (inplace)
+	/*if (inplace)
 	{
 		if (Rdptr > &buffer[Read-2])
 		{
@@ -739,17 +745,17 @@ inline unsigned char get_byte(void)
 		}
 	}
 	else
-	{
+	{*/
 		if (fread(&val, 1, 1, fp) != 1)
 		{
 			fclose(fp);
-			if (output_m2v && !inplace) fclose(wfp);
+			if (output_m2v/* && !inplace*/) fclose(wfp);
 			if (Debug) fclose(dfp);
 			//SendDlgItemMessage(hWnd, IDC_PROGRESS, PBM_SETPOS, 100, 0);
 			KillThread(true);
 		}
-	}
-	if (!(data_count++ % 524288) && (size > 0))
+	//}
+	/*if (!(data_count++ % 524288) && (size > 0))
 	{
 		Now = time(NULL);
 		if (Now >= Start)
@@ -761,7 +767,7 @@ inline unsigned char get_byte(void)
 			    F, hour, minute, sec, (drop_frame?',':'.'), pict, tfps, Elapsed / 1000);
 		//SetDlgItemText(hWnd, IDC_STATUS, stats);
 		printf("%s\n", stats);
-	}
+	}*/
 
 	return val;
 }
@@ -784,7 +790,7 @@ void video_parser(void)
 		// Parse for start codes.
 		val = get_byte();
 
-	    if (output_m2v && !inplace) put_byte(0, val);
+	    if (output_m2v/* && !inplace*/) put_byte(0, val);
 
 		switch (state)
 		{
@@ -813,7 +819,7 @@ void video_parser(void)
 			// Found a start code.
 			found = 0;
 			val = get_byte();
-			if (output_m2v && !inplace) put_byte(0, val);
+			if (output_m2v/* && !inplace*/) put_byte(0, val);
 
 			if (val == 0xb8)
 			{
@@ -847,20 +853,20 @@ void video_parser(void)
 				{
 					//just read timecode
 					val = get_byte();
-					if (output_m2v && !inplace) put_byte(0, val);
+					if (output_m2v/* && !inplace*/) put_byte(0, val);
 					drop_frame = (val & 0x80) >> 7;
 					minute = (val & 0x03) << 4;
 					hour = (val & 0x7c) >> 2;
 					val = get_byte();
-					if (output_m2v && !inplace) put_byte(0, val);
+					if (output_m2v/* && !inplace*/) put_byte(0, val);
 					minute |= (val & 0xf0) >> 4;
 					sec = (val & 0x07) << 3;
 					val = get_byte();
-					if (output_m2v && !inplace) put_byte(0, val);
+					if (output_m2v/* && !inplace*/) put_byte(0, val);
 					sec |= (val & 0xe0) >> 5;
 					pict = (val & 0x1f) << 1;
 					val = get_byte();
-					if (output_m2v && !inplace) put_byte(0, val);
+					if (output_m2v/* && !inplace*/) put_byte(0, val);
 					pict |= (val & 0x80) >> 7;
 				}
 				if (Debug) fprintf(dfp,"%7d  %02d:%02d:%02d%c%02d\n",F,hour,minute,sec,(drop_frame?',':'.'),pict);
@@ -869,23 +875,23 @@ void video_parser(void)
 			{
 				// Picture.
 				val = get_byte();
-				if (output_m2v && !inplace) put_byte(0, val);
+				if (output_m2v/* && !inplace*/) put_byte(0, val);
 				ref = (val << 2);
 				val = get_byte();
-				if (output_m2v && !inplace) put_byte(0, val);
+				if (output_m2v/* && !inplace*/) put_byte(0, val);
 				ref |= (val >> 6);
 				D = F + ref;
 				f++;
 				if (D >= MAX_PATTERN_LENGTH - 1)
 				{
-					if (inplace)
+					/*if (inplace)
 						close(wfd);
 					else
-					{
+					{*/
 						fclose(fp);
 						if (output_m2v)
 							fclose(wfp);
-					}
+					//}
 					//MessageBox(hWnd, "Maximum filelength exceeded, aborting!", "Error", MB_OK);
 					printf("Maximum filelength exceeded, aborting!\n");
 					KillThread(false);
@@ -895,25 +901,25 @@ void video_parser(void)
 			{
 				// Sequence header.
 				val = get_byte();
-				if (output_m2v && !inplace) put_byte(0, val);
+				if (output_m2v/* && !inplace*/) put_byte(0, val);
 				val = get_byte();
-				if (output_m2v && !inplace) put_byte(0, val);
+				if (output_m2v/* && !inplace*/) put_byte(0, val);
 				val = get_byte();
-				if (output_m2v && !inplace) put_byte(0, val);
+				if (output_m2v/* && !inplace*/) put_byte(0, val);
 				val = (get_byte() & 0xf0) | rate;
 				if (output_m2v) put_byte(0, val);
 			}
 			else if (val == 0xB5)
 			{
 				val = get_byte();
-				if (output_m2v && !inplace) put_byte(0, val);
+				if (output_m2v/* && !inplace*/) put_byte(0, val);
 				if ((val & 0xf0) == 0x80)
 				{
 					// Picture coding extension.
 					val = get_byte();
-					if (output_m2v && !inplace) put_byte(0, val);
+					if (output_m2v/* && !inplace*/) put_byte(0, val);
 					val = get_byte();
-					if (output_m2v && !inplace) put_byte(0, val);
+					if (output_m2v/* && !inplace*/) put_byte(0, val);
 					val = get_byte();
 					//rewrite trf
 					trf = tff ? tff_flags[D] : bff_flags[D];

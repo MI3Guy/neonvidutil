@@ -265,9 +265,14 @@ extern "C" {
 		int realStreamIndex = av_find_best_stream(inFmt, AVMEDIA_TYPE_VIDEO, streamIndex, -1, NULL, 0);
 		
 		if(realStreamIndex < 0) {
-			std::cerr << "ffmpeg-convert: Could not find input stream.\n";
-			return false;
+			realStreamIndex = av_find_best_stream(inFmt, AVMEDIA_TYPE_AUDIO, streamIndex, -1, NULL, 0);
+			if(realStreamIndex < 0) {
+				std::cerr << "ffmpeg-convert: Could not find input stream.\n";
+				return false;
+			}
 		}
+		
+		
 		
 		FILE* fp = fopen(outFile, "wb");
 		if(fp == NULL) {
