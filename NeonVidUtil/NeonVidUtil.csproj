@@ -49,14 +49,6 @@
       <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
       <Name>NeonVidUtilCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VC1FormatHandler\VC1FormatHandler.csproj">
-      <Project>{B2F34AC2-61EC-4168-85C7-308D6D08DA40}</Project>
-      <Name>VC1FormatHandler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\FFmpegFormatHandler\FFmpegFormatHandler.csproj">
-      <Project>{4015AA68-8A25-4C4F-9399-A0118DF7F220}</Project>
-      <Name>FFmpegFormatHandler</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="..\" />

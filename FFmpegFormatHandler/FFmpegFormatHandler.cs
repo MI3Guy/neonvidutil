@@ -34,8 +34,8 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			return ret.ToArray();
 		}
 		
-		private static readonly FFMpegSetting[] ffmpegSettings = new FFMpegSetting[] {
-			new FFMpegSetting {
+		private static readonly FFmpegSetting[] ffmpegSettings = new FFmpegSetting[] {
+			new FFmpegSetting {
 				inFormatType = new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD),
 				outFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
 				inFormatName = "truehd", outFormatName = "wav", codecName = "pcm_s24le"
@@ -43,7 +43,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		};
 		
 		public override object HandlesConversion(FormatType input, FormatType output, NeonOptions settings) {
-			foreach(FFMpegSetting setting in ffmpegSettings) {
+			foreach(FFmpegSetting setting in ffmpegSettings) {
 				if(setting.inFormatType.Equals(input) && setting.outFormatType.Equals(output)) {
 					return setting;
 				}
@@ -52,12 +52,12 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		}
 		
 		public override FormatCodec ConvertStream(FormatType input, FormatType output, NeonOptions settings) {
-			FFMpegSetting setting = (FFMpegSetting)HandlesConversion(input, output, settings);
+			FFmpegSetting setting = (FFmpegSetting)HandlesConversion(input, output, settings);
 			if(setting == null) {
 				return null;
 			}
 			
-			return new FFMpegCodec(setting);
+			return new FFmpegCodec(setting);
 		}
 	}
 }

@@ -4,12 +4,12 @@ using System.Diagnostics;
 using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
-	public class FFMpegCodec : FormatCodec {
-		public FFMpegCodec(FFMpegSetting setting) {
+	public class FFmpegCodec : FormatCodec {
+		public FFmpegCodec(FFmpegSetting setting) {
 			this.setting = setting;
 		}
 		
-		FFMpegSetting setting;
+		FFmpegSetting setting;
 		
 		public override Stream InitConvertData(Stream inbuff, string outfile) {
 			if(outfile == null) {

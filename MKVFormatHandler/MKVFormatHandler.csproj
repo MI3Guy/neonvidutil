@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9DE451FF-3FA3-4E5C-821C-A110FF45E979}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>MKVFormatHandler</RootNamespace>
+    <RootNamespace>NeonVidUtil.Plugin.MKVFormatHandler</RootNamespace>
     <AssemblyName>MKVFormatHandler</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

@@ -33,10 +33,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="FFMpegCodec.cs" />
-    <Compile Include="FFMpegSetting.cs" />
     <Compile Include="FFmpegConvert.cs" />
     <Compile Include="FFmpegFormatHandler.cs" />
+    <Compile Include="FFmpegSetting.cs" />
+    <Compile Include="FFmpegCodec.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

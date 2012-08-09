@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{510A298E-779D-49E5-831D-57EECE564DC1}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>NeonVidUtilCore</RootNamespace>
+    <RootNamespace>NeonVidUtil.Core</RootNamespace>
     <AssemblyName>NeonVidUtilCore</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\Unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLACSharp", "FLACSharp\FLACSharp.csproj", "{3CF46602-3954-46BA-AA74-75171A026769}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGPulldownFormatHandler", "DGPulldownSharp\DGPulldownFormatHandler.csproj", "{7B6BB2E7-1626-4D1A-832C-3AE3CDE04AEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -65,6 +67,10 @@ Global
 		{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}.Debug|x86.Build.0 = Debug|Any CPU
 		{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}.Release|x86.ActiveCfg = Release|Any CPU
 		{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}.Release|x86.Build.0 = Release|Any CPU
+		{7B6BB2E7-1626-4D1A-832C-3AE3CDE04AEB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7B6BB2E7-1626-4D1A-832C-3AE3CDE04AEB}.Debug|x86.Build.0 = Debug|Any CPU
+		{7B6BB2E7-1626-4D1A-832C-3AE3CDE04AEB}.Release|x86.ActiveCfg = Release|Any CPU
+		{7B6BB2E7-1626-4D1A-832C-3AE3CDE04AEB}.Release|x86.Build.0 = Release|Any CPU
 		{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}.Debug|x86.Build.0 = Debug|Any CPU
 		{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}.Release|x86.ActiveCfg = Release|Any CPU

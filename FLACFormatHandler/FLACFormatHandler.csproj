@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{09A283E5-B047-43FF-BFDE-056E697CC438}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>FLACFormatHandler</RootNamespace>
+    <RootNamespace>NeonVidUtil.Plugin.FLACFormatHandler</RootNamespace>
     <AssemblyName>FLACFormatHandler</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

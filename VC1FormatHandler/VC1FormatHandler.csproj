@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B2F34AC2-61EC-4168-85C7-308D6D08DA40}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>VC1FormatHandler</RootNamespace>
+    <RootNamespace>NeonVidUtil.Plugin.VC1FormatHandler</RootNamespace>
     <AssemblyName>VC1FormatHandler</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
