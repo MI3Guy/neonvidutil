@@ -3,7 +3,7 @@ using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.MKVFormatHandler {
 	public class MKVFormatHandler : FormatHandler {
-		public MKVFormatHandler() : base() {
+		public MKVFormatHandler() {
 			
 		}
 		
@@ -17,16 +17,19 @@ namespace NeonVidUtil.Plugin.MKVFormatHandler {
 				return false;
 			}
 			
-			for(int i = 0; i < input.Items.Length; ++i) {
-				if(input.Items[i].Codec == output.Codec) {
-					try {
-						if(input.Index == -1 || input.Index == input.Items[i].ID) {
+			if(input.Index == -1) {
+				for(int i = 0; i < input.Items.Length; ++i) {
+					if(input.Items[i].Codec == output.Codec) {
+						try {
 							return input.Items[i].ID;
 						}
-					}
-					catch {
+						catch {
+						}
 					}
 				}
+			}
+			else {
+				return input.Items[input.Index].ID;
 			}
 			return null;
 		}
@@ -44,11 +47,11 @@ namespace NeonVidUtil.Plugin.MKVFormatHandler {
 		}
 		
 		public override FormatCodec ConvertStream(FormatType input, FormatType output, NeonOptions settings) {
-			object param = HandlesConversion(input, output, settings);
-			if(!(param is int)) {
-				return null;
+			int index = output.Index;
+			if(input.Index != -1) {
+				index = input.Items[input.Index].ID;
 			}
-			return new MKVFormatDecoder((int)param);
+			return new MKVFormatDecoder(index);
 		}
 	}
 }

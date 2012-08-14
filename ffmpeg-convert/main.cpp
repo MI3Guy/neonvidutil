@@ -19,10 +19,10 @@ extern "C" {
 		av_register_all();
 	}
 	
-	bool ConvertFFmpegFileFile(const char* inFile, const char* inFormatName, const char* outFile, const char* outFormatName, const char* codecName) {
+	bool ConvertFFmpegFileFile(const char* inFile, const char* inFormatName, const char* outFile, const char* outFormatName, const char* codecName, int streamIndex) {
 		AVInputFormat* inFmtStruct = av_find_input_format(inFormatName);
 		if(!inFmtStruct) {
-			std::cerr << "ffmpeg-convert: Could not find input format.\n";
+			std::cerr << "ffmpeg-convert: Could not find input format " << inFormatName << ".\n";
 			return false;
 		}
 		
@@ -48,7 +48,7 @@ extern "C" {
 			}
 		}
 		
-		if(!ConvertFFmpeg(inFmt, outFmt, -1, codecName)) {
+		if(!ConvertFFmpeg(inFmt, outFmt, streamIndex, codecName)) {
 			return false;
 		}
 		
@@ -58,10 +58,11 @@ extern "C" {
 		return true;
 	}
 	
-	bool ConvertFFmpegFileStream(const char* inFile, const char* inFormatName, FFmpegURLWrite outStreamWrite, int outFid, const char* outFormatName, const char* codecName) {
+	bool ConvertFFmpegFileStream(const char* inFile, const char* inFormatName, FFmpegURLWrite outStreamWrite, const char* outFormatName, const char* codecName, int streamIndex) {
+		std::cerr << "ffmpeg-convert: ConvertFFmpegFileStream\n" << inFormatName << "\n";
 		AVInputFormat* inFmtStruct = av_find_input_format(inFormatName);
 		if(!inFmtStruct) {
-			std::cerr << "ffmpeg-convert: Could not find input format.\n";
+			std::cerr << "ffmpeg-convert: Could not find input format " << inFormatName << ".\n";
 			return false;
 		}
 		
@@ -88,14 +89,14 @@ extern "C" {
 				return false;
 			}
 			
-			outFmt->pb = avio_alloc_context(outBuff, BufferSize, 1, (void*)outFid, NULL, outStreamWrite, NULL);
+			outFmt->pb = avio_alloc_context(outBuff, BufferSize, 1, NULL, NULL, outStreamWrite, NULL);
 			if(outFmt->pb == NULL) {
 				std::cerr << "ffmpeg-convert: Could not allocate output IO context.\n";
 				return false;
 			}
 		}
 		
-		if(!ConvertFFmpeg(inFmt, outFmt, -1, codecName)) {
+		if(!ConvertFFmpeg(inFmt, outFmt, streamIndex, codecName)) {
 			return false;
 		}
 		
@@ -109,10 +110,10 @@ extern "C" {
 		return true;
 	}
 	
-	bool ConvertFFmpegStreamFile(FFmpegURLRead inStreamRead, int inFid, const char* inFormatName, const char* outFile, const char* outFormatName, const char* codecName) {
+	bool ConvertFFmpegStreamFile(FFmpegURLRead inStreamRead, const char* inFormatName, const char* outFile, const char* outFormatName, const char* codecName, int streamIndex) {
 		AVInputFormat* inFmtStruct = av_find_input_format(inFormatName);
 		if(!inFmtStruct) {
-			std::cerr << "ffmpeg-convert: Could not find input format.\n";
+			std::cerr << "ffmpeg-convert: Could not find input format " << inFormatName << ".\n";
 			return false;
 		}
 		
@@ -128,7 +129,7 @@ extern "C" {
 			return false;
 		}
 		
-		inFmt->pb = avio_alloc_context(inBuff, BufferSize, 0, (void*)inFid, inStreamRead, NULL, NULL);
+		inFmt->pb = avio_alloc_context(inBuff, BufferSize, 0, NULL, inStreamRead, NULL, NULL);
 		if(inFmt->pb == NULL) {
 			std::cerr << "ffmpeg-convert: Could not allocate input IO context.\n";
 			return false;
@@ -155,7 +156,7 @@ extern "C" {
 			}
 		}
 		
-		if(!ConvertFFmpeg(inFmt, outFmt, -1, codecName)) {
+		if(!ConvertFFmpeg(inFmt, outFmt, streamIndex, codecName)) {
 			return false;
 		}
 		
@@ -169,7 +170,7 @@ extern "C" {
 		return true;
 	}
 	
-	bool ConvertFFmpegStreamStream(FFmpegURLRead inStreamRead, int inFid, const char* inFormatName, FFmpegURLWrite outStreamWrite, int outFid, const char* outFormatName, const char* codecName) {
+	bool ConvertFFmpegStreamStream(FFmpegURLRead inStreamRead, const char* inFormatName, FFmpegURLWrite outStreamWrite, const char* outFormatName, const char* codecName, int streamIndex) {
 		AVInputFormat* inFmtStruct = av_find_input_format(inFormatName);
 		if(!inFmtStruct) {
 			std::cerr << "ffmpeg-convert: Could not find input format.\n";
@@ -188,7 +189,7 @@ extern "C" {
 			return false;
 		}
 		
-		inFmt->pb = avio_alloc_context(inBuff, BufferSize, 0, (void*)inFid, inStreamRead, NULL, NULL);
+		inFmt->pb = avio_alloc_context(inBuff, BufferSize, 0, NULL, inStreamRead, NULL, NULL);
 		if(inFmt->pb == NULL) {
 			std::cerr << "ffmpeg-convert: Could not allocate input IO context.\n";
 			return false;
@@ -216,14 +217,14 @@ extern "C" {
 				return false;
 			}		
 			
-			outFmt->pb = avio_alloc_context(outBuff, BufferSize, 1, (void*)outFid, NULL, outStreamWrite, NULL);
+			outFmt->pb = avio_alloc_context(outBuff, BufferSize, 1, NULL, NULL, outStreamWrite, NULL);
 			if(outFmt->pb == NULL) {
 				std::cerr << "ffmpeg-convert: Could not allocate output IO context.\n";
 				return false;
 			}
 		}
 		
-		if(!ConvertFFmpeg(inFmt, outFmt, -1, codecName)) {
+		if(!ConvertFFmpeg(inFmt, outFmt, streamIndex, codecName)) {
 			return false;
 		}
 		
@@ -239,7 +240,7 @@ extern "C" {
 		return true;
 	}
 	
-	bool FFmpegDemuxFileFile(const char* inFormatName, const char* inFile, const char* outFile, int streamIndex) {
+	bool FFmpegDemuxFileFile(const char* inFile, const char* inFormatName, const char* outFile, int streamIndex) {
 		AVInputFormat* inFmtStruct = av_find_input_format(inFormatName);
 		if(!inFmtStruct) {
 			std::cerr << "ffmpeg-convert: Could not find input format " << inFormatName << ".\n";
@@ -284,8 +285,8 @@ extern "C" {
 		av_init_packet(&inPacket);
 		
 		while(av_read_frame(inFmt, &inPacket) == 0) {
-			std::cerr << "index = " << inPacket.stream_index << ", " << streamIndex << "\n";
-			if(inPacket.stream_index == streamIndex) {
+			std::cerr << "index = " << inPacket.stream_index << ", " << realStreamIndex << "\n";
+			if(inPacket.stream_index == realStreamIndex) {
 				fwrite(inPacket.data, 1, inPacket.size, fp);
 			}
 			
@@ -300,6 +301,75 @@ extern "C" {
 		return true;
 	}
 	
+	bool FFmpegDemuxStreamStream(FFmpegURLRead inStreamRead, const char* inFormatName, FFmpegURLWrite outStreamWrite, int streamIndex) {
+		AVInputFormat* inFmtStruct = av_find_input_format(inFormatName);
+		if(!inFmtStruct) {
+			std::cerr << "ffmpeg-convert: Could not find input format " << inFormatName << ".\n";
+			return false;
+		}
+		
+		AVFormatContext* inFmt = avformat_alloc_context();
+		if(inFmt == NULL) {
+			std::cerr << "ffmpeg-convert: Could not allocate input context.\n";
+			return false;
+		}
+		
+		unsigned char* inBuff = (unsigned char*)av_malloc(BufferSize);
+		if(inBuff == NULL) {
+			std::cerr << "ffmpeg-convert: Could not allocate input buffer.\n";
+			return false;
+		}
+		
+		inFmt->pb = avio_alloc_context(inBuff, BufferSize, 0, NULL, inStreamRead, NULL, NULL);
+		if(inFmt->pb == NULL) {
+			std::cerr << "ffmpeg-convert: Could not allocate input IO context.\n";
+			return false;
+		}
+		
+		if(avformat_open_input(&inFmt, "", inFmtStruct, NULL) != 0) {
+			std::cerr << "ffmpeg-convert: Could not open input.\n";
+			return false;
+		}
+		
+		// Prepare inFmt
+		if(avformat_find_stream_info(inFmt, NULL) < 0) {
+			std::cerr << "ffmpeg-convert: Could not find stream info.\n";
+			return false;
+		}
+		
+		av_dump_format(inFmt, -1, "", 0);
+		
+		// Prepare inCodec
+		int realStreamIndex = av_find_best_stream(inFmt, AVMEDIA_TYPE_VIDEO, streamIndex, -1, NULL, 0);
+		
+		if(realStreamIndex < 0) {
+			realStreamIndex = av_find_best_stream(inFmt, AVMEDIA_TYPE_AUDIO, streamIndex, -1, NULL, 0);
+			if(realStreamIndex < 0) {
+				std::cerr << "ffmpeg-convert: Could not find input stream.\n";
+				return false;
+			}
+		}
+		
+		AVPacket inPacket;
+		av_init_packet(&inPacket);
+		
+		while(av_read_frame(inFmt, &inPacket) == 0) {
+			std::cerr << "index = " << inPacket.stream_index << ", " << realStreamIndex << "\n";
+			if(inPacket.stream_index == realStreamIndex) {
+				//fwrite(inPacket.data, 1, inPacket.size, fp);
+				outStreamWrite(NULL, inPacket.data, inPacket.size);
+			}
+			
+			av_free_packet(&inPacket);
+		}
+		
+		av_free(inBuff);
+		av_free(inFmt->pb);
+		avformat_close_input(&inFmt);
+		
+		return true;
+	}
+	
 	int FFmpegGetEOF() {
 		return AVERROR_EOF;
 	}
@@ -307,6 +377,8 @@ extern "C" {
 
 // Helper functions
 bool ConvertFFmpeg(AVFormatContext* inFmt, AVFormatContext* outFmt, int streamIndex, const char* codecName) {
+	std::cerr << "ffmpeg-convert: ConvertFFmpeg\n";
+	
 	// Prepare inFmt
 	if(avformat_find_stream_info(inFmt, NULL) < 0) {
 		std::cerr << "ffmpeg-convert: Could not find stream info.\n";
@@ -314,22 +386,36 @@ bool ConvertFFmpeg(AVFormatContext* inFmt, AVFormatContext* outFmt, int streamIn
 	}
 	
 	// Prepare inCodec
+	AVMediaType mediaType = AVMEDIA_TYPE_AUDIO;
 	AVCodec* inCodec = NULL;
 	int realStreamIndex = av_find_best_stream(inFmt, AVMEDIA_TYPE_AUDIO, streamIndex, -1, &inCodec, 0);
-	
 	if(realStreamIndex < 0) {
-		std::cerr << "ffmpeg-convert: Could not find input stream.\n";
-		return false;
+		realStreamIndex = av_find_best_stream(inFmt, AVMEDIA_TYPE_VIDEO, streamIndex, -1, &inCodec, 0);
+		mediaType = AVMEDIA_TYPE_VIDEO;
+		if(realStreamIndex < 0) {
+			std::cerr << "ffmpeg-convert: Could not find input stream.\n";
+			return false;
+		}
 	}
 	
-	AVCodec* outCodec = avcodec_find_encoder_by_name(codecName);
-	if(outCodec == NULL) {
-		std::cerr << "ffmpeg-convert: Could not find codec.\n";
-		avformat_close_input(&inFmt);
-		return false;
-	}
+	av_dump_format(inFmt, streamIndex, "", false);
+	
+	std::cerr << "streamIndex: " << streamIndex << "\n" << "realStreamIndex: " << realStreamIndex << "\n";
+	//return false;
 	
 	AVCodecContext* inCodecCtx = inFmt->streams[realStreamIndex]->codec;
+	AVCodec* outCodec = NULL;
+	if(strcmp(codecName, "copy") != 0) {
+		outCodec = avcodec_find_encoder_by_name(codecName);
+		if(outCodec == NULL) {
+			std::cerr << "ffmpeg-convert: Could not find codec.\n";
+			avformat_close_input(&inFmt);
+			return false;
+		}
+	}
+	else {
+		outCodec = inCodecCtx->codec;
+	}
 	
 	
 	AVStream* outStream = avformat_new_stream(outFmt, outCodec);
@@ -342,8 +428,19 @@ bool ConvertFFmpeg(AVFormatContext* inFmt, AVFormatContext* outFmt, int streamIn
 		outStream->codec->flags |= CODEC_FLAG_GLOBAL_HEADER;
 	}
 	
-	if(!ConvertFFmpegAudio(inFmt, inCodecCtx, inCodec, outFmt, outStream, outCodec, realStreamIndex)) {
-		return false;
+	if(strcmp(codecName, "copy") != 0) {
+		if(mediaType == AVMEDIA_TYPE_AUDIO) {
+			if(!ConvertFFmpegAudio(inFmt, inCodecCtx, inCodec, outFmt, outStream, outCodec, realStreamIndex)) {
+				return false;
+			}
+		}
+		else {
+			std::cerr << "ffmpeg-convert: Could not convert unknown media type.";
+			return false;
+		}
+	}
+	else {
+		// Copy
 	}
 	
 	avcodec_close(inCodecCtx);
@@ -357,6 +454,7 @@ bool ConvertFFmpeg(AVFormatContext* inFmt, AVFormatContext* outFmt, int streamIn
 }
 
 bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCodec* inCodec, AVFormatContext* outFmt, AVStream* audioStream, AVCodec* outCodec, int streamIndex) {
+	std::cerr << "ffmpeg-convert: ConvertFFmpegAudio\n";
 	audioStream->id = 1;
 	audioStream->codec->sample_fmt = inCodecCtx->sample_fmt;
 	audioStream->codec->sample_rate = inCodecCtx->sample_rate;
@@ -379,24 +477,22 @@ bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCo
 	}
 	
 	AVPacket inPacket;
+	AVPacket outPacket = { 0 };
 	av_init_packet(&inPacket);
+	av_init_packet(&outPacket);
 	
-	AVFrame* frame = NULL;
+	AVFrame* frame = avcodec_alloc_frame();
+	if(frame == NULL) {
+		std::cerr << "ffmpeg-convert: Error allocating frame.\n";
+		return false;
+	}
 	
 	while(av_read_frame(inFmt, &inPacket) == 0) {
-		std::cerr << "index = " << inPacket.stream_index << ", " << streamIndex << "\n";
+		//std::cerr << "index = " << inPacket.stream_index << ", " << streamIndex << "\n";
 		if(inPacket.stream_index == streamIndex) {
 			int got_frame_ptr = 0;
 			while(got_frame_ptr == 0) {
-				if(frame == NULL) {
-					if((frame = avcodec_alloc_frame()) == NULL) {
-						std::cerr << "ffmpeg-convert: Error allocating frame.\n";
-						return false;
-					}
-				}
-				else {
-					avcodec_get_frame_defaults(frame);
-				}
+				avcodec_get_frame_defaults(frame);
 				
 				if(avcodec_decode_audio4(inCodecCtx, frame, &got_frame_ptr, &inPacket) < 0) {
 					std::cerr << "ffmpeg-convert: Error while decoding.\n";
@@ -405,10 +501,6 @@ bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCo
 				}
 			}
 			
-			av_free_packet(&inPacket);
-			
-			AVPacket outPacket = { 0 };
-			av_init_packet(&outPacket);
 			int got_packet_ptr = 0;
 			while(got_packet_ptr == 0) {
 				if(avcodec_encode_audio2(audioStream->codec, &outPacket, frame, &got_packet_ptr) != 0) {
@@ -422,9 +514,50 @@ bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCo
 				std::cerr << "ffmpeg-convert: Error while writing frame.\n";
 				return false;
 			}
+			
+			//std::cerr << "outPacket->destruct: " << outPacket.destruct << "\n"; 
+			av_free_packet(&outPacket);
 		}
+		av_free_packet(&inPacket);
 	}
+	
 	av_free(frame);
+	av_write_trailer(outFmt);
+	return true;
+}
+
+bool ConvertFFmpegCopy(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVFormatContext* outFmt, AVStream* outStream, int streamIndex, AVMediaType mediaType) {
+	std::cerr << "ffmpeg-convert: ConvertFFmpegCopy\n";
+	if(mediaType == AVMEDIA_TYPE_AUDIO) {
+		outStream->id = 1;
+		outStream->codec->sample_fmt = inCodecCtx->sample_fmt;
+		outStream->codec->sample_rate = inCodecCtx->sample_rate;
+		outStream->codec->channels = inCodecCtx->channels;
+		outStream->codec->channel_layout = inCodecCtx->channel_layout;
+	}
+	/*else {
+		std::cerr << "ffmpeg-convert: Unknown media type.";
+		return false;
+	}*/
+	
+	if(avformat_write_header(outFmt, NULL) != 0) {
+		std::cerr << "ffmpeg-convert: Could not write header.\n";
+		return false;
+	}
+	
+	AVPacket inPacket;
+	av_init_packet(&inPacket);
+	
+	while(av_read_frame(inFmt, &inPacket) == 0) {
+		std::cerr << "index = " << inPacket.stream_index << ", " << streamIndex << "\n";
+		if(inPacket.stream_index == streamIndex) {
+			if(av_interleaved_write_frame(outFmt, &inPacket) != 0) {
+				std::cerr << "ffmpeg-convert: Error while writing frame.\n";
+				return false;
+			}
+		}
+		av_free_packet(&inPacket);
+	}
 	
 	av_write_trailer(outFmt);
 	return true;
@@ -432,9 +565,5 @@ bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCo
 
 int main() {
 	InitFFmpeg();
-	FFmpegDemuxFileFile("matroska,webm", "/home/john/Videos/Main_Movie_t01.mkv", "test.vc1", 0);
-	
-	return 0;
+	ConvertFFmpegFileFile("/home/john/Videos/vid2.mkv", "matroska", "test.wav", "wav", "pcm_s32le", 1);
 }
-
-

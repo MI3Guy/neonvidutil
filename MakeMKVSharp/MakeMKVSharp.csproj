@@ -5,16 +5,16 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7B6BB2E7-1626-4D1A-832C-3AE3CDE04AEB}</ProjectGuid>
+    <ProjectGuid>{1A90A8C7-55D0-42B1-8F57-B75206A12576}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>NeonVidUtil.Plugin.DGPulldownFormatHandler</RootNamespace>
-    <AssemblyName>DGPulldownFormatHandler</AssemblyName>
+    <RootNamespace>MakeMKVSharp</RootNamespace>
+    <AssemblyName>MakeMKVSharp</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Debug\Plugins</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -23,7 +23,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\Release\Plugins</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -34,15 +34,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="DGPulldown.cs" />
-    <Compile Include="DGPulldownFormatHandler.cs" />
-    <Compile Include="DGPulldownRemover.cs" />
+    <Compile Include="MakeMKV.cs" />
+    <Compile Include="DriveInfo.cs" />
+    <Compile Include="MakeMKVMessage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\NeonVidUtilCore\NeonVidUtilCore.csproj">
-      <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
-      <Name>NeonVidUtilCore</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

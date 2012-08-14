@@ -18,6 +18,12 @@ namespace NeonVidUtil.Plugin.DGPulldownFormatHandler {
 		private static extern bool DGPulldownRemoveFileFile(string inFile, string outFile);
 		
 		[DllImport("DGPulldown")]
+		private static extern bool DGPulldownRemoveStreamFile(IOReadFunction read, IOResetFunction reset, string outFile);
+		
+		[DllImport("DGPulldown")]
+		private static extern bool DGPulldownRemoveFileStream(string inFile, IOWriteFunction write);
+		
+		[DllImport("DGPulldown")]
 		private static extern bool DGPulldownRemoveStreamStream(IOReadFunction read, IOResetFunction reset, IOWriteFunction write);
 		
 		private int ReadFunc(IntPtr buff, int count) {
@@ -57,6 +63,24 @@ namespace NeonVidUtil.Plugin.DGPulldownFormatHandler {
 			return DGPulldownRemoveFileFile(inFile, outFile);
 		}
 		
+		public bool RemovePulldown(Stream inStream, string outFile) {
+			buffStream = new MemoryStream();
+			hasReset = false;
+			
+			IOReadFunction read = new IOReadFunction(ReadFunc);
+			IOResetFunction reset = new IOResetFunction(ResetFunc);
+			this.inStream = inStream;
+			this.outStream = outStream;
+			return DGPulldownRemoveStreamFile(read, reset, outFile);
+		}
+		
+		public bool RemovePulldown(string inFile, Stream outStream) {
+			this.outStream = outStream;
+			
+			IOWriteFunction write = new IOWriteFunction(WriteFunc);
+			return DGPulldownRemoveFileStream(inFile, write);
+		}
+		
 		public bool RemovePulldown(Stream inStream, Stream outStream) {
 			buffStream = new MemoryStream();
 			hasReset = false;
@@ -64,8 +88,8 @@ namespace NeonVidUtil.Plugin.DGPulldownFormatHandler {
 			this.outStream = outStream;
 			
 			IOReadFunction read = new IOReadFunction(ReadFunc);
-			IOWriteFunction write = new IOWriteFunction(WriteFunc);
 			IOResetFunction reset = new IOResetFunction(ResetFunc);
+			IOWriteFunction write = new IOWriteFunction(WriteFunc);
 			return DGPulldownRemoveStreamStream(read, reset, write);
 		}
 	}

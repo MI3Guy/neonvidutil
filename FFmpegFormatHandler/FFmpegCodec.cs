@@ -5,11 +5,20 @@ using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 	public class FFmpegCodec : FormatCodec {
-		public FFmpegCodec(FFmpegSetting setting) {
+		public FFmpegCodec(FFmpegSetting setting, FormatType input, int index) {
 			this.setting = setting;
+			if(input.Container == FormatType.FormatContainer.Matroska) {
+				inFormatName = "matroska";
+			}
+			else {
+				inFormatName = setting.inFormatName;
+			}
+			streamIndex = index;
 		}
 		
 		FFmpegSetting setting;
+		string inFormatName;
+		int streamIndex;
 		
 		public override Stream InitConvertData(Stream inbuff, string outfile) {
 			if(outfile == null) {
@@ -21,31 +30,54 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		}
 		
 		public override void ConvertData(Stream inbuff, Stream outbuff) {
-			string inFileName = null;
-			string outFileName = null;
-			if(inbuff is FileStream) {
-				FileStream fs = (FileStream)inbuff;
-				inFileName = fs.Name;
-				fs.Close();
-			}
+			FFmpegConvert ffmpeg = new FFmpegConvert();
 			
-			if(outbuff is FileStream) {
-				FileStream fs = (FileStream)inbuff;
-				outFileName = fs.Name;
-				fs.Close();
+			if(setting.codecName != null) {
+				string inFileName = null;
+				string outFileName = null;
+				if(inbuff is FileStream) {
+					FileStream fs = (FileStream)inbuff;
+					inFileName = fs.Name;
+					fs.Close();
+				}
+				
+				if(outbuff is FileStream) {
+					FileStream fs = (FileStream)inbuff;
+					outFileName = fs.Name;
+					fs.Close();
+				}
+				
+				if(inFileName == null && outFileName == null) {
+					ffmpeg.Convert(inbuff, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex);
+				}
+				else if(inFileName == null /* && outFileName != null */) {
+					ffmpeg.Convert(inbuff, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex);
+				}
+				else if(/*inFileName != null && */outFileName == null) {
+					ffmpeg.Convert(inFileName, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex);
+				}
+				else /*if(inFileName != null && outFileName != null)*/ {
+					ffmpeg.Convert(inFileName, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex);
+				}
 			}
-			
-			if(inFileName == null && outFileName == null) {
-				FFmpegConvert.ConvertFFmpeg(inbuff, setting.inFormatName, outbuff, setting.outFormatName, setting.codecName);
-			}
-			else if(inFileName == null /* && outFileName != null */) {
-				FFmpegConvert.ConvertFFmpeg(inbuff, setting.inFormatName, outFileName, setting.outFormatName, setting.codecName);
-			}
-			else if(/*inFileName != null && */outFileName == null) {
-				FFmpegConvert.ConvertFFmpeg(inFileName, setting.inFormatName, outbuff, setting.outFormatName, setting.codecName);
-			}
-			else /*if(inFileName != null && outFileName != null)*/ {
-				FFmpegConvert.ConvertFFmpeg(inFileName, setting.inFormatName, outFileName, setting.outFormatName, setting.codecName);
+			else {
+				string inFileName = null;
+				string outFileName = null;
+				if(inbuff is FileStream && outbuff is FileStream) {
+					FileStream fs = (FileStream)inbuff;
+					inFileName = fs.Name;
+					fs.Close();
+					fs = (FileStream)inbuff;
+					outFileName = fs.Name;
+					fs.Close();
+				}
+				
+				if(inFileName == null && outFileName == null) {
+					ffmpeg.Demux(inbuff, inFormatName, outbuff, streamIndex);
+				}
+				else {
+					ffmpeg.Demux(inFileName, inFormatName, outFileName, streamIndex);
+				}
 			}
 			
 			if(outbuff is CircularStream) {

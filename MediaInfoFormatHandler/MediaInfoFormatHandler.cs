@@ -30,7 +30,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 					string codecid = MI.Get(StreamKind.Video, i, "Format");
 					FormatType ft = new FormatType(codecid);
 					FormatType tmpft = ft.IsRawCodec();
-					if(tmpft != null) {
+					if(!tmpft.Equals(FormatType.None)) {
 						ft = tmpft;
 					}
 					try {
@@ -50,7 +50,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 					string codecid = MI.Get(StreamKind.Audio, i, "Format");
 					FormatType ft = new FormatType(codecid);
 					FormatType tmpft = ft.IsRawCodec();
-					if(tmpft != null) {
+					if(!tmpft.Equals(FormatType.None)) {
 						ft = tmpft;
 					}
 					try {
@@ -70,7 +70,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 					string codecid = MI.Get(StreamKind.Text, i, "Format");
 					FormatType ft = new FormatType(codecid);
 					FormatType tmpft = ft.IsRawCodec();
-					if(tmpft != null) {
+					if(!tmpft.Equals(FormatType.None)) {
 						ft = tmpft;
 					}
 					try {
@@ -81,7 +81,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 				}
 			}
 			catch {
-				return null;
+				return FormatType.None;
 			}
 			
 			MI.Close();
@@ -93,6 +93,11 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 			
 			if(items.Count != 1) {
 				items.Sort(new FormatTypeComparer());
+				for(int i = 0; i < items.Count; ++i) {
+					FormatType t = items[i];
+					t.Index = i;
+					items[i] = t;
+				}
 				return new FormatType(container, items.ToArray()) { Index = idx };
 			}
 			else {

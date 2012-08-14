@@ -11,7 +11,7 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 		
 		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
 			if(Path.GetExtension(file).ToUpper() != ".WAV") {
-				return null;
+				return FormatType.None;
 			}
 			else {
 				return new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM);

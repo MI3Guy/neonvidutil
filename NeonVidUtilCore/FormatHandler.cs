@@ -24,16 +24,16 @@ namespace NeonVidUtil.Core {
 		/// The format to use instead of the one passed.
 		/// </param>
 		public virtual bool IsRawCodec(FormatType type, out FormatType outtype) {
-			outtype = null;
+			outtype = FormatType.None;
 			return IsRawCodec(type);
 		}
 		
 		public virtual FormatType ReadInfo(string file, NeonOptions settings) {
-			return null;
+			return FormatType.None;
 		}
 		
 		public virtual FormatType GenerateOutputType(string file, NeonOptions settings) {
-			return null;
+			return FormatType.None;
 		}
 		
 		public virtual object HandlesConversion(FormatType input, FormatType output, NeonOptions settings) {

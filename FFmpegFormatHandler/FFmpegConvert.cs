@@ -4,45 +4,28 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
-	public static class FFmpegConvert {
+	public class FFmpegConvert {
 		static FFmpegConvert() {
 			InitFFmpeg();
 		}
 		
-		private static Dictionary<int, Stream> VirtualFiles = new Dictionary<int, Stream>();
-		private static int AddVFileStream(Stream vfile) {
-			int attempts = 0;
-			int fid;
-			Random rand = new Random();
-			lock(VirtualFiles) {
-				do {
-					fid = rand.Next();
-					if(fid == 0) continue;
-					
-					if(++attempts > 10) {
-						throw new ApplicationException("Could not find virtual file name.");
-					}
-				} while(VirtualFiles.ContainsKey(fid) || fid == 0);
-				VirtualFiles.Add(fid, vfile);
-			}
-			return fid;
+		public FFmpegConvert() {
+			
 		}
 		
-		[DllImport("ffmpeg-convert")]
-		private static extern void InitFFmpeg();
+		public static void Test() {
+			// Will ensure that DLL loaded.
+		}
 		
-		[DllImport("ffmpeg-convert", EntryPoint = "ConvertFFmpegFileFile")]
-		public static extern bool ConvertFFmpeg(string inFile, string inFormatName, 
-		                                                string outFile, string outFormat,
-		                                                string codecName);
-		
+		private Stream inStream;
+		private Stream outStream;
 		
 		private delegate int FFmpegURLRead(IntPtr h, IntPtr buf, int size);
 		private delegate int FFmpegURLWrite(IntPtr h, IntPtr buf, int size);
 		
-		private static int FFmpegURLRead_Func(IntPtr h, IntPtr buf, int size) {
+		private int FFmpegURLRead_Func(IntPtr h, IntPtr buf, int size) {
 			byte[] data = new byte[size];
-			int len = VirtualFiles[(int)h].Read(data, 0, size);
+			int len = inStream.Read(data, 0, size);
 			if(len == 0) {
 				return FFmpegGetEOF();
 			}
@@ -50,68 +33,96 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			return len;
 		}
 		
-		private static int FFmpegURLWrite_Func(IntPtr h, IntPtr buf, int size) {
+		private int FFmpegURLWrite_Func(IntPtr h, IntPtr buf, int size) {
 			byte[] data = new byte[size];
 			System.Runtime.InteropServices.Marshal.Copy(buf, data, 0, size);
-			VirtualFiles[(int)h].Write(data, 0, size);
+			outStream.Write(data, 0, size);
 			return size;
 		}
 		
 		[DllImport("ffmpeg-convert")]
+		private static extern void InitFFmpeg();
+		
+		[DllImport("ffmpeg-convert")]
+		private static extern bool ConvertFFmpegFileFile(string inFile, string inFormatName, 
+		                                                 string outFile, string outFormat,
+		                                                 string codecName, int streamIndex);
+		
+		public bool Convert(string inFile, string inFormatName, 
+		                    string outFile, string outFormat,
+		                    string codecName, int streamIndex) {
+			return ConvertFFmpegFileFile(inFile, inFormatName, outFile, outFormat, codecName, streamIndex);
+		}
+		
+		
+		[DllImport("ffmpeg-convert")]
 		private static extern bool ConvertFFmpegFileStream(string inFile, string inFormatName,
-		                                                   FFmpegURLWrite outStreamWrite, int outFid, string outFormatName,
-		                                                   string codecName);
+		                                                   FFmpegURLWrite outStreamWrite, string outFormatName,
+		                                                   string codecName, int streamIndex);
 		
-		public static bool ConvertFFmpeg(string inFile, string inFormatName,
-		                                 Stream outStream, string outFormatName,
-		                                 string codecName) {
-			int outStreamId = AddVFileStream(outStream);
-			bool ret = ConvertFFmpegFileStream(inFile, inFormatName, FFmpegURLWrite_Func, outStreamId, outFormatName, codecName);
+		public bool Convert(string inFile, string inFormatName,
+		                    Stream outStream, string outFormatName,
+		                    string codecName, int streamIndex) {
+			FFmpegURLWrite write = new FFmpegURLWrite(FFmpegURLWrite_Func);
+			this.outStream = outStream;
 			
-			lock(VirtualFiles) {
-				VirtualFiles.Remove(outStreamId);
-			}
-			
+			bool ret = ConvertFFmpegFileStream(inFile, inFormatName, write, outFormatName, codecName, streamIndex);
 			return ret;
 		}
 		
 		[DllImport("ffmpeg-convert")]
-		private static extern bool ConvertFFmpegStreamFile(FFmpegURLRead inStreamRead, int inFid, string inFormatName,
+		private static extern bool ConvertFFmpegStreamFile(FFmpegURLRead inStreamRead, string inFormatName,
 		                                                   string outFile, string outFormatName,
-		                                                   string codecName);
+		                                                   string codecName, int streamIndex);
 		
 		
-		public static bool ConvertFFmpeg(Stream inStream, string inFormatName,
-		                                 string outFile, string outFormatName,
-		                                 string codecName) {
-			int inStreamId = AddVFileStream(inStream);
-			bool ret = ConvertFFmpegStreamFile(FFmpegURLRead_Func, inStreamId, inFormatName, outFile, outFormatName, codecName);
-			
-			lock(VirtualFiles) {
-				VirtualFiles.Remove(inStreamId);
-			}
-			
+		public bool Convert(Stream inStream, string inFormatName,
+		                   string outFile, string outFormatName,
+		                   string codecName, int streamIndex) {
+			FFmpegURLRead read = new FFmpegURLRead(FFmpegURLRead_Func);
+			this.inStream = inStream;
+			bool ret = ConvertFFmpegStreamFile(read, inFormatName, outFile, outFormatName, codecName, streamIndex);
 			return ret;
 		}
 		
 		[DllImport("ffmpeg-convert")]
-		private static extern bool ConvertFFmpegStreamStream(FFmpegURLRead inStreamRead, int inFid, string inFormatName,
-		                                                     FFmpegURLWrite outStreamWrite, int outFid, string outFormatName,
-		                                                     string codecName);
+		private static extern bool ConvertFFmpegStreamStream(FFmpegURLRead inStreamRead, string inFormatName,
+		                                                     FFmpegURLWrite outStreamWrite, string outFormatName,
+		                                                     string codecName, int streamIndex);
 		
-		public static bool ConvertFFmpeg(Stream inStream, string inFormatName,
-		                                 Stream outStream, string outFormatName,
-		                                 string codecName) {
-			int inStreamId = AddVFileStream(inStream);
-			int outStreamId = AddVFileStream(outStream);
-			bool ret = ConvertFFmpegStreamStream(FFmpegURLRead_Func, inStreamId, inFormatName, FFmpegURLWrite_Func, outStreamId, outFormatName, codecName);
-			
-			lock(VirtualFiles) {
-				VirtualFiles.Remove(inStreamId);
-				VirtualFiles.Remove(outStreamId);
-			}
-			
+		public bool Convert(Stream inStream, string inFormatName,
+		                   Stream outStream, string outFormatName,
+		                   string codecName, int streamIndex) {
+			FFmpegURLRead read = new FFmpegURLRead(FFmpegURLRead_Func);
+			FFmpegURLWrite write = new FFmpegURLWrite(FFmpegURLWrite_Func);
+			this.inStream = inStream;
+			this.outStream = outStream;
+			bool ret = ConvertFFmpegStreamStream(read, inFormatName, write, outFormatName, codecName, streamIndex);
 			return ret;
+		}
+		
+		[DllImport("ffmpeg-convert")]
+		private static extern bool FFmpegDemuxFileFile(string inFile, string inFormatName,
+		                                               string outFile,
+		                                               int streamIndex);
+		
+		public bool Demux(string inFile, string inFormatName,
+		                  string outFile,
+		                  int streamIndex) {
+			return FFmpegDemuxFileFile(inFile, inFormatName, outFile, streamIndex);
+		}
+		
+		[DllImport("ffmpeg-convert")]
+		private static extern bool FFmpegDemuxStreamStream(FFmpegURLRead inStreamRead, string inFormatName,
+		                                                   FFmpegURLWrite outStreamWrite,
+		                                                   int streamIndex);
+		
+		public bool Demux(Stream inStream, string inFormatName, Stream outStream, int streamIndex) {
+			FFmpegURLRead read = new FFmpegURLRead(FFmpegURLRead_Func);
+			FFmpegURLWrite write = new FFmpegURLWrite(FFmpegURLWrite_Func);
+			this.inStream = inStream;
+			this.outStream = outStream;
+			return FFmpegDemuxStreamStream(read, inFormatName, write, streamIndex);
 		}
 		
 		[DllImport("ffmpeg-convert")]

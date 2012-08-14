@@ -884,8 +884,3 @@ void generate_flags(void)
 		}
 	}
 }
-
-int main(int argc, char** argv) {
-	DGPulldownRemoveFileFile("/media/EXTRADATA4/Videos/MISSING_SEASON_1_DISC_1/missingvid.mpeg", "/media/EXTRADATA4/Videos/MISSING_SEASON_1_DISC_1/missingvid.mpeg.pulldown.m2v");
-	return 0;
-}

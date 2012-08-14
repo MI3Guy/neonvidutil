@@ -42,21 +42,21 @@ namespace NeonVidUtil.Core {
 		public static FormatType AutoReadInfo(string file, NeonOptions settings) {
 			foreach(KeyValuePair<string, FormatHandler> kvp in AllHandlers) {
 				FormatType type = kvp.Value.ReadInfo(file, settings);
-				if(type != null) {
+				if(!type.Equals(FormatType.None)) {
 					return type;
 				}
 			}
-			return null;
+			return FormatType.None;
 		}
 		
 		public static FormatType AutoGenerateOutputType(string file, NeonOptions settings) {
 			foreach(KeyValuePair<string, FormatHandler> kvp in AllHandlers) {
 				FormatType type = kvp.Value.GenerateOutputType(file, settings);
-				if(type != null) {
+				if(!type.Equals(FormatType.None)) {
 					return type;
 				}
 			}
-			return null;
+			return FormatType.None;
 		}
 		
 		public static FormatHandler FindConverter(FormatType input, FormatType output, NeonOptions settings) {
@@ -93,7 +93,7 @@ namespace NeonVidUtil.Core {
 					return true;
 				}
 			}
-			outtype = null;
+			outtype = FormatType.None;
 			return false;
 		}
 		

@@ -4,13 +4,25 @@ using NeonVidUtil.Core;
 using NDesk.Options;
 using System.Threading;
 
+using MakeMKVSharp;
+using System.Linq;
+
 namespace NeonVidUtil {
 	public static class Program {
 		public static int Main() {
-			//string[] args = { "/home/john/Videos/vid2.mkv", "test.flac" };
+			/*MakeMKV makemkv = new MakeMKV();
+			
+			DriveInfo[] di = makemkv.ReadDrives().ToArray();
+			
+			Console.WriteLine(di.Length);
+			
+			return 0;*/
+			string[] args = { "/home/john/Videos/vid2.mkv", "test.flac" };
 			//string[] args = { "/home/john/Projects/audio.thd", "test.flac" };
-			string[] args = { "/home/john/Projects/tmp4c280100.tmp", "test.flac" };
+			//string[] args = { "/home/john/Projects/tmp4c280100.tmp", "test.flac" };
 			//string[] args = { "/home/john/Videos/vid2.mkv" };
+			//string[] args = { "--plugin-ignore=MKV", "--removepulldown", "/home/john/Videos/Main_Movie_t01.mkv", "test.vc1" };
+			//string[] args = { "--removepulldown", "/home/john/Videos/title00.mkv", "test.m2v" };
 			
 			
 			Console.WriteLine("Neon VidUtil pre relase test");
@@ -124,7 +136,7 @@ namespace NeonVidUtil {
 			Console.WriteLine("Conversion Path:");
 			Console.WriteLine(path.ToString());
 			
-			path.Run(args[0], args[1]);
+			path.Run(inFileName, outFileName);
 			
 			FormatCodec.DeleteTempFiles();
 			

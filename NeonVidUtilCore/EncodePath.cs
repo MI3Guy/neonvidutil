@@ -73,7 +73,7 @@ namespace NeonVidUtil.Core {
 		
 		private static FormatCodec[] FindConvertPath(FormatType input, FormatType output, NeonOptions settings) {
 			Dictionary<FormatType, EncodeNode> graph = new Dictionary<FormatType, EncodeNode>(new FormatTypeComparer());
-			graph.Add(input, new EncodeNode { Cost = 0, Previous = null, Using = null });
+			graph.Add(input, new EncodeNode { Cost = 0, Previous = FormatType.None, Using = null });
 			bool hasUpdated = true;
 			
 			while(hasUpdated) {
@@ -87,7 +87,7 @@ namespace NeonVidUtil.Core {
 						FormatType[] formatOutputTypes = handler.Value.OutputTypes(graphItem.Key, settings);
 						if(formatOutputTypes != null) {
 							foreach(FormatType formatOutputType in formatOutputTypes) {
-								EncodeNode node = new EncodeNode { Cost = graphItem.Value.Cost + 1, Previous = graphItem.Key, Using = handler.Value };
+								EncodeNode node = new EncodeNode { Cost = graphItem.Value.Cost + 1, Previous = graphItem.Key, Using = handler.Value, Current = formatOutputType };
 								if(!NewItems.ContainsKey(formatOutputType) && (!graph.ContainsKey(formatOutputType) || graph[formatOutputType].Cost > node.Cost + 1)) {
 									NewItems.Add(formatOutputType, node);
 									hasUpdated = true;
@@ -106,12 +106,10 @@ namespace NeonVidUtil.Core {
 				}
 				
 				foreach(KeyValuePair<FormatType, EncodeNode> updItem in NewItems) {
-					if(!graph.ContainsKey(updItem.Key)) {
-						graph.Add(updItem.Key, updItem.Value);
+					if(graph.ContainsKey(updItem.Key)) {
+						graph.Remove(updItem.Key);
 					}
-					else {
-						graph[updItem.Key] = updItem.Value;
-					}
+					graph.Add(updItem.Key, updItem.Value);
 				}
 				
 			}
@@ -120,16 +118,16 @@ namespace NeonVidUtil.Core {
 			if(graph.ContainsKey(output)) {
 				Stack<FormatCodec> path = new Stack<FormatCodec>();
 				
-				FormatType next = null;
+				FormatType next = FormatType.None;
 				FormatType curr = output;
 				FormatHandler processor;
-				while(graph[curr].Previous != null) {
+				while(!graph[curr].Previous.Equals(FormatType.None)) {
 					processor = PluginHelper.FindProcessor(curr, settings, next);
 					if(processor != null) {
 						path.Push(processor.Process(curr, settings, next));
 					}
 					
-					path.Push(graph[curr].Using.ConvertStream(graph[curr].Previous, curr, settings));
+					path.Push(graph[curr].Using.ConvertStream(graph[curr].Previous, graph[curr].Current, settings));
 					next = curr;
 					curr = graph[curr].Previous;
 				}
@@ -158,6 +156,11 @@ namespace NeonVidUtil.Core {
 			}
 			
 			public FormatHandler Using {
+				get;
+				set;
+			}
+			
+			public FormatType Current {
 				get;
 				set;
 			}

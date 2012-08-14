@@ -42,7 +42,7 @@ namespace NeonVidUtil.Plugin.VC1FormatHandler {
 			}
 			
 			if(outbuff is FileStream) {
-				FileStream fs = (FileStream)inbuff;
+				FileStream fs = (FileStream)outbuff;
 				outFileName = fs.Name;
 				fs.Close();
 			}

@@ -22,13 +22,13 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 				return true;
 			}
 			
-			outtype = null;
+			outtype = FormatType.None;
 			return false;
 		}
 		
 		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
 			if(Path.GetExtension(file).ToUpper() != ".FLAC") {
-				return null;
+				return FormatType.None;
 			}
 			
 			return new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC);

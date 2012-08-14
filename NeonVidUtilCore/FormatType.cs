@@ -2,7 +2,7 @@ using System;
 using System.Text;
 
 namespace NeonVidUtil.Core {
-	public class FormatType {
+	public struct FormatType {
 		/// <summary>
 		/// Container specifies the container format.
 		/// </summary>
@@ -24,6 +24,8 @@ namespace NeonVidUtil.Core {
 			
 			Matroska,
 			
+			VC1,
+			MPEG,
 			
 			FLAC,
 			TrueHD,
@@ -34,12 +36,14 @@ namespace NeonVidUtil.Core {
 		public enum FormatCodecType {
 			Unknown,
 			
+			None,
+			
 			Custom,
 			
 			// Video
 			AVC,
 			VC1,
-			MPEG2,
+			MPEGVideo,
 			
 			// Audio
 			FLAC,
@@ -50,10 +54,12 @@ namespace NeonVidUtil.Core {
 			SRT
 		}
 		
+		public static readonly FormatType None = new FormatType(FormatContainer.None, FormatCodecType.None);
+		
 		public FormatType(FormatCodecType codec) : this(FormatContainer.None, codec) {
 		}
 		
-		public FormatType(FormatContainer container, FormatCodecType codec) {
+		public FormatType(FormatContainer container, FormatCodecType codec) : this() {
 			Container = container;
 			Codec = codec;
 			Items = null;
@@ -61,12 +67,14 @@ namespace NeonVidUtil.Core {
 			ID = -1;
 		}
 		
-		public FormatType(FormatContainer container, FormatType[] items) {
+		public FormatType(FormatContainer container, FormatType[] items) : this() {
 			Container = container;
 			Codec = null;
 			Items = items;
 			Index = -1;
 			ID = -1;
+			
+			
 		}
 		
 		public FormatType(string codec) : this(null, codec) {
@@ -77,29 +85,41 @@ namespace NeonVidUtil.Core {
 			codecString = codec;
 			
 			if(codecString == null) {
-				throw new ArgumentException();
+				Codec = FormatCodecType.None;
 			}
-			else if(containerString == null) {
-					Container = FormatContainer.None;
-				}
+			if(containerString == null) {
+				Container = FormatContainer.None;
+			}
 			
 			if(container != null) {
 				FormatContainer econt;
-				if(Enum.TryParse<FormatContainer>(container.Replace("-", ""), out econt)) {
+				if(Enum.TryParse<FormatContainer>(container.Replace("-", "").Replace(" ", ""), out econt)) {
 					containerString = null;
 					Container = econt;
 				}
 			}
 			
-			FormatCodecType ecodec;
-			if(Enum.TryParse<FormatCodecType>(codec.Replace("-", ""), out ecodec)) {
-				codecString = null;
-				Codec = ecodec;
+			if(codec != null) {
+				FormatCodecType ecodec;
+				if(Enum.TryParse<FormatCodecType>(codec.Replace("-", "").Replace(" ", ""), out ecodec)) {
+					codecString = null;
+					Codec = ecodec;
+				}
 			}
 		}
 		
 		public FormatType(string container, FormatType[] items) : this(FormatContainer.Custom, items) {
 			containerString = container;
+			
+			if(container == null) {
+				throw new ArgumentException();
+			}
+			
+			FormatContainer econt;
+			if(Enum.TryParse<FormatContainer>(container.Replace("-", "").Replace(" ", ""), out econt)) {
+				containerString = null;
+				Container = econt;
+			}
 		}
 		
 		public bool IsRawContainer() {
@@ -113,15 +133,15 @@ namespace NeonVidUtil.Core {
 			if(res) {
 				return outtype;
 			}
-			return null;
+			return FormatType.None;
 		}
 		
 		public FormatContainer Container {
 			get;
-			protected set;
+			private set;
 		}
 		
-		protected string containerString;
+		private string containerString;
 		
 		public string ContainerString {
 			get {
@@ -136,10 +156,10 @@ namespace NeonVidUtil.Core {
 		
 		public FormatCodecType? Codec {
 			get;
-			protected set;
+			private set;
 		}
 		
-		protected string codecString;
+		private string codecString;
 		
 		public string CodecString {
 			get {
@@ -157,7 +177,7 @@ namespace NeonVidUtil.Core {
 		
 		public FormatType[] Items {
 			get;
-			protected set;
+			private set;
 		}
 		
 		public int Index {
@@ -194,12 +214,12 @@ namespace NeonVidUtil.Core {
 			}
 			
 			return this.ContainerString == other.ContainerString &&
-				this.CodecString == other.CodecString &&
-				this.Index == other.Index;
+				this.CodecString == other.CodecString;// &&
+				//this.Index == other.Index;
 		}
 		
 		public override int GetHashCode() {
-			return 3*ContainerString.GetHashCode() + (CodecString == null ? 0 : 29*CodecString.GetHashCode()) + (Items == null ? 0 : 31*Items.GetHashCode()) + 41*Index.GetHashCode();
+			return 3*ContainerString.GetHashCode() + (CodecString == null ? 0 : 29*CodecString.GetHashCode()) + (Items == null ? 0 : 31*Items.GetHashCode());// + 41*Index.GetHashCode();
 		}
 		
 		public override string ToString() {

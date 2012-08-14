@@ -58,7 +58,7 @@ namespace NeonVidUtil.Core {
 		}
 		
 		public static bool GetBoolValue(string val) {
-			return val == "1" || val.ToUpper() == "TRUE" || val.ToUpper() == "YES";
+			return val != null && (val == "1" || val.ToUpper() == "TRUE" || val.ToUpper() == "YES");
 		}
 		
 		public class SettingItem {
