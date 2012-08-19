@@ -19,7 +19,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 		
 		public override FormatType ReadInfo(string file, NeonOptions settings) {
 			MI.Open(file);
-			//Console.WriteLine(MI.Inform());
+			Console.WriteLine(MI.Option("Info_Parameters"));
 			
 			string container = MI.Get(StreamKind.General, 0, "Format");
 			List<FormatType> items = new List<FormatType>();//[MI.Count_Get(StreamKind.Video) + MI.Count_Get(StreamKind.Audio) + MI.Count_Get(StreamKind.Text)];
@@ -48,6 +48,11 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 				count = MI.Count_Get(StreamKind.Audio);
 				for(int i = 0; i < count; ++i) {
 					string codecid = MI.Get(StreamKind.Audio, i, "Format");
+					if(codecid == "DTS") {
+						if(MI.Get(StreamKind.Audio, i, "Format_Profile") == "MA / Core") {
+							codecid = "DTS-HD MA";
+						}
+					}
 					FormatType ft = new FormatType(codecid);
 					FormatType tmpft = ft.IsRawCodec();
 					if(!tmpft.Equals(FormatType.None)) {

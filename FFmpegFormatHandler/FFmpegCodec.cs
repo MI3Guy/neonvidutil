@@ -25,7 +25,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				return new CircularStream();
 			}
 			else {
-				return File.OpenRead(outfile);
+				return File.Create(outfile);
 			}
 		}
 		
@@ -42,7 +42,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				}
 				
 				if(outbuff is FileStream) {
-					FileStream fs = (FileStream)inbuff;
+					FileStream fs = (FileStream)outbuff;
 					outFileName = fs.Name;
 					fs.Close();
 				}

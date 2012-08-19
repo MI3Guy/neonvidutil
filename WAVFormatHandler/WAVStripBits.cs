@@ -29,6 +29,7 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			using(FileStream fs = File.OpenRead(fname)) {
 				WAVBitDepthDetector detector = new WAVBitDepthDetector(fs);
 				depth = detector.Check();
+				NeAPI.Output(string.Format("Detected Bit depth: {0}", depth));
 			}
 			
 			
@@ -42,8 +43,9 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 				WAVWriter writer = new WAVWriter(outbuff, fmtChunk2, (uint)dataChunk.CalcLength());
 				
 				WAVDataSample sample;
+				byte[] mask = WAVDataSample.FindMaskForBits(depth);
 				while((sample = dataChunk.ReadSample()) != null) {
-					writer.WriteSample(sample);
+					writer.WriteSample(new WAVDataSample(sample, depth, mask));
 				}
 			}
 			

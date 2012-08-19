@@ -403,6 +403,7 @@ bool ConvertFFmpeg(AVFormatContext* inFmt, AVFormatContext* outFmt, int streamIn
 	std::cerr << "streamIndex: " << streamIndex << "\n" << "realStreamIndex: " << realStreamIndex << "\n";
 	//return false;
 	
+	std::cerr << "Codec: " << codecName << "\n";
 	AVCodecContext* inCodecCtx = inFmt->streams[realStreamIndex]->codec;
 	AVCodec* outCodec = NULL;
 	if(strcmp(codecName, "copy") != 0) {
@@ -455,16 +456,26 @@ bool ConvertFFmpeg(AVFormatContext* inFmt, AVFormatContext* outFmt, int streamIn
 
 bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCodec* inCodec, AVFormatContext* outFmt, AVStream* audioStream, AVCodec* outCodec, int streamIndex) {
 	std::cerr << "ffmpeg-convert: ConvertFFmpegAudio\n";
-	audioStream->id = 1;
-	audioStream->codec->sample_fmt = inCodecCtx->sample_fmt;
-	audioStream->codec->sample_rate = inCodecCtx->sample_rate;
-	audioStream->codec->channels = inCodecCtx->channels;
-	audioStream->codec->channel_layout = inCodecCtx->channel_layout;
+	std::cerr << "ffmpeg-convert: Codec Name: " << inCodec->name << "\n";
+	//for(int i = 0; outCodec->sample_fmts[i] != AV_SAMPLE_FMT_NONE; ++i) {
+	//	std::cerr << "ffmpeg-convert: Supported Sample Format: " << av_get_sample_fmt_name(outCodec->sample_fmts[i]) << "\n";
+	//}
+	
+	//if(strcmp(outCodec->name, "pcm_s16le") == 0) {
+	//	inCodecCtx->request_sample_fmt = AV_SAMPLE_FMT_S16;
+	//}
 	
 	if(avcodec_open2(inCodecCtx, inCodec, NULL) < 0) {
 		std::cerr << "ffmpeg-convert: Could not open input codec.\n";
 		return false;
 	}
+	//std::cerr << "ffmpeg-convert: Sample Format = " << av_get_sample_fmt_name(inCodecCtx->sample_fmt) << "\n";
+	
+	audioStream->id = 1;
+	audioStream->codec->sample_fmt = inCodecCtx->sample_fmt;
+	audioStream->codec->sample_rate = inCodecCtx->sample_rate;
+	audioStream->codec->channels = inCodecCtx->channels;
+	audioStream->codec->channel_layout = inCodecCtx->channel_layout;
 	
 	if(avcodec_open2(audioStream->codec, outCodec, NULL) < 0) {
 		std::cerr << "ffmpeg-convert: Could not open output codec.\n";

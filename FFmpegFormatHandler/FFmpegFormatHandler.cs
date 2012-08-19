@@ -13,6 +13,8 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		
 		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
 			switch(Path.GetExtension(file).ToUpper()) {
+				case ".WAV":
+					return new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM);
 				case ".THD":
 					return new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD);
 				case ".VC1":
@@ -25,6 +27,8 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		
 		public override bool IsRawCodec(FormatType type) {
 			return new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD).Equals(type) ||
+				new FormatType(FormatType.FormatContainer.AC3, FormatType.FormatCodecType.AC3).Equals(type) ||
+				new FormatType(FormatType.FormatContainer.EAC3, FormatType.FormatCodecType.EAC3).Equals(type) ||
 				new FormatType(FormatType.FormatContainer.MPEG, FormatType.FormatCodecType.MPEGVideo).Equals(type);
 		}
 		
@@ -32,6 +36,16 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			if(new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD).Equals(type) ||
 			   new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.TrueHD).Equals(type)) {
 				outtype = new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD);
+				return true;
+			}
+			else if(new FormatType(FormatType.FormatContainer.AC3, FormatType.FormatCodecType.AC3).Equals(type) ||
+			        new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.AC3).Equals(type)) {
+				outtype = new FormatType(FormatType.FormatContainer.AC3, FormatType.FormatCodecType.AC3);
+				return true;
+			}
+			else if(new FormatType(FormatType.FormatContainer.EAC3, FormatType.FormatCodecType.EAC3).Equals(type) ||
+			        new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.EAC3).Equals(type)) {
+				outtype = new FormatType(FormatType.FormatContainer.EAC3, FormatType.FormatCodecType.EAC3);
 				return true;
 			}
 			else if(new FormatType(FormatType.FormatContainer.MPEG, FormatType.FormatCodecType.MPEGVideo).Equals(type) ||
@@ -51,9 +65,8 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				if(input.Index != -1) {
 					if(input.Index >= 0 && input.Index < input.Items.Length) {
 						ret =
-							from setting in ffmpegSettings
-								where setting.inFormatType.Equals(input.Items[input.Index])
-								select setting.outFormatType;
+							ffmpegSettings.Where(setting => setting.inFormatType.Equals(input.Items[input.Index]))
+								.Select(setting => { FormatType type = setting.outFormatType; type.Index = input.Index; return type; });
 					}
 				}
 				else {
@@ -94,6 +107,16 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				inFormatType = new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD),
 				outFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
 				inFormatName = "truehd", outFormatName = "wav", codecName = "pcm_s24le"
+			},
+			new FFmpegSetting {
+				inFormatType = new FormatType(FormatType.FormatContainer.AC3, FormatType.FormatCodecType.AC3),
+				outFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+				inFormatName = "ac3", outFormatName = "wav", codecName = "pcm_s16le"
+			},
+			new FFmpegSetting {
+				inFormatType = new FormatType(FormatType.FormatContainer.EAC3, FormatType.FormatCodecType.EAC3),
+				outFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+				inFormatName = "eac3", outFormatName = "wav", codecName = "pcm_s16le"
 			},
 			
 			// Demuxing

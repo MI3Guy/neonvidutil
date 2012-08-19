@@ -1,5 +1,7 @@
 using System;
 using System.Text;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace NeonVidUtil.Core {
 	public struct FormatType {
@@ -27,9 +29,12 @@ namespace NeonVidUtil.Core {
 			VC1,
 			MPEG,
 			
+			Wave,
 			FLAC,
 			TrueHD,
-			Wave
+			AC3,
+			EAC3,
+			DTS
 			
 		}
 		
@@ -46,9 +51,14 @@ namespace NeonVidUtil.Core {
 			MPEGVideo,
 			
 			// Audio
-			FLAC,
 			PCM,
+			FLAC,
 			TrueHD,
+			[Description("DTS-HD MA")]
+			DTSHDMA,
+			AC3,
+			EAC3,
+			DTS,
 			
 			// Subtitles
 			SRT
@@ -167,11 +177,18 @@ namespace NeonVidUtil.Core {
 					return null;
 				}
 				else if(Codec == FormatCodecType.Custom) {
-						return codecString;
+					return codecString;
+				}
+				else {
+					FieldInfo fi = typeof(FormatCodecType).GetField(((FormatCodecType)Codec).ToString());
+					DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+					if(attributes.Length > 0) {
+						return attributes[0].Description;
 					}
 					else {
 						return ((FormatCodecType)Codec).ToString();
 					}
+				}
 			}
 		}
 		

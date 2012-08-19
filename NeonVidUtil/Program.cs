@@ -17,12 +17,15 @@ namespace NeonVidUtil {
 			Console.WriteLine(di.Length);
 			
 			return 0;*/
-			string[] args = { "/home/john/Videos/vid2.mkv", "test.flac" };
+			//string[] args = { "--plugin-ignore=WAV", "--streamindex=2", "/home/john/Videos/vid2.mkv", "test.wav" };
 			//string[] args = { "/home/john/Projects/audio.thd", "test.flac" };
 			//string[] args = { "/home/john/Projects/tmp4c280100.tmp", "test.flac" };
-			//string[] args = { "/home/john/Videos/vid2.mkv" };
-			//string[] args = { "--plugin-ignore=MKV", "--removepulldown", "/home/john/Videos/Main_Movie_t01.mkv", "test.vc1" };
+			string[] args = { "/media/EXTRADATA4/Videos/JAWS/JAWS_t00.mkv" };
+			//string[] args = { "--plugin-ignore=WAV", "/home/john/Videos/Main_Movie_t01.mkv", "test.wav" };
 			//string[] args = { "--removepulldown", "/home/john/Videos/title00.mkv", "test.m2v" };
+			//string[] args = { "--plugin-ignore=WAV", "/home/john/Videos/JAWS_t00 (1).mka", "test.wav" };
+			
+
 			
 			
 			Console.WriteLine("Neon VidUtil pre relase test");

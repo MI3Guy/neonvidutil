@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeMKVFormatHandler", "Mak
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeMKVSharp", "MakeMKVSharp\MakeMKVSharp.csproj", "{1A90A8C7-55D0-42B1-8F57-B75206A12576}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WavPackSharp", "WavPackSharp\WavPackSharp.csproj", "{52318870-7311-46C0-B87C-40E77AB378EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -69,6 +71,10 @@ Global
 		{510A298E-779D-49E5-831D-57EECE564DC1}.Debug|x86.Build.0 = Debug|Any CPU
 		{510A298E-779D-49E5-831D-57EECE564DC1}.Release|x86.ActiveCfg = Release|Any CPU
 		{510A298E-779D-49E5-831D-57EECE564DC1}.Release|x86.Build.0 = Release|Any CPU
+		{52318870-7311-46C0-B87C-40E77AB378EC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{52318870-7311-46C0-B87C-40E77AB378EC}.Debug|x86.Build.0 = Debug|Any CPU
+		{52318870-7311-46C0-B87C-40E77AB378EC}.Release|x86.ActiveCfg = Release|Any CPU
+		{52318870-7311-46C0-B87C-40E77AB378EC}.Release|x86.Build.0 = Release|Any CPU
 		{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}.Debug|x86.Build.0 = Debug|Any CPU
 		{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}.Release|x86.ActiveCfg = Release|Any CPU
