@@ -19,7 +19,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 		
 		public override FormatType ReadInfo(string file, NeonOptions settings) {
 			MI.Open(file);
-			Console.WriteLine(MI.Option("Info_Parameters"));
+			//Console.WriteLine(MI.Option("Info_Parameters"));
 			
 			string container = MI.Get(StreamKind.General, 0, "Format");
 			List<FormatType> items = new List<FormatType>();//[MI.Count_Get(StreamKind.Video) + MI.Count_Get(StreamKind.Audio) + MI.Count_Get(StreamKind.Text)];
@@ -96,7 +96,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 				idx = -1;
 			}
 			
-			if(items.Count != 1) {
+			if(items.Count != 1 || container == "Matroska") {
 				items.Sort(new FormatTypeComparer());
 				for(int i = 0; i < items.Count; ++i) {
 					FormatType t = items[i];

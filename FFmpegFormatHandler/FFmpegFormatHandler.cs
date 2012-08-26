@@ -48,6 +48,11 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				outtype = new FormatType(FormatType.FormatContainer.EAC3, FormatType.FormatCodecType.EAC3);
 				return true;
 			}
+			else if(new FormatType(FormatType.FormatContainer.DTS, FormatType.FormatCodecType.DTS).Equals(type) ||
+			        new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.DTS).Equals(type)) {
+				outtype = new FormatType(FormatType.FormatContainer.DTS, FormatType.FormatCodecType.DTS);
+				return true;
+			}
 			else if(new FormatType(FormatType.FormatContainer.MPEG, FormatType.FormatCodecType.MPEGVideo).Equals(type) ||
 			        new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.MPEGVideo).Equals(type)) {
 				outtype = new FormatType(FormatType.FormatContainer.MPEG, FormatType.FormatCodecType.MPEGVideo);
@@ -61,7 +66,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		
 		public override FormatType[] OutputTypes(FormatType input, NeonOptions settings) {
 			IEnumerable<FormatType> ret = null;
-			if(input.Container == FormatType.FormatContainer.Matroska) {
+			if(input.Container == FormatType.FormatContainer.Matroska && input.Items != null) {
 				if(input.Index != -1) {
 					if(input.Index >= 0 && input.Index < input.Items.Length) {
 						ret =
@@ -69,7 +74,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 								.Select(setting => { FormatType type = setting.outFormatType; type.Index = input.Index; return type; });
 					}
 				}
-				else {
+				else if(input.Items != null) {
 					List<FormatType> ret2 = new List<FormatType>();
 					for(int i = 0; i < input.Items.Length; ++i) {
 						var list =
@@ -118,12 +123,27 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				outFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
 				inFormatName = "eac3", outFormatName = "wav", codecName = "pcm_s16le"
 			},
+			new FFmpegSetting {
+				inFormatType = new FormatType(FormatType.FormatContainer.DTS, FormatType.FormatCodecType.DTS),
+				outFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+				inFormatName = "dts", outFormatName = "wav", codecName = "pcm_s16le"
+			},
 			
 			// Demuxing
 			new FFmpegSetting {
 				inFormatType = new FormatType(FormatType.FormatContainer.VC1, FormatType.FormatCodecType.VC1),
 				outFormatType = new FormatType(FormatType.FormatContainer.VC1, FormatType.FormatCodecType.VC1),
 				inFormatName = "vc1"
+			},
+			new FFmpegSetting {
+				inFormatType = new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.PCM),
+				outFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+				inFormatName = "wav", outFormatName = "wav", codecName = "copy"
+			},
+			new FFmpegSetting {
+				inFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+				outFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+				inFormatName = "wav"
 			},
 			/*new FFmpegSetting {
 				inFormatType = new FormatType(FormatType.FormatContainer.MPEG, FormatType.FormatCodecType.MPEGVideo),

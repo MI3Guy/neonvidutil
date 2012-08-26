@@ -20,10 +20,10 @@ namespace NeonVidUtil {
 			//string[] args = { "--plugin-ignore=WAV", "--streamindex=2", "/home/john/Videos/vid2.mkv", "test.wav" };
 			//string[] args = { "/home/john/Projects/audio.thd", "test.flac" };
 			//string[] args = { "/home/john/Projects/tmp4c280100.tmp", "test.flac" };
-			string[] args = { "/media/EXTRADATA4/Videos/JAWS/JAWS_t00.mkv" };
+			//string[] args = { "/media/EXTRADATA4/Videos/JAWS/JAWS_t00.mkv" };
 			//string[] args = { "--plugin-ignore=WAV", "/home/john/Videos/Main_Movie_t01.mkv", "test.wav" };
 			//string[] args = { "--removepulldown", "/home/john/Videos/title00.mkv", "test.m2v" };
-			//string[] args = { "--plugin-ignore=WAV", "/home/john/Videos/JAWS_t00 (1).mka", "test.wav" };
+			string[] args = { "--plugin-ignore=WAV", "/media/EXTRADATA4/Videos/The_Lady_Vanishes/The_Lady_Vanishes_t00.mkv", "test.wav" };
 			
 
 			

@@ -47,17 +47,23 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 					fs.Close();
 				}
 				
+				bool errorCode;
 				if(inFileName == null && outFileName == null) {
-					ffmpeg.Convert(inbuff, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex);
+					errorCode = ffmpeg.Convert(inbuff, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex);
 				}
 				else if(inFileName == null /* && outFileName != null */) {
-					ffmpeg.Convert(inbuff, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex);
+					errorCode = ffmpeg.Convert(inbuff, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex);
 				}
 				else if(/*inFileName != null && */outFileName == null) {
-					ffmpeg.Convert(inFileName, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex);
+					errorCode = ffmpeg.Convert(inFileName, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex);
 				}
 				else /*if(inFileName != null && outFileName != null)*/ {
-					ffmpeg.Convert(inFileName, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex);
+					errorCode = ffmpeg.Convert(inFileName, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex);
+				}
+				
+				if(!errorCode) {
+					//TODO: Throw exception.
+					System.Diagnostics.Debugger.Break();
 				}
 			}
 			else {
