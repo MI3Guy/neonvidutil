@@ -3,13 +3,13 @@ using System.IO;
 
 namespace WAVSharp {
 	public class WAVBitDepthDetector {
-		public WAVBitDepthDetector(Stream instream) {
+		public WAVBitDepthDetector(Stream instream, Action callback) {
 			reader = new WAVReader(instream);
-			this.instream = instream;
+			this.callback = callback;
 		}
 		
-		Stream instream;
 		WAVReader reader;
+		Action callback;
 		
 		
 		public int Check() {
@@ -17,15 +17,10 @@ namespace WAVSharp {
 			
 			int numBits = 0;
 			uint mask = ~(uint)0;
-			int numWritten = 0;
 			
 			WAVDataSample sample;
 			while((sample = dataChunk.ReadSample()) != null && numBits < sizeof(uint)*8) {
-				int numTotal = (int)((double)instream.Position / instream.Length * 50.0);
-				if(numTotal > numWritten) {
-					Console.Write(new string('-', numTotal - numWritten));
-					numWritten = numTotal;
-				}
+				callback();
 				
 				for(int channel = 0; channel < sample.Channels; ++channel) {
 					uint data = sample.GetSampleForChannel(channel);

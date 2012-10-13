@@ -19,7 +19,7 @@ extern "C" {
 
 typedef int (*FFmpegURLRead)(void* h, unsigned char* buf, int size);
 typedef int (*FFmpegURLWrite)(void* h, unsigned char* buf, int size);
-
+typedef void (*Action)();
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,22 +27,22 @@ extern "C" {
 	void InitFFmpeg();
 	bool ConvertFFmpegFileFile(const char* inFile, const char* inFormatName,
 	                           const char* outFile, const char* outFormatName,
-	                           const char* codecName, int streamIndex);
+	                           const char* codecName, int streamIndex, Action callback);
 	bool ConvertFFmpegFileStream(const char* inFile, const char* inFormatName,
 	                             FFmpegURLWrite outStreamWrite, const char* outFormatName,
-	                             const char* codecName, int streamIndex);
+	                             const char* codecName, int streamIndex, Action callback);
 	bool ConvertFFmpegStreamFile(FFmpegURLRead inStreamRead, const char* inFormatName,
 	                             const char* outFile, const char* outFormatName,
-	                             const char* codecName, int streamIndex);
+	                             const char* codecName, int streamIndex, Action callback);
 	bool ConvertFFmpegStreamStream(FFmpegURLRead inStream, const char* inFormatName,
 	                               FFmpegURLWrite outStream, const char* outFormatName,
-	                               const char* codecName, int streamIndex);
+	                               const char* codecName, int streamIndex, Action callback);
 	bool FFmpegDemuxFileFile(const char* inFile, const char* inFormatName,
 	                         const char* outFile,
-	                         int streamIndex);
+	                         int streamIndex, Action callback);
 	bool FFmpegDemuxStreamStream(FFmpegURLRead inStreamRead, const char* inFormatName,
 	                             FFmpegURLWrite outStreamWrite,
-	                             int streamIndex);
+	                             int streamIndex, Action callback);
 	int FFmpegGetEOF();
 #ifdef __cplusplus
 }

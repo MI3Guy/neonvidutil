@@ -66,7 +66,7 @@ namespace NeonVidUtil.Core {
 		}
 		
 		public abstract Stream InitConvertData(Stream inbuff, string outfile);
-		public abstract void ConvertData(Stream inbuff, Stream outbuff);
+		public abstract void ConvertData(Stream inbuff, Stream outbuff, int progressId);
 		
 		protected string UseTempFile(Stream inbuff) {
 			return UseTempFile(inbuff, null);

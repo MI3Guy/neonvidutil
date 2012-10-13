@@ -13,7 +13,7 @@ namespace NeonVidUtil.Plugin.DGPulldownFormatHandler {
 			}
 		}
 		
-		public override void ConvertData(Stream inbuff, Stream outbuff) {
+		public override void ConvertData(Stream inbuff, Stream outbuff, int progressId) {
 			string inFileName = null;
 			string outFileName = null;
 			if(inbuff is FileStream) {

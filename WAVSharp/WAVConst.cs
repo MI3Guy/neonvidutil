@@ -13,6 +13,7 @@ namespace WAVSharp {
 		public const int FormatChunkSizeExtensible = 40;
 		public const int FormatChunkExtensibleExtSize = 22;
 			
+		[FlagsAttribute]
 		public enum Speaker {
 			None 				=	0x0,
 			FrontLeft			=	0x1,

@@ -14,10 +14,6 @@ namespace NeonVidUtil.Core {
 			}
 		}
 		
-		public EncodePath(string path) {
-			
-		}
-		
 		private FormatCodec[] steps;
 		
 		public int Length {
@@ -29,10 +25,14 @@ namespace NeonVidUtil.Core {
 			set { steps[index] = value; }
 		}
 		
+		public bool Success {
+			get;
+			protected set;
+		}
+		
 		public void Run(string infile, string outfile) {
 			List<Stream> streams = new List<Stream>();
-			
-			List<Thread> threads = new List<Thread>();
+			List<EncodeStepHandler> stepHandlers = new List<EncodeStepHandler>();
 			
 			Stream lastStream = null;
 			FileStream inStream = File.OpenRead(infile);
@@ -41,16 +41,27 @@ namespace NeonVidUtil.Core {
 			
 			for(int i = 0; i < steps.Length; ++i) {
 				Thread t = new Thread(new ParameterizedThreadStart(StepThreadCall));
-				threads.Add(t);
 				Stream s = steps[i].InitConvertData(lastStream, (i == steps.Length - 1) ? outfile : null);
 				streams.Add(s);
 				
-				t.Start(new EncodeStepHandler(lastStream, s, steps[i]));
+				EncodeStepHandler stepHandler = new EncodeStepHandler(lastStream, s, steps[i], t, i);
+				stepHandlers.Add(stepHandler);
+				stepHandler.RunThread();
 				lastStream = s;
 			}
 			
-			foreach(Thread t in threads) {
-				t.Join();
+			try {
+				foreach(EncodeStepHandler handler in stepHandlers) {
+					handler.JoinThread();
+				}
+			}
+			catch(Exception ex) {
+				NeAPI.Output(ex.Message);
+				NeAPI.Output(ex.InnerException.Message);
+				foreach(EncodeStepHandler handler in stepHandlers) {
+					handler.AbortThread();
+				}
+				Success = false;
 			}
 			
 			foreach(Stream s in streams) {

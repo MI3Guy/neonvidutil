@@ -5,11 +5,12 @@ using WAVSharp;
 
 namespace NeonVidUtil.Plugin.WAVFormatHandler {
 	public class WAVStripBits : FormatCodec {
-		public WAVStripBits() {
-			
+		public WAVStripBits(string bitDepthSetting) {
+			this.bitDepthSetting = bitDepthSetting;
 		}
 		
 		string fname;
+		string bitDepthSetting;
 		
 		public override Stream InitConvertData(Stream inbuff, string outfile) {
 			fname = UseTempFile(inbuff);
@@ -24,12 +25,14 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			}
 		}
 		
-		public override void ConvertData(Stream inbuff, Stream outbuff) {
+		public override void ConvertData(Stream inbuff, Stream outbuff, int progressId) {
 			int depth;
-			using(FileStream fs = File.OpenRead(fname)) {
-				WAVBitDepthDetector detector = new WAVBitDepthDetector(fs);
-				depth = detector.Check();
-				NeAPI.Output(string.Format("Detected Bit depth: {0}", depth));
+			if(!int.TryParse(bitDepthSetting, out depth)) {
+				using(FileStream fs = File.OpenRead(fname)) {
+					WAVBitDepthDetector detector = new WAVBitDepthDetector(fs, () => NeAPI.ProgressBar(progressId, inbuff));
+					depth = detector.Check();
+					NeAPI.Output(string.Format("Detected Bit depth: {0}", depth));
+				}
 			}
 			
 			
@@ -46,6 +49,7 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 				byte[] mask = WAVDataSample.FindMaskForBits(depth);
 				while((sample = dataChunk.ReadSample()) != null) {
 					writer.WriteSample(new WAVDataSample(sample, depth, mask));
+					NeAPI.ProgressBar(progressId, inbuff);
 				}
 			}
 			

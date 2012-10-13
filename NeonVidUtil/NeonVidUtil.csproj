@@ -50,9 +50,13 @@
       <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
       <Name>NeonVidUtilCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MakeMKVSharp\MakeMKVSharp.csproj">
-      <Project>{1A90A8C7-55D0-42B1-8F57-B75206A12576}</Project>
-      <Name>MakeMKVSharp</Name>
+    <ProjectReference Include="..\WavPackSharp\WavPackSharp.csproj">
+      <Project>{52318870-7311-46C0-B87C-40E77AB378EC}</Project>
+      <Name>WavPackSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WAVSharp\WAVSharp.csproj">
+      <Project>{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}</Project>
+      <Name>WAVSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

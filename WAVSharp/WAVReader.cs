@@ -30,7 +30,8 @@ namespace WAVSharp {
 							break;
 							
 						case WAVConst.ChunkIdData:
-							return new WAVDataChunk(reader, formatChunk);
+							dataChunk = new WAVDataChunk(reader, formatChunk);
+							return dataChunk;
 							
 						default:
 							uint size = reader.ReadUInt32();
@@ -50,6 +51,7 @@ namespace WAVSharp {
 		
 		WAVRIFF wavRiff;
 		WAVFormatChunk formatChunk;
+		WAVDataChunk dataChunk;
 		
 		public WAVRIFF WavRiff {
 			get { return wavRiff; }
@@ -57,6 +59,10 @@ namespace WAVSharp {
 		
 		public WAVFormatChunk FormatChunk {
 			get { return formatChunk; }
+		}
+		
+		public WAVDataChunk DataChunk {
+			get { return dataChunk; }
 		}
 		
 		

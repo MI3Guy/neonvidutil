@@ -21,12 +21,8 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 		public override bool HandlesProcessing(FormatType format, NeonOptions settings, FormatType next) {
 			if(new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM).Equals(format)) {
 				string depth = settings[this, "bitdepth"];
-				if(depth.ToUpper() == "AUTO") {
-					return true;
-				}
-				else {
-					return false;
-				}
+				int bitDepth;
+				return depth.ToUpper() == "AUTO" || int.TryParse(depth, out bitDepth);
 			}
 			else {
 				return false;
@@ -35,7 +31,7 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 		
 		public override FormatCodec Process(FormatType input, NeonOptions settings, FormatType next) {
 			if(HandlesProcessing(input, settings, next)) {
-				return new WAVStripBits();
+				return new WAVStripBits(settings[this, "bitdepth"]);
 			}
 			else {
 				return null;

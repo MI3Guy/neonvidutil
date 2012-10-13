@@ -5,7 +5,7 @@ using WAVSharp;
 
 namespace FLACSharp {
 	public class FLACEncoder {
-		public FLACEncoder(WAVDataChunk inData, Stream outstream, FLACInfo info) {
+		public FLACEncoder(WAVDataChunk inData, Stream outstream, FLACInfo info, Action callback = null) {
 			this.inData = inData;
 			this.outstream = outstream;
 			this.info = info;
@@ -28,6 +28,7 @@ namespace FLACSharp {
 			}
 			
 			samples = info.sample_rate;
+			_callback = callback;
 			
 			WriteCallback = new FLACSharpAPI.FLAC__StreamEncoderWriteCallback(Write);
 			SeekCallback = new FLACSharpAPI.FLAC__StreamEncoderSeekCallback(Seek);
@@ -39,6 +40,7 @@ namespace FLACSharp {
 		FLACInfo info;
 		IntPtr encoder;
 		uint samples;
+		Action _callback;
 		FLACSharpAPI.FLAC__StreamEncoderWriteCallback WriteCallback;
 		FLACSharpAPI.FLAC__StreamEncoderSeekCallback  SeekCallback;
 		FLACSharpAPI.FLAC__StreamEncoderTellCallback  TellCallback;
@@ -71,16 +73,10 @@ namespace FLACSharp {
 				if(sampleCounter == samples || sample == null) {
 					fixed(int* pcmbuff = pcm) {
 						IntPtr ptr = new IntPtr(pcmbuff);
-						if(!FLACSharpAPI.FLAC__stream_encoder_process_interleaved(encoder, ptr, sampleCounter)) {
-							
-							using(StreamWriter log = File.CreateText("log.txt")) {
-								foreach(int pcmVal in pcm) {
-									log.WriteLine("{0:X} {1} {2}", pcmVal, pcmVal > 0x7FFFFF, pcmVal < -(0x7FFFFF+1));
-								}
-							}
-							
+						if(!FLACSharpAPI.FLAC__stream_encoder_process_interleaved(encoder, ptr, sampleCounter)) {							
 							throw new ApplicationException(string.Format("An error occurred during the encode.\nError code: {0}", FLACSharpAPI.FLAC__stream_encoder_get_state(encoder)));
 						}
+						_callback();
 					}
 					sampleCounter = 0;
 				}

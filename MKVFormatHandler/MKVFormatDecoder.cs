@@ -22,14 +22,14 @@ namespace NeonVidUtil.Plugin.MKVFormatHandler {
 				outfile = CreateTempFileName();
 			}
 			string cmd = string.Format("tracks \"{0}\" --fullraw \"{2}:{1}\"", fname, outfile, index);
-			Console.WriteLine("Running: mkvextract {0}", cmd);
+			NeAPI.Output(string.Format("Running: mkvextract {0}", cmd));
 			Process proc = Process.Start("mkvextract", cmd);
 			proc.WaitForExit();
 			
 			return File.OpenRead(outfile);
 		}
 		
-		public override void ConvertData(Stream inbuff, Stream outbuff) {
+		public override void ConvertData(Stream inbuff, Stream outbuff, int progressId) {
 			
 		}
 	}

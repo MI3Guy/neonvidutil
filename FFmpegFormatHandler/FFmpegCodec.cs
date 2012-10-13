@@ -29,11 +29,13 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			}
 		}
 		
-		public override void ConvertData(Stream inbuff, Stream outbuff) {
+		public override void ConvertData(Stream inbuff, Stream outbuff, int progressId) {
 			FFmpegConvert ffmpeg = new FFmpegConvert();
 			
+			Action callback = () => NeAPI.ProgressBar(progressId, inbuff);
+			
 			if(setting.codecName != null) {
-				string inFileName = null;
+				/*string inFileName = null;
 				string outFileName = null;
 				if(inbuff is FileStream) {
 					FileStream fs = (FileStream)inbuff;
@@ -45,21 +47,21 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 					FileStream fs = (FileStream)outbuff;
 					outFileName = fs.Name;
 					fs.Close();
-				}
+				}*/
 				
 				bool errorCode;
-				if(inFileName == null && outFileName == null) {
-					errorCode = ffmpeg.Convert(inbuff, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex);
-				}
-				else if(inFileName == null /* && outFileName != null */) {
-					errorCode = ffmpeg.Convert(inbuff, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex);
-				}
-				else if(/*inFileName != null && */outFileName == null) {
-					errorCode = ffmpeg.Convert(inFileName, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex);
-				}
-				else /*if(inFileName != null && outFileName != null)*/ {
-					errorCode = ffmpeg.Convert(inFileName, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex);
-				}
+				//if(inFileName == null && outFileName == null) {
+					errorCode = ffmpeg.Convert(inbuff, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex, callback);
+				//}
+				//else if(inFileName == null /* && outFileName != null */) {
+				//	errorCode = ffmpeg.Convert(inbuff, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex, callback);
+				//}
+				//else if(/*inFileName != null && */outFileName == null) {
+				//	errorCode = ffmpeg.Convert(inFileName, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex, callback);
+				//}
+				//else /*if(inFileName != null && outFileName != null)*/ {
+				//	errorCode = ffmpeg.Convert(inFileName, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex, callback);
+				//}
 				
 				if(!errorCode) {
 					//TODO: Throw exception.
@@ -67,23 +69,23 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				}
 			}
 			else {
-				string inFileName = null;
-				string outFileName = null;
-				if(inbuff is FileStream && outbuff is FileStream) {
+				//string inFileName = null;
+				//string outFileName = null;
+				/*if(inbuff is FileStream && outbuff is FileStream) {
 					FileStream fs = (FileStream)inbuff;
 					inFileName = fs.Name;
 					fs.Close();
 					fs = (FileStream)inbuff;
 					outFileName = fs.Name;
 					fs.Close();
-				}
+				}*/
 				
-				if(inFileName == null && outFileName == null) {
-					ffmpeg.Demux(inbuff, inFormatName, outbuff, streamIndex);
-				}
-				else {
-					ffmpeg.Demux(inFileName, inFormatName, outFileName, streamIndex);
-				}
+				//if(inFileName == null && outFileName == null) {
+					ffmpeg.Demux(inbuff, inFormatName, outbuff, streamIndex, callback);
+				//}
+				//else {
+				//	ffmpeg.Demux(inFileName, inFormatName, outFileName, streamIndex, callback);
+				//}
 			}
 			
 			if(outbuff is CircularStream) {

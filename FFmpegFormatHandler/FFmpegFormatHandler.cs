@@ -9,6 +9,10 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		public override void OutputHandlerInfo() {
 			NeAPI.Output("Supported Conversions");
 			NeAPI.Output("\tTrueHD\t=>\tWAV");
+			NeAPI.Output("\tAC-3\t=>\tWAV");
+			NeAPI.Output("\tEAC-3\t=>\tWAV");
+			NeAPI.Output("\tDTS\t=>\tWAV");
+			NeAPI.Output("\tMKV:PCM\t=>\tWAV");
 		}
 		
 		public override FormatType GenerateOutputType(string file, NeonOptions settings) {

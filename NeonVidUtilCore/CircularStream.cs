@@ -1,8 +1,158 @@
 using System;
 using System.IO;
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace NeonVidUtil.Core {
+		public class CircularStream : Stream {
+		public CircularStream() {
+			bufferList = new ConcurrentQueue<byte[]>();
+			emptySem = new Semaphore(numItems, numItems);
+			fullSem = new Semaphore(0, numItems);
+			doneWriting = false;
+		}
+		const int numItems = 20;
+		
+		protected byte[] readBuffer;
+		protected int readBufferOffset;
+		protected ConcurrentQueue<byte[]> bufferList;
+		protected Semaphore emptySem;
+		protected Semaphore fullSem;
+		protected bool doneWriting;
+		
+		public override int Read (byte[] buffer, int offset, int count)
+		{
+			if(readBuffer != null) {
+				return HandleRead(readBuffer, buffer, readBufferOffset, offset, count);
+			}
+			
+			if(doneWriting) {
+				byte[] data;
+				if(bufferList.TryDequeue(out data)) {
+					return HandleRead(data, buffer, 0, offset, count);
+				}
+				else {
+					return 0;
+				}
+			}
+			else {
+				//NeAPI.Output("fillSem.WaitOne()");
+				fullSem.WaitOne();
+				
+				byte[] data;
+				while(!bufferList.TryDequeue(out data)) {
+					if(doneWriting) {
+						break;
+					}
+					else {
+						Thread.Sleep(0);
+					}
+				}
+				
+				//NeAPI.Output("emptySem.Release()");
+				emptySem.Release();
+				
+				if(data == null) {
+					return 0;
+				}
+				else {
+					return HandleRead(data, buffer, 0, offset, count);
+				}
+			}
+		}
+		
+		private int HandleRead(byte[] source, byte[] dest, int srcOffset, int destOffset, int destCount) {
+			int copyAmount;
+			if((source.Length - srcOffset) > destCount)
+			{
+				copyAmount = destCount;
+				Buffer.BlockCopy(source, srcOffset, dest, destOffset, copyAmount);
+				
+				readBufferOffset = srcOffset + destCount;
+				readBuffer = source;
+			}
+			else {
+				copyAmount = source.Length - srcOffset;
+				Buffer.BlockCopy(source, srcOffset, dest, destOffset, copyAmount);
+				
+				readBufferOffset = 0;
+				readBuffer = null;
+			}
+			return copyAmount;
+		}
+		
+		public override void Write (byte[] buffer, int offset, int count) {
+			if(count == 0) {
+				return;
+			}
+			
+			byte[] buff2 = new byte[count];
+			Buffer.BlockCopy(buffer, offset, buff2, 0, count);
+			
+			//NeAPI.Output("emptySem.WaitOne()");
+			emptySem.WaitOne();
+			
+			bufferList.Enqueue(buff2);
+			
+			//NeAPI.Output("fillSem.Release()");
+			fullSem.Release();
+		}
+		
+		public void MarkEnd() {
+			emptySem.WaitOne();
+			doneWriting = true;
+			fullSem.Release();
+		}
+		
+		public override void Flush ()
+		{
+			
+		}
+		
+		public override bool CanRead {
+			get {
+				return true;
+			}
+		}
+		
+		public override bool CanWrite {
+			get {
+				return true;
+			}
+		}
+		
+		public override bool CanSeek {
+			get {
+				return false;
+			}
+		}
+		
+		public override long Length {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public override long Position {
+			get {
+				throw new NotSupportedException();
+			}
+			set {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public override long Seek (long offset, SeekOrigin origin)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override void SetLength (long value)
+		{
+			throw new NotSupportedException();
+		}
+	}
+#if OLD_CIRCULAR_STREAM
 	public class CircularStream : Stream
 	{
 		public CircularStream() :
@@ -240,5 +390,6 @@ namespace NeonVidUtil.Core {
 		
 		
 	}
+#endif
 }
 

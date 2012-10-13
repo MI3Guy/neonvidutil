@@ -32,7 +32,7 @@ namespace NeonVidUtil.Plugin.VC1FormatHandler {
 			}
 		}
 		
-		public override void ConvertData(System.IO.Stream inbuff, System.IO.Stream outbuff) {
+		public override void ConvertData(System.IO.Stream inbuff, System.IO.Stream outbuff, int progressId) {
 			string inFileName = null;
 			string outFileName = null;
 			if(inbuff is FileStream) {

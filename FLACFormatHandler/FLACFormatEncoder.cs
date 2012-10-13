@@ -18,7 +18,7 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 			return new CircularStream();
 		}
 		
-		public override void ConvertData(Stream inbuff, Stream outbuff) {
+		public override void ConvertData(Stream inbuff, Stream outbuff, int progressId) {
 			WAVReader wavReader = new WAVReader(inbuff);
 			WAVDataChunk dataChunk = wavReader.ReadDataChunk();
 			
@@ -35,7 +35,7 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 				} while(bytesRead > 0);
 			}*/
 			
-			FLACEncoder encoder = new FLACEncoder(dataChunk, outbuff, new FLACInfo(wavReader.FormatChunk));
+			FLACEncoder encoder = new FLACEncoder(dataChunk, outbuff, new FLACInfo(wavReader.FormatChunk), () => { NeAPI.ProgressBar(progressId, inbuff); });
 			encoder.Encode();
 			
 			if(outbuff is CircularStream) {

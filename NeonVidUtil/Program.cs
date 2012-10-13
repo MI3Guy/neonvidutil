@@ -3,31 +3,11 @@ using System.Collections.Generic;
 using NeonVidUtil.Core;
 using NDesk.Options;
 using System.Threading;
-
-using MakeMKVSharp;
 using System.Linq;
 
 namespace NeonVidUtil {
 	public static class Program {
-		public static int Main() {
-			/*MakeMKV makemkv = new MakeMKV();
-			
-			DriveInfo[] di = makemkv.ReadDrives().ToArray();
-			
-			Console.WriteLine(di.Length);
-			
-			return 0;*/
-			//string[] args = { "--plugin-ignore=WAV", "--streamindex=2", "/home/john/Videos/vid2.mkv", "test.wav" };
-			//string[] args = { "/home/john/Projects/audio.thd", "test.flac" };
-			//string[] args = { "/home/john/Projects/tmp4c280100.tmp", "test.flac" };
-			//string[] args = { "/media/EXTRADATA4/Videos/JAWS/JAWS_t00.mkv" };
-			//string[] args = { "--plugin-ignore=WAV", "/home/john/Videos/Main_Movie_t01.mkv", "test.wav" };
-			//string[] args = { "--removepulldown", "/home/john/Videos/title00.mkv", "test.m2v" };
-			string[] args = { "--plugin-ignore=WAV", "/media/EXTRADATA4/Videos/The_Lady_Vanishes/The_Lady_Vanishes_t00.mkv", "test.wav" };
-			
-
-			
-			
+		public static int Main(string[] args) {
 			Console.WriteLine("Neon VidUtil pre relase test");
 			if(Type.GetType("Mono.Runtime") != null) {
 				Console.WriteLine("Detected .NET Runtime: Mono {0}", Environment.Version);
@@ -122,19 +102,7 @@ namespace NeonVidUtil {
 			
 			FormatType outft = PluginHelper.AutoGenerateOutputType(outFileName, Settings);
 			
-			/*FormatHandler handler = FormatHandler.FindConverter(inft, outft, null);
-			
-			System.IO.FileStream infs = System.IO.File.OpenRead(args[0]);
-			System.IO.FileStream outfs = System.IO.File.Create(args[1]);
-			FormatCodec dec = handler.ConvertStream(inft, outft, null);
-			dec.ConvertData(infs, outfs);*/
-			
-			//FormatHandler[] handlers = EncodePath.FindConvertPath(inft, outft);
 			EncodePath path = new EncodePath(inft, outft, Settings);
-			
-			/*foreach(FormatHandler handler in handlers) {
-				//handler.ConvertStream(
-			}*/
 			
 			Console.WriteLine("Conversion Path:");
 			Console.WriteLine(path.ToString());
@@ -143,7 +111,7 @@ namespace NeonVidUtil {
 			
 			FormatCodec.DeleteTempFiles();
 			
-			return 0;
+			return path.Success ? 0 : 1;
 		}
 	}
 }

@@ -36,6 +36,7 @@ namespace NeonVidUtil.Core {
 			foreach(KeyValuePair<string, FormatHandler> kvp in AllHandlers) {
 				NeAPI.Output(kvp.Key);
 				kvp.Value.OutputHandlerInfo();
+				NeAPI.Output("");
 			}
 		}
 		

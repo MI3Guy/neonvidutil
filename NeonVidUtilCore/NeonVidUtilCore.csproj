@@ -43,6 +43,7 @@
     <Compile Include="FormatTypeComparer.cs" />
     <Compile Include="CircularStream.cs" />
     <Compile Include="NeAPI.cs" />
+    <Compile Include="INeUI.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
