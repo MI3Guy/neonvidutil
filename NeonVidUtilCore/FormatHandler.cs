@@ -5,6 +5,17 @@ using System.Reflection;
 
 namespace NeonVidUtil.Core {
 	public abstract class FormatHandler {
+		
+		public virtual IEnumerable<KeyValuePair<FormatType, FormatType>> RawCodecs {
+			get { return new KeyValuePair<FormatType, FormatType>[] {}; }
+		}
+		
+		public virtual IEnumerable<ConversionInfo> Conversions {
+			get { return new ConversionInfo[] {}; }
+		}
+		
+		
+		
 		public abstract void OutputHandlerInfo();
 		
 		public virtual bool IsRawCodec(FormatType type) {
