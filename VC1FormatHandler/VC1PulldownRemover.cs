@@ -66,6 +66,12 @@ namespace NeonVidUtil.Plugin.VC1FormatHandler {
 				((CircularStream)outbuff).MarkEnd();
 			}
 		}
+		
+		public override string DisplayValue {
+			get {
+				return "VC-1 Pulldown Removal";
+			}
+		}
 	}
 }
 

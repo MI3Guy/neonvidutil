@@ -10,11 +10,11 @@ namespace WAVSharp {
 			EXTENSIBLE	= 0xFFFE
 		}
 		
-		public const int FormatChunkSizeExtensible = 40;
-		public const int FormatChunkExtensibleExtSize = 22;
+		public const uint FormatChunkSizeExtensible = 40;
+		public const ushort FormatChunkExtensibleExtSize = 22;
 			
 		[FlagsAttribute]
-		public enum Speaker {
+		public enum Speaker : uint {
 			None 				=	0x0,
 			FrontLeft			=	0x1,
 			FrontRight			=	0x2,

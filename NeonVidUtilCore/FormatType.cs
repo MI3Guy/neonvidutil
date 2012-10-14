@@ -31,6 +31,7 @@ namespace NeonVidUtil.Core {
 			
 			Wave,
 			FLAC,
+			WavPack,
 			TrueHD,
 			AC3,
 			EAC3,
@@ -47,16 +48,20 @@ namespace NeonVidUtil.Core {
 			
 			// Video
 			AVC,
+			[Description("VC-1")]
 			VC1,
 			MPEGVideo,
 			
 			// Audio
 			PCM,
 			FLAC,
+			WavPack,
 			TrueHD,
 			[Description("DTS-HD MA")]
 			DTSHDMA,
+			[Description("AC-3")]
 			AC3,
+			[Description("EAC-3")]
 			EAC3,
 			DTS,
 			

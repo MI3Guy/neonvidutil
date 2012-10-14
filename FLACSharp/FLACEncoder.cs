@@ -5,7 +5,7 @@ using WAVSharp;
 
 namespace FLACSharp {
 	public class FLACEncoder {
-		public FLACEncoder(WAVDataChunk inData, Stream outstream, FLACInfo info, Action callback = null) {
+		public FLACEncoder(WAVDataChunk inData, Stream outstream, FLACInfo info, Action callback = null, Action<string> output = null) {
 			this.inData = inData;
 			this.outstream = outstream;
 			this.info = info;
@@ -92,6 +92,11 @@ namespace FLACSharp {
 			FLACSharpAPI.FLAC__stream_encoder_delete(encoder);
 			encoder = IntPtr.Zero;
 		}
+		
+		private void CheckChannelMapping() {
+			
+		}
+		
 		
 		private FLACSharpAPI.FLAC__StreamEncoderWriteStatus Write(IntPtr encoder, IntPtr buffer, uint bytes, uint samples, uint current_frame, IntPtr client_data) {
 			byte[] buff2 = new byte[bytes];

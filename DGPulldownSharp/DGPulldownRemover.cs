@@ -47,6 +47,12 @@ namespace NeonVidUtil.Plugin.DGPulldownFormatHandler {
 				((CircularStream)outbuff).MarkEnd();
 			}
 		}
+		
+		public override string DisplayValue {
+			get {
+				return "MPEG-2 Pulldown Removal";
+			}
+		}
 	}
 }
 

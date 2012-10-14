@@ -42,6 +42,12 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 				((CircularStream)outbuff).MarkEnd();
 			}
 		}
+		
+		public override string DisplayValue {
+			get {
+				return "WAV\t=>\tFLAC";
+			}
+		}
 	}
 }
 

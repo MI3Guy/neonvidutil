@@ -21,6 +21,10 @@ namespace WAVSharp {
 		
 		BinaryWriter writer;
 		
+		public BinaryWriter Writer {
+			get { return writer; }
+		}
+		
 		public void WriteSample(WAVDataSample sample) {
 			writer.Write(sample.Data);
 		}

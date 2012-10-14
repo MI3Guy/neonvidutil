@@ -38,6 +38,7 @@
     <Compile Include="FLACSharpAPI.cs" />
     <Compile Include="FLACInfo.cs" />
     <Compile Include="FLACEncoder.cs" />
+    <Compile Include="FLACDecoder.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

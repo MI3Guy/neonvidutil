@@ -30,13 +30,13 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			if(len == 0) {
 				return FFmpegGetEOF();
 			}
-			System.Runtime.InteropServices.Marshal.Copy(data, 0, buf, size);
+			Marshal.Copy(data, 0, buf, size);
 			return len;
 		}
 		
 		private int FFmpegURLWrite_Func(IntPtr h, IntPtr buf, int size) {
 			byte[] data = new byte[size];
-			System.Runtime.InteropServices.Marshal.Copy(buf, data, 0, size);
+			Marshal.Copy(buf, data, 0, size);
 			outStream.Write(data, 0, size);
 			return size;
 		}

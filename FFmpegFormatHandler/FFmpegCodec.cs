@@ -92,6 +92,22 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				((CircularStream)outbuff).MarkEnd();
 			}
 		}
+		
+		public override string DisplayValue {
+			get {
+				string fromStr = setting.inFormatType.CodecString;
+				/*if(!PluginHelper.AutoIsRawCodec(setting.inFormatType)) {
+					fromStr = setting.inFormatType.ContainerString + ":" + fromStr;
+				}*/
+				
+				string toStr = setting.outFormatType.Codec.ToString();
+				/*if(!PluginHelper.AutoIsRawCodec(setting.inFormatType)) {
+					toStr = setting.outFormatType.ContainerString + ":" + toStr;
+				}*/
+				
+				return fromStr + "\t=>\t" + toStr;
+			}
+		}
 	}
 }
 

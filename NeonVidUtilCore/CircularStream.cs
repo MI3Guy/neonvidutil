@@ -19,14 +19,15 @@ namespace NeonVidUtil.Core {
 		protected Semaphore emptySem;
 		protected Semaphore fullSem;
 		protected bool doneWriting;
+		long writePosition;
+		long readPosition;
 		
 		public override int Read (byte[] buffer, int offset, int count)
 		{
 			if(readBuffer != null) {
 				return HandleRead(readBuffer, buffer, readBufferOffset, offset, count);
 			}
-			
-			if(doneWriting) {
+			else if(doneWriting) {
 				byte[] data;
 				if(bufferList.TryDequeue(out data)) {
 					return HandleRead(data, buffer, 0, offset, count);
@@ -78,6 +79,7 @@ namespace NeonVidUtil.Core {
 				readBufferOffset = 0;
 				readBuffer = null;
 			}
+			readPosition += copyAmount;
 			return copyAmount;
 		}
 		
@@ -96,6 +98,8 @@ namespace NeonVidUtil.Core {
 			
 			//NeAPI.Output("fillSem.Release()");
 			fullSem.Release();
+			
+			writePosition += count;
 		}
 		
 		public void MarkEnd() {
@@ -135,7 +139,7 @@ namespace NeonVidUtil.Core {
 		
 		public override long Position {
 			get {
-				throw new NotSupportedException();
+				return readPosition;
 			}
 			set {
 				throw new NotSupportedException();

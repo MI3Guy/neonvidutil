@@ -70,7 +70,7 @@ namespace NeonVidUtil.Plugin.DGPulldownFormatHandler {
 			IOReadFunction read = new IOReadFunction(ReadFunc);
 			IOResetFunction reset = new IOResetFunction(ResetFunc);
 			this.inStream = inStream;
-			this.outStream = outStream;
+			this.outStream = null;
 			return DGPulldownRemoveStreamFile(read, reset, outFile);
 		}
 		

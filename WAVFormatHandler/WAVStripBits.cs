@@ -29,7 +29,7 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			int depth;
 			if(!int.TryParse(bitDepthSetting, out depth)) {
 				using(FileStream fs = File.OpenRead(fname)) {
-					WAVBitDepthDetector detector = new WAVBitDepthDetector(fs, () => NeAPI.ProgressBar(progressId, inbuff));
+					WAVBitDepthDetector detector = new WAVBitDepthDetector(fs, () => NeAPI.ProgressBar(progressId, fs));
 					depth = detector.Check();
 					NeAPI.Output(string.Format("Detected Bit depth: {0}", depth));
 				}
@@ -49,12 +49,18 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 				byte[] mask = WAVDataSample.FindMaskForBits(depth);
 				while((sample = dataChunk.ReadSample()) != null) {
 					writer.WriteSample(new WAVDataSample(sample, depth, mask));
-					NeAPI.ProgressBar(progressId, inbuff);
+					NeAPI.ProgressBar(progressId, fs);
 				}
 			}
 			
 			if(outbuff is CircularStream) {
 				((CircularStream)outbuff).MarkEnd();
+			}
+		}
+		
+		public override string DisplayValue {
+			get {
+				return "WAV Strip Bits";
 			}
 		}
 	}

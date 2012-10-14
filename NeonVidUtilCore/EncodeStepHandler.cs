@@ -20,6 +20,7 @@ namespace NeonVidUtil.Core {
 		private int progressId;
 		
 		public void Run() {
+			NeAPI.Output(string.Format("Beginning Conversion: {0}", codec.DisplayValue));
 			try {
 				codec.ConvertData(instream, outstream, progressId);
 				error = null;
@@ -30,6 +31,8 @@ namespace NeonVidUtil.Core {
 			finally {
 				NeAPI.ProgressBar(progressId, null);
 			}
+			
+			NeAPI.Output("Ended Conversion");
 		}
 		
 		public void RunThread() {

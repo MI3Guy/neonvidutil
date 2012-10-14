@@ -32,6 +32,13 @@ namespace NeonVidUtil.Plugin.MKVFormatHandler {
 		public override void ConvertData(Stream inbuff, Stream outbuff, int progressId) {
 			
 		}
+		
+		public override string DisplayValue {
+			get {
+				return "MKVEXTRACTTEMP";
+			}
+		}
+		
 	}
 }
 

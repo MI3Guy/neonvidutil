@@ -4,6 +4,13 @@ using System.Collections.Generic;
 
 namespace NeonVidUtil.Core {
 	public abstract class FormatCodec {
+		public abstract Stream InitConvertData(Stream inbuff, string outfile);
+		public abstract void ConvertData(Stream inbuff, Stream outbuff, int progressId);
+		
+		public abstract string DisplayValue {
+			get;
+		}
+		
 		private static List<string> tempFiles = new List<string>();
 		
 		
@@ -64,9 +71,6 @@ namespace NeonVidUtil.Core {
 				tempFiles.Clear();
 			}
 		}
-		
-		public abstract Stream InitConvertData(Stream inbuff, string outfile);
-		public abstract void ConvertData(Stream inbuff, Stream outbuff, int progressId);
 		
 		protected string UseTempFile(Stream inbuff) {
 			return UseTempFile(inbuff, null);

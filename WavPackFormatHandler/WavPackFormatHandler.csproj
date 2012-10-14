@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{43C175DB-68A5-4755-A27F-F520F5497DD7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>NeonVidUtil.Plugin.WavPackFormatHandler</RootNamespace>
+    <AssemblyName>WavPackFormatHandler</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\Plugins</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Release\Plugins</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="WavPackFormatHandler.cs" />
+    <Compile Include="WavPackFormatEncoder.cs" />
+    <Compile Include="WavPackFormatDecoder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NeonVidUtilCore\NeonVidUtilCore.csproj">
+      <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
+      <Name>NeonVidUtilCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WavPackSharp\WavPackSharp.csproj">
+      <Project>{52318870-7311-46C0-B87C-40E77AB378EC}</Project>
+      <Name>WavPackSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WAVSharp\WAVSharp.csproj">
+      <Project>{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}</Project>
+      <Name>WAVSharp</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

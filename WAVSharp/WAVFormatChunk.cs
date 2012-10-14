@@ -59,6 +59,54 @@ namespace WAVSharp {
 			SubFormat = WAVConst.FormatSubtypePCM;
 		}
 		
+		public WAVFormatChunk(long FileLength = 0,
+		                      ushort? channels = null,
+		                      uint? samplesPerSec = null,
+		                      ushort? bitsPerSample = null,
+		                      ushort? validBitsPerSample = null,
+		                      uint? channelMask = null)
+		{
+			if(channels == null) {
+				throw new ArgumentNullException("channels");
+			}
+			if(samplesPerSec == null) {
+				throw new ArgumentNullException("samplesPerSec");
+			}
+			if(bitsPerSample == null) {
+				throw new ArgumentNullException("bitsPerSample");
+			}
+			
+			this.FileLength = FileLength;
+			this.nChannels = (ushort)channels;
+			this.nSamplesPerSec = (uint)samplesPerSec;
+			this.wBitsPerSample = (ushort)bitsPerSample;
+			
+			this.nAvgBytesPerSec = (uint)(nChannels * nSamplesPerSec * (wBitsPerSample / 8));
+			this.nBlockAlign = (ushort)(wBitsPerSample / 8 * nChannels);
+			
+			if(wBitsPerSample > 16 || validBitsPerSample != null || channelMask != null) {
+				wFormatTag = WAVConst.FormatTag.EXTENSIBLE;
+				
+				if(validBitsPerSample != null || channelMask != null) {
+					cksize = WAVConst.FormatChunkSizeExtensible;
+					cbSize = WAVConst.FormatChunkExtensibleExtSize;
+					
+					wValidBitsPerSample = validBitsPerSample ?? wBitsPerSample;
+					dwChannelMask = channelMask ?? (uint)WAVConst.Speaker.None;
+					SubFormat = WAVConst.FormatSubtypePCM;
+				}
+				else {
+					cksize = expectedSizeMore;
+					cbSize = 0;
+				}
+			}
+			else {
+				cksize = expectedSizeSimple;
+				
+				wFormatTag = WAVConst.FormatTag.PCM;
+			}
+		}
+		
 		public long FileLength;
 		public uint cksize;
 		public WAVConst.FormatTag wFormatTag;
