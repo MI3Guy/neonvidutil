@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 namespace NeonVidUtil.Core {
 	public static class PluginHelper {
@@ -34,15 +35,28 @@ namespace NeonVidUtil.Core {
 		
 		public static void AutoOutputHandlerInfo() {
 			foreach(KeyValuePair<string, FormatHandler> kvp in AllHandlers) {
-				NeAPI.Output(kvp.Key);
-				kvp.Value.OutputHandlerInfo();
-				NeAPI.Output("");
+				IEnumerable<ConversionInfo> conversions = kvp.Value.Conversions;
+				IEnumerable<ProcessingInfo> processes = kvp.Value.Processes;
+				
+				if(conversions.Count() > 0 || processes.Count() > 0) {
+					NeAPI.Output(kvp.Key);
+					
+					foreach(ConversionInfo conversion in conversions) {
+						NeAPI.Output("\t{0}\t=>\t{1}", conversion.InFormatType.CodecString, conversion.OutFormatType.CodecString);
+					}
+					
+					foreach(ProcessingInfo process in processes) {
+						NeAPI.Output("\t{0}\t:\t{1}", process.HandledType.CodecString, process.Description);
+					}
+					
+					NeAPI.Output("");
+				}
 			}
 		}
 		
-		public static FormatType AutoReadInfo(string file, NeonOptions settings) {
+		public static FormatType AutoReadFileInfo(string file) {
 			foreach(KeyValuePair<string, FormatHandler> kvp in AllHandlers) {
-				FormatType type = kvp.Value.ReadInfo(file, settings);
+				FormatType type = kvp.Value.ReadFileInfo(file);
 				if(!type.Equals(FormatType.None)) {
 					return type;
 				}
@@ -50,9 +64,9 @@ namespace NeonVidUtil.Core {
 			return FormatType.None;
 		}
 		
-		public static FormatType AutoGenerateOutputType(string file, NeonOptions settings) {
+		public static FormatType AutoGenerateOutputType(string file) {
 			foreach(KeyValuePair<string, FormatHandler> kvp in AllHandlers) {
-				FormatType type = kvp.Value.GenerateOutputType(file, settings);
+				FormatType type = kvp.Value.GenerateOutputType(file);
 				if(!type.Equals(FormatType.None)) {
 					return type;
 				}
@@ -60,36 +74,39 @@ namespace NeonVidUtil.Core {
 			return FormatType.None;
 		}
 		
-		public static FormatHandler FindConverter(FormatType input, FormatType output, NeonOptions settings) {
+		public static FormatHandler FindConverter(ConversionInfo conversion, out ConversionInfo updatedConversion) {
+			ConversionInfo conversionCandidate;
 			foreach(KeyValuePair<string, FormatHandler> kvp in AllHandlers) {
-				object testparam = kvp.Value.HandlesConversion(input, output, settings);
+				object testparam = kvp.Value.HandlesConversion(conversion, out conversionCandidate);
 				if(testparam != null) {
+					updatedConversion = conversionCandidate;
 					return kvp.Value;
 				}
 			}
+			updatedConversion = conversion;
 			return null;
 		}
 		
-		public static FormatHandler FindProcessor(FormatType input, NeonOptions settings, FormatType next) {
+		public static FormatHandler FindProcessor(FormatType input, FormatType next) {
 			foreach(KeyValuePair<string, FormatHandler> kvp in AllHandlers) {
-				if(kvp.Value.HandlesProcessing(input, settings, next)) {
+				if(kvp.Value.HandlesProcessing(input, next)) {
 					return kvp.Value;
 				}
 			}
 			return null;
 		}
 		
-		public static bool AutoIsRawCodec(FormatType type) {
+		public static bool AutoIsRawFormat(FormatType type) {
 			foreach(KeyValuePair<string, FormatHandler> kvp in allHandlers) {
-				if(kvp.Value.IsRawCodec(type)) return true;
+				if(kvp.Value.IsRawFormat(type)) return true;
 			}
 			return false;
 		}
 		
-		public static bool AutoIsRawCodec(FormatType type, out FormatType outtype) {
+		public static bool AutoFindRawFormatContainer(FormatType type, out FormatType outtype) {
 			foreach(KeyValuePair<string, FormatHandler> kvp in allHandlers) {
 				FormatType temp;
-				if(kvp.Value.IsRawCodec(type, out temp)) {
+				if(kvp.Value.FindRawFormatContainer(type, out temp)) {
 					outtype = temp;
 					return true;
 				}

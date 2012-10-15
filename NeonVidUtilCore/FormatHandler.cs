@@ -6,19 +6,32 @@ using System.Reflection;
 namespace NeonVidUtil.Core {
 	public abstract class FormatHandler {
 		
-		public virtual IEnumerable<KeyValuePair<FormatType, FormatType>> RawCodecs {
-			get { return new KeyValuePair<FormatType, FormatType>[] {}; }
+		public virtual Dictionary<FormatType, FormatType> RawFormats {
+			get { return new Dictionary<FormatType, FormatType>(); }
 		}
 		
 		public virtual IEnumerable<ConversionInfo> Conversions {
 			get { return new ConversionInfo[] {}; }
 		}
 		
+		public virtual IEnumerable<FormatType.FormatContainer> ConversionContainers {
+			get { return new FormatType.FormatContainer[] {}; }
+		}
 		
+		public virtual IEnumerable<ProcessingInfo> Processes {
+			get { return new ProcessingInfo[] {}; }
+		}
 		
-		public abstract void OutputHandlerInfo();
+		public virtual Dictionary<string, FormatType> OutputTypes {
+			get { return new Dictionary<string, FormatType>(); }
+		}
 		
-		public virtual bool IsRawCodec(FormatType type) {
+		public virtual bool IsRawFormat(FormatType type) {
+			foreach(KeyValuePair<FormatType, FormatType> rawFormat in RawFormats) {
+				if(rawFormat.Key.Equals(type) || rawFormat.Value.Equals(type)) {
+					return true;
+				}
+			}
 			return false;
 		}
 		
@@ -34,38 +47,40 @@ namespace NeonVidUtil.Core {
 		/// <param name='outtype'>
 		/// The format to use instead of the one passed.
 		/// </param>
-		public virtual bool IsRawCodec(FormatType type, out FormatType outtype) {
+		public virtual bool FindRawFormatContainer(FormatType type, out FormatType outtype) {
+			foreach(KeyValuePair<FormatType, FormatType> rawFormat in RawFormats) {
+				if(rawFormat.Key.Equals(type)) {
+					outtype = rawFormat.Value;
+					return true;
+				}
+			}
+			
 			outtype = FormatType.None;
-			return IsRawCodec(type);
-		}
-		
-		public virtual FormatType ReadInfo(string file, NeonOptions settings) {
-			return FormatType.None;
-		}
-		
-		public virtual FormatType GenerateOutputType(string file, NeonOptions settings) {
-			return FormatType.None;
-		}
-		
-		public virtual object HandlesConversion(FormatType input, FormatType output, NeonOptions settings) {
-			return null;
-		}
-		
-		public virtual FormatType[] OutputTypes(FormatType input, NeonOptions settings) {
-			return null;
-		}
-		
-		public virtual FormatCodec ConvertStream(FormatType input, FormatType output, NeonOptions settings) {
-			return null;
-		}
-		
-		public virtual bool HandlesProcessing(FormatType format, NeonOptions settings, FormatType next) {
 			return false;
 		}
 		
-		public virtual FormatCodec Process(FormatType input, NeonOptions settings, FormatType next) {
-			return null;
+		public virtual FormatType GenerateOutputType(string file) {
+			try {
+				return OutputTypes[Path.GetExtension(file).ToUpper()];
+			}
+			catch {
+				return FormatType.None;
+			}
 		}
+		
+		public abstract FormatType ReadFileInfo(string file);
+		
+		public abstract IEnumerable<ConversionInfo> FindConversionTypes(FormatType input);
+		
+		public bool HandlesConversion(ConversionInfo conversion) {
+			ConversionInfo updatedConversion;
+			return HandlesConversion(conversion, out updatedConversion);
+		}
+		public abstract bool HandlesConversion(ConversionInfo conversion, out ConversionInfo updatedConversion);
+		public abstract FormatCodec ConvertStream(ConversionInfo conversion);
+		
+		public abstract bool HandlesProcessing(FormatType format, FormatType next);
+		public abstract FormatCodec Process(FormatType input, FormatType next);
 	}
 }
 

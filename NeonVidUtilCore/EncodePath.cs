@@ -95,17 +95,23 @@ namespace NeonVidUtil.Core {
 				foreach(KeyValuePair<FormatType, EncodeNode> graphItem in graph) {
 					foreach(KeyValuePair<string, FormatHandler> handler in PluginHelper.AllHandlers) {
 						
-						FormatType[] formatOutputTypes = handler.Value.OutputTypes(graphItem.Key, settings);
-						if(formatOutputTypes != null) {
-							foreach(FormatType formatOutputType in formatOutputTypes) {
-								EncodeNode node = new EncodeNode { Cost = graphItem.Value.Cost + 1, Previous = graphItem.Key, Using = handler.Value, Current = formatOutputType };
-								if(!NewItems.ContainsKey(formatOutputType) && (!graph.ContainsKey(formatOutputType) || graph[formatOutputType].Cost > node.Cost + 1)) {
-									NewItems.Add(formatOutputType, node);
+						IEnumerable<ConversionInfo> conversions = handler.Value.FindConversionTypes(graphItem.Key);
+						if(conversions != null) {
+							foreach(ConversionInfo conversion in conversions) {
+								EncodeNode node = new EncodeNode {
+									Cost = graphItem.Value.Cost + 1,
+									Previous = graphItem.Key,
+									Using = handler.Value,
+									Conversion = conversion
+								};
+								
+								if(!NewItems.ContainsKey(conversion.OutFormatType) && (!graph.ContainsKey(conversion.OutFormatType) || graph[conversion.OutFormatType].Cost > node.Cost + 1)) {
+									NewItems.Add(conversion.OutFormatType, node);
 									hasUpdated = true;
 								}
 								else {
-									if(!graph.ContainsKey(formatOutputType) && NewItems[formatOutputType].Cost > node.Cost + 1) {
-										NewItems[formatOutputType] = node;
+									if(!graph.ContainsKey(conversion.OutFormatType) && NewItems[conversion.OutFormatType].Cost > node.Cost + 1) {
+										NewItems[conversion.OutFormatType] = node;
 										hasUpdated = true;
 									}
 								}
@@ -118,9 +124,11 @@ namespace NeonVidUtil.Core {
 				
 				foreach(KeyValuePair<FormatType, EncodeNode> updItem in NewItems) {
 					if(graph.ContainsKey(updItem.Key)) {
-						graph.Remove(updItem.Key);
+						graph[updItem.Key] = updItem.Value;
 					}
-					graph.Add(updItem.Key, updItem.Value);
+					else {
+						graph.Add(updItem.Key, updItem.Value);
+					}
 				}
 				
 			}
@@ -133,19 +141,19 @@ namespace NeonVidUtil.Core {
 				FormatType curr = output;
 				FormatHandler processor;
 				while(!graph[curr].Previous.Equals(FormatType.None)) {
-					processor = PluginHelper.FindProcessor(curr, settings, next);
+					processor = PluginHelper.FindProcessor(curr, next);
 					if(processor != null) {
-						path.Push(processor.Process(curr, settings, next));
+						path.Push(processor.Process(curr, next));
 					}
 					
-					path.Push(graph[curr].Using.ConvertStream(graph[curr].Previous, graph[curr].Current, settings));
+					path.Push(graph[curr].Using.ConvertStream(graph[curr].Conversion));
 					next = curr;
 					curr = graph[curr].Previous;
 				}
 				
-				processor = PluginHelper.FindProcessor(curr, settings, next);
+				processor = PluginHelper.FindProcessor(curr, next);
 				if(processor != null) {
-					path.Push(processor.Process(curr, settings, next));
+					path.Push(processor.Process(curr, next));
 				}
 				
 				return path.ToArray();
@@ -171,7 +179,7 @@ namespace NeonVidUtil.Core {
 				set;
 			}
 			
-			public FormatType Current {
+			public ConversionInfo Conversion {
 				get;
 				set;
 			}

@@ -30,6 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -45,6 +46,10 @@
     <Compile Include="NeAPI.cs" />
     <Compile Include="INeUI.cs" />
     <Compile Include="ConversionInfo.cs" />
+    <Compile Include="ConversionFormatHandler.cs" />
+    <Compile Include="ProcessFormatHandler.cs" />
+    <Compile Include="InfoFormatHandler.cs" />
+    <Compile Include="ProcessingInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

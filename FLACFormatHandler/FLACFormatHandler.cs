@@ -1,68 +1,45 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.FLACFormatHandler {
-	public class FLACFormatHandler : FormatHandler {
+	public class FLACFormatHandler : ConversionFormatHandler {
 		public FLACFormatHandler() {
-		}
-		
-		public override void OutputHandlerInfo() {
-			NeAPI.Output("Supported Conversions");
-			NeAPI.Output("\tWAV\t=>\tFLAC");
-		}
-		
-		public override bool IsRawCodec(FormatType type) {
-			return (type.Container == FormatType.FormatContainer.FLAC || type.Container == FormatType.FormatContainer.None) && type.Codec == FormatType.FormatCodecType.FLAC;
-		}
-		
-		public override bool IsRawCodec(FormatType type, out FormatType outtype) {
-			if(IsRawCodec(type)) {
-				outtype = new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC);
-				return true;
-			}
+			rawFormats = new Dictionary<FormatType, FormatType>();
+			rawFormats.Add(new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.FLAC),
+			               new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC));
 			
-			outtype = FormatType.None;
-			return false;
+			outputTypes = new Dictionary<string, FormatType>();
+			outputTypes.Add(".FLAC", new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC));
 		}
 		
-		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
-			if(Path.GetExtension(file).ToUpper() != ".FLAC") {
-				return FormatType.None;
-			}
-			
-			return new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC);
-		}
-		
-		public override FormatType[] OutputTypes(FormatType input, NeonOptions settings) {
-			if(input.Container == FormatType.FormatContainer.FLAC && input.Codec == FormatType.FormatCodecType.FLAC) {
-				return null;//new FormatType[] { new FormatType(FormatType.FormatContainer.WAV, FormatType.FormatCodecType.PCM) };
-			}
-			else if(input.Container == FormatType.FormatContainer.Wave && input.Codec == FormatType.FormatCodecType.PCM) {
-				return new FormatType[] { new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC) };
-			}
-			else {
-				return null;
+		private Dictionary<FormatType, FormatType> rawFormats;
+		public override Dictionary<FormatType, FormatType> RawFormats {
+			get {
+				return rawFormats;
 			}
 		}
 		
-		public override object HandlesConversion(FormatType input, FormatType output, NeonOptions settings) {
-			return
-				((
-					(input.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.Wave) &&
-					input.Codec == FormatType.FormatCodecType.PCM &&
-					output.Container == FormatType.FormatContainer.FLAC &&
-					output.Codec == FormatType.FormatCodecType.FLAC
-				) ||
-				(
-					input.Container == FormatType.FormatContainer.FLAC &&
-					input.Codec == FormatType.FormatCodecType.FLAC &&
-					(output.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.Wave) &&
-					output.Codec == FormatType.FormatCodecType.PCM
-				)) ? new object() : null;
+		private Dictionary<string, FormatType> outputTypes;
+		public override Dictionary<string, FormatType> OutputTypes {
+			get {
+				return outputTypes;
+			}
 		}
 		
-		public override FormatCodec ConvertStream(FormatType input, FormatType output, NeonOptions settings) {
+		public override IEnumerable<ConversionInfo> Conversions {
+			get {
+				return new ConversionInfo[] {
+					new ConversionInfo {
+						InFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+						OutFormatType = new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC)
+					}
+				};
+			}
+		}
+		
+		public override FormatCodec ConvertStream(ConversionInfo conversion) {
 			return new FLACFormatEncoder();
 		}
 	}

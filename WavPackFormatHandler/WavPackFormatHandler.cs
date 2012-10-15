@@ -1,80 +1,55 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.WavPackFormatHandler {
-	public class WavPackFormatHandler : FormatHandler {
+	public class WavPackFormatHandler : ConversionFormatHandler {
 		public WavPackFormatHandler() {
+			rawFormats = new Dictionary<FormatType, FormatType>();
+			rawFormats.Add(new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.WavPack),
+			               new FormatType(FormatType.FormatContainer.WavPack, FormatType.FormatCodecType.WavPack));
 			
+			outputTypes = new Dictionary<string, FormatType>();
+			outputTypes.Add(".WAV", new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM));
+			outputTypes.Add(".WV", new FormatType(FormatType.FormatContainer.WavPack, FormatType.FormatCodecType.WavPack));
 		}
 		
-		public override void OutputHandlerInfo()
-		{
-			NeAPI.Output("Supported Conversions");
-			NeAPI.Output("\tWAV\t=>\tWavPack");
-		}
-		
-		public override bool IsRawCodec(FormatType type) {
-			return (type.Container == FormatType.FormatContainer.WavPack || type.Container == FormatType.FormatContainer.None) && type.Codec == FormatType.FormatCodecType.WavPack;
-		}
-		
-		public override bool IsRawCodec(FormatType type, out FormatType outtype) {
-			if(IsRawCodec(type)) {
-				outtype = new FormatType(FormatType.FormatContainer.WavPack, FormatType.FormatCodecType.WavPack);
-				return true;
-			}
-			
-			outtype = FormatType.None;
-			return false;
-		}
-		
-		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
-			if(Path.GetExtension(file).ToUpper() == ".WV") {
-				return new FormatType(FormatType.FormatContainer.WavPack, FormatType.FormatCodecType.WavPack);
-			}
-			else if(Path.GetExtension(file).ToUpper() == ".WAV") {
-				return new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM);
-			}
-			else {
-				return FormatType.None;
+		private Dictionary<FormatType, FormatType> rawFormats;
+		public override Dictionary<FormatType, FormatType> RawFormats {
+			get {
+				return rawFormats;
 			}
 		}
 		
-		public override FormatType[] OutputTypes(FormatType input, NeonOptions settings) {
-			if(input.Container == FormatType.FormatContainer.WavPack && input.Codec == FormatType.FormatCodecType.WavPack) {
-				return new FormatType[] { new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM) };
+		private Dictionary<string, FormatType> outputTypes;
+		public override Dictionary<string, FormatType> OutputTypes {
+			get {
+				return outputTypes;
 			}
-			else if(input.Container == FormatType.FormatContainer.Wave && input.Codec == FormatType.FormatCodecType.PCM) {
-				return new FormatType[] { new FormatType(FormatType.FormatContainer.WavPack, FormatType.FormatCodecType.WavPack) };
+		}
+		
+		public override IEnumerable<ConversionInfo> Conversions {
+			get {
+				return new ConversionInfo[] {
+					new ConversionInfo {
+						InFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+						OutFormatType = new FormatType(FormatType.FormatContainer.WavPack, FormatType.FormatCodecType.WavPack)
+					},
+					new ConversionInfo {
+						InFormatType = new FormatType(FormatType.FormatContainer.WavPack, FormatType.FormatCodecType.WavPack),
+						OutFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM)
+					}
+				};
 			}
-			else {
+		}
+		
+		public override FormatCodec ConvertStream(ConversionInfo conversion) {
+			if(!HandlesConversion(conversion)) {
 				return null;
 			}
-		}
-		
-		public override object HandlesConversion(FormatType input, FormatType output, NeonOptions settings) {
-			return
-				((
-					(input.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.Wave) &&
-					input.Codec == FormatType.FormatCodecType.PCM &&
-					output.Container == FormatType.FormatContainer.WavPack &&
-					output.Codec == FormatType.FormatCodecType.WavPack
-				) ||
-				(
-					input.Container == FormatType.FormatContainer.WavPack &&
-					input.Codec == FormatType.FormatCodecType.WavPack &&
-					(output.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.Wave) &&
-					output.Codec == FormatType.FormatCodecType.PCM
-				)) ? new object() : null;
-		}
-		
-		public override FormatCodec ConvertStream(FormatType input, FormatType output, NeonOptions settings) {
-			if(
-					(input.Container == FormatType.FormatContainer.None || input.Container == FormatType.FormatContainer.Wave) &&
-					input.Codec == FormatType.FormatCodecType.PCM &&
-					output.Container == FormatType.FormatContainer.WavPack &&
-					output.Codec == FormatType.FormatCodecType.WavPack
-				) {
+			
+			if(conversion.OutFormatType.Codec == FormatType.FormatCodecType.WavPack) {
 				return new WavPackFormatEncoder();	
 			}
 			else {

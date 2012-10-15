@@ -128,7 +128,7 @@ namespace WavPackSharp {
 			WavpackConfig cfg = new WavpackConfig();
 			cfg.bytes_per_sample = inData.FormatChunk.wBitsPerSample / 8;
 			cfg.bits_per_sample = (inData.FormatChunk.cbSize > 0 ? inData.FormatChunk.wValidBitsPerSample : inData.FormatChunk.wBitsPerSample);
-			cfg.channel_mask = (inData.FormatChunk.cbSize > 0 ? (int)inData.FormatChunk.dwChannelMask : GetDefaultChannelMask(inData.FormatChunk.nChannels));
+			cfg.channel_mask = GetChannelMask(inData.FormatChunk.cbSize, inData.FormatChunk.dwChannelMask, inData.FormatChunk.nChannels);
 			cfg.num_channels = inData.FormatChunk.nChannels;
 			cfg.sample_rate = (int)inData.FormatChunk.nSamplesPerSec;
 			cfg.flags = WavpackConfigFlags.VeryHigh | WavpackConfigFlags.ExtraMode;
@@ -187,6 +187,25 @@ namespace WavPackSharp {
 			}
 			
 			WavpackCloseFile(wpc);
+		}
+		
+		private static int GetChannelMask(ushort cbSize, uint dwChannelMask, ushort nChannels) {
+			if(cbSize > 0 && dwChannelMask != 0) {
+				return (int)dwChannelMask;
+			}
+			else {
+				return GetDefaultChannelMask(nChannels);
+			}
+			
+		}
+		
+		private static int GetValidBitsPerSample(ushort cbSize, ushort wValidBitsPerSample, ushort wBitsPerSample) {
+			if(cbSize > 0 && wValidBitsPerSample != 0) {
+				return wValidBitsPerSample;
+			}
+			else {
+				return wBitsPerSample;
+			}
 		}
 		
 		private static int GetDefaultChannelMask(int channels) {

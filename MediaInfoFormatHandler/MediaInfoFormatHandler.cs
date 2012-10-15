@@ -5,7 +5,7 @@ using MediaInfoLib;
 using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
-	public class MediaInfoFormatHandler : FormatHandler {
+	public class MediaInfoFormatHandler : InfoFormatHandler {
 		public MediaInfoFormatHandler() : base() {
 			MI = new MediaInfo();
 			MI.Option("Info_Version", "0.7.0.0;NeonVidUtil_MediaInfoFormatHandler;0.0.0.1");
@@ -13,11 +13,8 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 		
 		protected MediaInfo MI;
 		
-		public override void OutputHandlerInfo() {
-			
-		}
 		
-		public override FormatType ReadInfo(string file, NeonOptions settings) {
+		public override FormatType ReadFileInfo(string file) {
 			MI.Open(file);
 			//Console.WriteLine(MI.Option("Info_Parameters"));
 			
@@ -92,7 +89,7 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 			MI.Close();
 			
 			int idx;
-			if(!int.TryParse(settings["Core", "streamindex"], out idx)) {
+			if(!int.TryParse(NeAPI.Settings["Core", "streamindex"], out idx)) {
 				idx = -1;
 			}
 			

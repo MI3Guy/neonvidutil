@@ -138,13 +138,13 @@ namespace NeonVidUtil.Core {
 		}
 		
 		public bool IsRawContainer() {
-			return Container == FormatContainer.None || PluginHelper.AutoIsRawCodec(this);
+			return Container == FormatContainer.None || PluginHelper.AutoIsRawFormat(this);
 		}
 		
 		public FormatType IsRawCodec() {
 			FormatType outtype;
 			if(ContainerString == null) return this;
-			bool res = PluginHelper.AutoIsRawCodec(this, out outtype);
+			bool res = PluginHelper.AutoFindRawFormatContainer(this, out outtype);
 			if(res) {
 				return outtype;
 			}

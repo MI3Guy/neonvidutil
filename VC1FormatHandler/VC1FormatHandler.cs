@@ -1,49 +1,55 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.VC1FormatHandler {
-	public class VC1FormatHandler : FormatHandler {
-		public override void OutputHandlerInfo() {
-			NeAPI.Output("Supported Processing");
-			NeAPI.Output("\tVC1\t:\tPulldown Removal");
+	public class VC1FormatHandler : ProcessFormatHandler {
+		public VC1FormatHandler() {
+			rawFormats = new Dictionary<FormatType, FormatType>();
+			rawFormats.Add(new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.VC1),
+			               new FormatType(FormatType.FormatContainer.VC1, FormatType.FormatCodecType.VC1));
+			
+			outputTypes = new Dictionary<string, FormatType>();
+			outputTypes.Add(".VC1", new FormatType(FormatType.FormatContainer.VC1, FormatType.FormatCodecType.VC1));
 		}
 		
-		public override bool IsRawCodec(FormatType type) {
-			return (type.Container == FormatType.FormatContainer.VC1 || type.Container == FormatType.FormatContainer.None) && type.Codec == FormatType.FormatCodecType.VC1;
+		private Dictionary<FormatType, FormatType> rawFormats;
+		public override Dictionary<FormatType, FormatType> RawFormats {
+			get {
+				return rawFormats;
+			}
 		}
 		
-		public override bool IsRawCodec(FormatType type, out FormatType outtype) {
-			if(IsRawCodec(type)) {
-				outtype = new FormatType(FormatType.FormatContainer.VC1, FormatType.FormatCodecType.VC1);
-				return true;
+		private Dictionary<string, FormatType> outputTypes;
+		public override Dictionary<string, FormatType> OutputTypes {
+			get {
+				return outputTypes;
+			}
+		}
+		
+		public override IEnumerable<ProcessingInfo> Processes {
+			get {
+				return new ProcessingInfo[] {
+					new ProcessingInfo {
+						HandledType = new FormatType(FormatType.FormatContainer.VC1, FormatType.FormatCodecType.VC1),
+						Description = "VC-1 Pulldown Removal"
+					}
+				};
+			}
+		}
+		
+		public override bool HandlesProcessing(FormatType format, FormatType next) {
+			if(base.HandlesProcessing(format, next)) {
+				return NeonOptions.GetBoolValue(NeAPI.Settings[this, "removepulldown"]);
 			}
 			else {
-				outtype = FormatType.None;
 				return false;
 			}
 		}
 		
-		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
-			if(Path.GetExtension(file).ToUpper() != ".VC1") {
-				return FormatType.None;
-			}
-			else {
-				return new FormatType(FormatType.FormatContainer.VC1, FormatType.FormatCodecType.VC1);
-			}
-		}
-		
-		public override bool HandlesProcessing(FormatType format, NeonOptions settings, FormatType next) {
-			if(format.Codec == FormatType.FormatCodecType.VC1 && format.Container == FormatType.FormatContainer.VC1) {
-				return NeonOptions.GetBoolValue(settings[this, "removepulldown"]);
-			}
-			else {
-				return false;
-			}
-		}
-		
-		public override FormatCodec Process(FormatType input, NeonOptions settings, FormatType next) {
-			if(HandlesProcessing(input, settings, next)) {
+		public override FormatCodec Process(FormatType input, FormatType next) {
+			if(HandlesProcessing(input, next)) {
 				return new VC1PulldownRemover();
 			}
 			else {

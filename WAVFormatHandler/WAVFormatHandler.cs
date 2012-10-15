@@ -1,26 +1,36 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.WAVFormatHandler {
-	public class WAVFormatHandler : FormatHandler {
-		public override void OutputHandlerInfo() {
-			NeAPI.Output("Supported Processing");
-			NeAPI.Output("\tWAV\t:\tChange Bit Depth");
+	public class WAVFormatHandler : ProcessFormatHandler {
+		public WAVFormatHandler() {
+			outputTypes = new Dictionary<string, FormatType>();
+			outputTypes.Add(".WAV", new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM));
 		}
 		
-		public override FormatType GenerateOutputType(string file, NeonOptions settings) {
-			if(Path.GetExtension(file).ToUpper() != ".WAV") {
-				return FormatType.None;
+		private Dictionary<string, FormatType> outputTypes;
+		public override Dictionary<string, FormatType> OutputTypes {
+			get {
+				return outputTypes;
 			}
-			else {
-				return new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM);
+		}
+		
+		public override IEnumerable<ProcessingInfo> Processes {
+			get {
+				return new ProcessingInfo[] {
+					new ProcessingInfo {
+						HandledType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+						Description = "WAV Strip Bits"
+					}
+				};
 			}
 		}
 
-		public override bool HandlesProcessing(FormatType format, NeonOptions settings, FormatType next) {
-			if(new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM).Equals(format)) {
-				string depth = settings[this, "bitdepth"];
+		public override bool HandlesProcessing(FormatType format, FormatType next) {
+			if(base.HandlesProcessing(format, next)) {
+				string depth = NeAPI.Settings[this, "bitdepth"];
 				int bitDepth;
 				return depth.ToUpper() == "AUTO" || int.TryParse(depth, out bitDepth);
 			}
@@ -29,9 +39,9 @@ namespace NeonVidUtil.Plugin.WAVFormatHandler {
 			}
 		}
 		
-		public override FormatCodec Process(FormatType input, NeonOptions settings, FormatType next) {
-			if(HandlesProcessing(input, settings, next)) {
-				return new WAVStripBits(settings[this, "bitdepth"]);
+		public override FormatCodec Process(FormatType input, FormatType next) {
+			if(HandlesProcessing(input, next)) {
+				return new WAVStripBits(NeAPI.Settings[this, "bitdepth"]);
 			}
 			else {
 				return null;

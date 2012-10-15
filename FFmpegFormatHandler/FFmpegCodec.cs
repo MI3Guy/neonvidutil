@@ -5,15 +5,14 @@ using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 	public class FFmpegCodec : FormatCodec {
-		public FFmpegCodec(FFmpegSetting setting, FormatType input, int index) {
+		public FFmpegCodec(FFmpegSetting setting) {
 			this.setting = setting;
-			if(input.Container == FormatType.FormatContainer.Matroska) {
+			if(setting.InFormatType.Container == FormatType.FormatContainer.Matroska) {
 				inFormatName = "matroska";
 			}
 			else {
 				inFormatName = setting.inFormatName;
 			}
-			streamIndex = index;
 		}
 		
 		FFmpegSetting setting;
@@ -95,12 +94,12 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		
 		public override string DisplayValue {
 			get {
-				string fromStr = setting.inFormatType.CodecString;
+				string fromStr = setting.InFormatType.CodecString;
 				/*if(!PluginHelper.AutoIsRawCodec(setting.inFormatType)) {
 					fromStr = setting.inFormatType.ContainerString + ":" + fromStr;
 				}*/
 				
-				string toStr = setting.outFormatType.Codec.ToString();
+				string toStr = setting.OutFormatType.Codec.ToString();
 				/*if(!PluginHelper.AutoIsRawCodec(setting.inFormatType)) {
 					toStr = setting.outFormatType.ContainerString + ":" + toStr;
 				}*/

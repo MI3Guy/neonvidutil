@@ -8,6 +8,9 @@ using System.Linq;
 namespace NeonVidUtil {
 	public static class Program {
 		public static int Main(string[] args) {
+			args = new string[] { "/media/EXTRADATA4/Videos/The_Lady_Vanishes/The_Lady_Vanishes_t00 (1).mka", "test.wv" };
+			
+			
 			Console.WriteLine("Neon VidUtil pre relase test");
 			if(Type.GetType("Mono.Runtime") != null) {
 				Console.WriteLine("Detected .NET Runtime: Mono {0}", Environment.Version);
@@ -17,7 +20,9 @@ namespace NeonVidUtil {
 				Console.WriteLine("Probably Microsoft.NET");
 			}
 			
-			NeonOptions Settings = new NeonOptions();
+			NeAPI.UI = new CommandLineUI();
+			
+			NeonOptions Settings = NeAPI.Settings;
 			
 			string inFileName = null;
 			string outFileName = null;
@@ -93,14 +98,14 @@ namespace NeonVidUtil {
 				return 0;
 			}
 			
-			FormatType inft = PluginHelper.AutoReadInfo(inFileName, Settings);
+			FormatType inft = PluginHelper.AutoReadFileInfo(inFileName);
 			Console.WriteLine(inft);
 			
 			if(outFileName == null) {
 				return 0;
 			}
 			
-			FormatType outft = PluginHelper.AutoGenerateOutputType(outFileName, Settings);
+			FormatType outft = PluginHelper.AutoGenerateOutputType(outFileName);
 			
 			EncodePath path = new EncodePath(inft, outft, Settings);
 			
