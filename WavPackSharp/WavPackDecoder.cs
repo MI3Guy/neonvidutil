@@ -139,7 +139,7 @@ namespace JVL.Audio.WavPackWrapper
         public WavPackDecoder(Stream file)
             : this(file, false)
         {
-
+			
         }
 		
 		WavPackStreamReader reader;
@@ -164,6 +164,7 @@ namespace JVL.Audio.WavPackWrapper
 				set_pos_abs = new WavPackStreamReader.set_pos_abs_type(CallbackSetPosAbs),
 				set_pos_rel = new WavPackStreamReader.set_pos_rel_type(CallbackSetPosRel),
 				push_back_byte = new WavPackStreamReader.push_back_byte_type(CallbackPushBackByte),
+				get_length = new WavPackStreamReader.get_length_type(CallbackGetLength),
 				can_seek = new WavPackStreamReader.can_seek_type(CallbackCanSeek),
 				write_bytes = new WavPackStreamReader.write_bytes_type(CallbackWriteBytes)
 			};
@@ -533,20 +534,19 @@ namespace JVL.Audio.WavPackWrapper
 		
 		private int CallbackReadBytes(IntPtr id, IntPtr data, int bcount) {
 			byte[] databuff = new byte[bcount];
+			
+			int i = 0;
 			if(pushedBackBytes.Count > 0) {
-				int i;
-				for(i = 0; i < bcount; ++i)
+				for(i = 0; i < bcount && pushedBackBytes.Count > 0; ++i)
 				{
 					databuff[i] = pushedBackBytes.Pop();
 				}
 				Marshal.Copy(databuff, 0, data, i);
-				return i;
 			}
-			else {
-				int length = readStream.Read(databuff, 0, bcount);
-				Marshal.Copy(databuff, 0, data, length);
-				return length;
-			}
+			
+			int length = readStream.Read(databuff, i, bcount - i);
+			Marshal.Copy(databuff, 0, data, i + length);
+			return length;
 		}
 		
 		private uint CallbackGetPos(IntPtr id) {
@@ -610,7 +610,7 @@ namespace JVL.Audio.WavPackWrapper
 			return realc;
 		}
 		
-		private uint CallbackGetLength(IntPtr id, int c) {
+		private uint CallbackGetLength(IntPtr id) {
 			try {
 				return (uint)readStream.Length;
 			}

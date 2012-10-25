@@ -9,6 +9,7 @@ namespace FLACSharp {
 			this.inData = inData;
 			this.outstream = outstream;
 			this.info = info;
+			this.output = output;
 			
 			encoder = FLACSharpAPI.FLAC__stream_encoder_new();
 			if(encoder == IntPtr.Zero) {
@@ -41,6 +42,7 @@ namespace FLACSharp {
 		IntPtr encoder;
 		uint samples;
 		Action _callback;
+		Action<string> output;
 		FLACSharpAPI.FLAC__StreamEncoderWriteCallback WriteCallback;
 		FLACSharpAPI.FLAC__StreamEncoderSeekCallback  SeekCallback;
 		FLACSharpAPI.FLAC__StreamEncoderTellCallback  TellCallback;
@@ -84,7 +86,6 @@ namespace FLACSharp {
 			}
 			
 			
-			
 			if(!FLACSharpAPI.FLAC__stream_encoder_finish(encoder)) {
 				throw new ApplicationException("An error occurred while finishing the encode.");
 			}
@@ -93,10 +94,65 @@ namespace FLACSharp {
 			encoder = IntPtr.Zero;
 		}
 		
-		private void CheckChannelMapping() {
-			
+		private void CheckChannelMapping(FLACInfo info) {
+			const string WarningMessage = "Warning: Channel Mapping not supported by FLAC standard.";
+			switch(info.channels) {
+				case 1:
+					if(info.channel_mapping != (uint)WAVConst.Speaker.FrontCenter) {
+						output(WarningMessage + " Probably OK for mono tracks.");
+					}
+					break;
+					
+				case 2:
+					if(info.channel_mapping != (uint)(WAVConst.Speaker.FrontLeft | WAVConst.Speaker.FrontRight)) {
+						output(WarningMessage);
+					}
+					break;
+					
+				case 3:
+					if(info.channel_mapping != (uint)(WAVConst.Speaker.FrontLeft | WAVConst.Speaker.FrontRight | WAVConst.Speaker.FrontCenter)) {
+						output(WarningMessage);
+					}
+					break;
+					
+				case 4:
+					if(info.channel_mapping != (uint)(WAVConst.Speaker.FrontLeft | WAVConst.Speaker.FrontRight
+				                            | WAVConst.Speaker.BackLeft | WAVConst.Speaker.BackRight)) {
+						output(WarningMessage);
+					}
+					break;
+					
+				case 5:
+					if(info.channel_mapping != (uint)(WAVConst.Speaker.FrontLeft | WAVConst.Speaker.FrontRight | WAVConst.Speaker.FrontCenter
+				                            | WAVConst.Speaker.BackLeft | WAVConst.Speaker.BackRight)) {
+						output(WarningMessage);
+					}
+					break;
+					
+				case 6:
+					if(info.channel_mapping != (uint)WAVConst.Speaker.FivePointOne) {
+						output(WarningMessage);
+					}
+					break;
+					
+				case 7:
+					output(WarningMessage);
+					break;
+					
+				case 8:
+					if(info.channel_mapping == (uint)WAVConst.Speaker.SevenPointOneReal) {
+						output(WarningMessage + " Input configuration is the most commonly used channel mapping for 8 channel FLAC.");
+					}
+					else {
+						output(WarningMessage);
+					}
+					break;
+					
+				default:
+					output("Number of channels is not supported by flac.");
+					break;
+			}
 		}
-		
 		
 		private FLACSharpAPI.FLAC__StreamEncoderWriteStatus Write(IntPtr encoder, IntPtr buffer, uint bytes, uint samples, uint current_frame, IntPtr client_data) {
 			byte[] buff2 = new byte[bytes];

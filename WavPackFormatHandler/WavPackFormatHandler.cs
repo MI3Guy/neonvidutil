@@ -45,7 +45,7 @@ namespace NeonVidUtil.Plugin.WavPackFormatHandler {
 		}
 		
 		public override FormatCodec ConvertStream(ConversionInfo conversion) {
-			if(!HandlesConversion(conversion)) {
+			if(!HandlesConversion(conversion, out conversion)) {
 				return null;
 			}
 			

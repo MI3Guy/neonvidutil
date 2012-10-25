@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WavPackSharp", "WavPackShar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WavPackFormatHandler", "WavPackFormatHandler\WavPackFormatHandler.csproj", "{43C175DB-68A5-4755-A27F-F520F5497DD7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibSndFileSharp", "LibSndFileSharp\LibSndFileSharp.csproj", "{9064A9E3-E56A-482D-96DF-B6114F618554}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -101,6 +103,10 @@ Global
 		{8A2FBEFF-6875-4396-90EB-2B5C10FE1D44}.Debug|x86.Build.0 = Debug|Any CPU
 		{8A2FBEFF-6875-4396-90EB-2B5C10FE1D44}.Release|x86.ActiveCfg = Release|Any CPU
 		{8A2FBEFF-6875-4396-90EB-2B5C10FE1D44}.Release|x86.Build.0 = Release|Any CPU
+		{9064A9E3-E56A-482D-96DF-B6114F618554}.Debug|x86.ActiveCfg = Debug|x86
+		{9064A9E3-E56A-482D-96DF-B6114F618554}.Debug|x86.Build.0 = Debug|x86
+		{9064A9E3-E56A-482D-96DF-B6114F618554}.Release|x86.ActiveCfg = Release|x86
+		{9064A9E3-E56A-482D-96DF-B6114F618554}.Release|x86.Build.0 = Release|x86
 		{9DE451FF-3FA3-4E5C-821C-A110FF45E979}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{9DE451FF-3FA3-4E5C-821C-A110FF45E979}.Debug|x86.Build.0 = Debug|Any CPU
 		{9DE451FF-3FA3-4E5C-821C-A110FF45E979}.Release|x86.ActiveCfg = Release|Any CPU

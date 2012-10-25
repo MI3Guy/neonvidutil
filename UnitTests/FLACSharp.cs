@@ -24,7 +24,8 @@ namespace UnitTests {
 						                                    new FLACInfo {
 						                                        bits_per_sample = wavReader.FormatChunk.wBitsPerSample,
 						                                        channels = wavReader.FormatChunk.nChannels,
-						                                        sample_rate = wavReader.FormatChunk.nSamplesPerSec
+						                                        sample_rate = wavReader.FormatChunk.nSamplesPerSec,
+																channel_mapping = wavReader.FormatChunk.dwChannelMask
 						                                    });
 						encoder.Encode();
 					}

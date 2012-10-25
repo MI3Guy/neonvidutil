@@ -15,10 +15,17 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 		
 		
 		public override FormatType ReadFileInfo(string file) {
-			MI.Open(file);
-			//Console.WriteLine(MI.Option("Info_Parameters"));
+			int ok = MI.Open(file);
+			if(ok == 0) {
+				return FormatType.None;
+			}
 			
 			string container = MI.Get(StreamKind.General, 0, "Format");
+			if(container == string.Empty) {
+				return FormatType.None;
+			}
+			
+			
 			List<FormatType> items = new List<FormatType>();//[MI.Count_Get(StreamKind.Video) + MI.Count_Get(StreamKind.Audio) + MI.Count_Get(StreamKind.Text)];
 			
 			try {

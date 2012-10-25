@@ -1,13 +1,11 @@
 using System;
 using System.IO;
 using FLACSharp;
-using WAVSharp;
 using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.FLACFormatHandler {
-	public class FLACFormatEncoder : FormatCodec {
-		public FLACFormatEncoder() {
-			
+	public class FLACFormatDecoder : FormatCodec {
+		public FLACFormatDecoder() {
 		}
 		
 		public override Stream InitConvertData(Stream inbuff, string outfile) {
@@ -19,11 +17,8 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 		}
 		
 		public override void ConvertData(Stream inbuff, Stream outbuff, int progressId) {
-			WAVReader wavReader = new WAVReader(inbuff);
-			WAVDataChunk dataChunk = wavReader.ReadDataChunk();
-			
-			FLACEncoder encoder = new FLACEncoder(dataChunk, outbuff, new FLACInfo(wavReader.FormatChunk), () => { NeAPI.ProgressBar(progressId, inbuff); });
-			encoder.Encode();
+			FLACDecoder decoder = new FLACDecoder(inbuff, outbuff, () => { NeAPI.ProgressBar(progressId, inbuff); });
+			decoder.Process();
 			
 			if(outbuff is CircularStream) {
 				((CircularStream)outbuff).MarkEnd();
@@ -32,7 +27,7 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 		
 		public override string DisplayValue {
 			get {
-				return "WAV\t=>\tFLAC";
+				return "FLAC\t=>\tWAV";
 			}
 		}
 	}

@@ -12,6 +12,7 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 			
 			outputTypes = new Dictionary<string, FormatType>();
 			outputTypes.Add(".FLAC", new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC));
+			outputTypes.Add(".WAV", new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM));
 		}
 		
 		private Dictionary<FormatType, FormatType> rawFormats;
@@ -34,13 +35,26 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 					new ConversionInfo {
 						InFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
 						OutFormatType = new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC)
+					},
+					new ConversionInfo {
+						InFormatType = new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC),
+						OutFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM)
 					}
 				};
 			}
 		}
 		
 		public override FormatCodec ConvertStream(ConversionInfo conversion) {
-			return new FLACFormatEncoder();
+			if(!HandlesConversion(conversion, out conversion)) {
+				return null;
+			}
+			
+			if(conversion.InFormatType.Codec == FormatType.FormatCodecType.PCM) {
+				return new FLACFormatEncoder();
+			}
+			else {
+				return new FLACFormatDecoder();
+			}
 		}
 	}
 }

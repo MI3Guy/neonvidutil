@@ -8,6 +8,7 @@ using System.Linq;
 namespace NeonVidUtil {
 	public static class Program {
 		public static int Main(string[] args) {
+			args = new string[] { "--plugin-ignore=WAV", "test.wv", "test.wav" };
 			Console.WriteLine("Neon VidUtil pre relase test");
 			if(Type.GetType("Mono.Runtime") != null) {
 				Console.WriteLine("Detected .NET Runtime: Mono {0}", Environment.Version);
@@ -96,6 +97,12 @@ namespace NeonVidUtil {
 			}
 			
 			FormatType inft = PluginHelper.AutoReadFileInfo(inFileName);
+			if(inft.Equals(FormatType.None)) {
+				Console.WriteLine("Could not identify the input format.");
+				return 1;
+			}
+			
+			Console.WriteLine("Input Format:");
 			Console.WriteLine(inft);
 			
 			if(outFileName == null) {

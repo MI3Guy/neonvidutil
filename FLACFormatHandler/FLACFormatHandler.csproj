@@ -35,6 +35,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="FLACFormatEncoder.cs" />
     <Compile Include="FLACFormatHandler.cs" />
+    <Compile Include="FLACFormatDecoder.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
