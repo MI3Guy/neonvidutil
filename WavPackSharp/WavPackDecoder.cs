@@ -541,7 +541,6 @@ namespace JVL.Audio.WavPackWrapper
 				{
 					databuff[i] = pushedBackBytes.Pop();
 				}
-				Marshal.Copy(databuff, 0, data, i);
 			}
 			
 			int length = readStream.Read(databuff, i, bcount - i);

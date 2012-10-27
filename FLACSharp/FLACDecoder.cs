@@ -15,6 +15,7 @@ namespace FLACSharp {
 		private Stream inStream;
 		private Stream outStream;
 		private Action callback;
+		private bool hasWrittenHeader;
 		
 		public void Process() {
 			IntPtr decoder = FLAC__stream_decoder_new();
@@ -67,6 +68,8 @@ namespace FLACSharp {
 				realBytes = inStream.Read(buff, 0, realBytes);
 				bytes = (IntPtr)realBytes;
 				Marshal.Copy(buff, 0, buffer, realBytes);
+				
+				callback();
 				if(realBytes == 0) {
 					return StreamDecoderReadStatus.EndOfStream;
 				}
@@ -117,6 +120,14 @@ namespace FLACSharp {
 			int bitDepth = frame.Header.BitsPerSample;
 			int numChannels = frame.Header.Channels;
 			int samplesPerChannel = frame.Header.BlockSize;
+			
+			if(!hasWrittenHeader) {
+				hasWrittenHeader = true;
+				new WAVWriter(
+					outStream,
+					new WAVFormatChunk(FileLength: 0, channels: unchecked((ushort)numChannels), samplesPerSec: (uint)frame.Header.SampleRate, bitsPerSample: (ushort)bitDepth),
+					0);
+			}
 			
 			int[] samples = new int[numChannels * samplesPerChannel];
 			IntPtr[] channelArrays = new IntPtr[numChannels];
@@ -283,6 +294,9 @@ namespace FLACSharp {
 		
 		[DllImport("libFLAC")]
 		private static extern bool FLAC__stream_decoder_finish(IntPtr decoder);
+				
+		[DllImport("libFLAC")]
+		private static extern ulong FLAC__stream_decoder_get_total_samples(IntPtr decoder);
 		
 	}
 }
