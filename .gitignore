@@ -9,6 +9,7 @@ bin/
 obj/
 archive/
 build/
+*.in
 
 # Test files
 *.wav

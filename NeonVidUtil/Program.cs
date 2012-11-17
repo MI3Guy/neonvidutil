@@ -8,7 +8,10 @@ using System.Linq;
 namespace NeonVidUtil {
 	public static class Program {
 		public static int Main(string[] args) {
+#if DEBUG
 			args = new string[] { "--plugin-ignore=WAV", "/media/EXTRADATA4/Videos/NeTestVideos/test.wav", "test.ac3" };
+#endif
+			
 			Console.WriteLine("Neon VidUtil pre relase test");
 			if(Type.GetType("Mono.Runtime") != null) {
 				Console.WriteLine("Detected .NET Runtime: Mono {0}", Environment.Version);

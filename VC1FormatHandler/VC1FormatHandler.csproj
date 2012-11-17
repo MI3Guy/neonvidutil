@@ -43,9 +43,5 @@
       <Project>{510A298E-779D-49E5-831D-57EECE564DC1}</Project>
       <Name>NeonVidUtilCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\vc1conv\vc1conv.cproj">
-      <Project>{84D1A34D-1F70-465B-968D-B74BAEE16774}</Project>
-      <Name>vc1conv</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>
