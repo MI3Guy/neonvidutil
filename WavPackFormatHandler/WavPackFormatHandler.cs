@@ -6,6 +6,8 @@ using NeonVidUtil.Core;
 namespace NeonVidUtil.Plugin.WavPackFormatHandler {
 	public class WavPackFormatHandler : ConversionFormatHandler {
 		public WavPackFormatHandler() {
+			WavPackSharp.WavPack.TestLoad();
+			
 			rawFormats = new Dictionary<FormatType, FormatType>();
 			rawFormats.Add(new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.WavPack),
 			               new FormatType(FormatType.FormatContainer.WavPack, FormatType.FormatCodecType.WavPack));

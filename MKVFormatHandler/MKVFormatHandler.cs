@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 using NeonVidUtil.Core;
 using System.Linq;
@@ -6,8 +8,38 @@ using System.Linq;
 namespace NeonVidUtil.Plugin.MKVFormatHandler {
 	public class MKVFormatHandler : ConversionFormatHandler {
 		public MKVFormatHandler() {
-			
+			try
+			{
+				ProcessStartInfo psi = new ProcessStartInfo("mkvextract", "-V");
+				psi.RedirectStandardOutput = true;
+				psi.UseShellExecute = false;
+				
+				System.Diagnostics.Process.Start(psi);
+				mkvExtractPath = psi.FileName;
+			}
+			catch
+			{
+				try
+				{
+					ProcessStartInfo psi = new ProcessStartInfo(
+						Path.Combine(
+							Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().FullName),
+							"mkvextract"),
+						"-V");
+					psi.RedirectStandardOutput = true;
+					psi.UseShellExecute = false;
+					
+					System.Diagnostics.Process.Start(psi);
+					mkvExtractPath = psi.FileName;
+				}
+				catch
+				{
+					throw new Exception("Could not locate mkvextract executable.");
+				}
+			}
 		}
+		
+		string mkvExtractPath;
 		
 		public override IEnumerable<ConversionInfo> Conversions {
 			get {
@@ -54,7 +86,6 @@ namespace NeonVidUtil.Plugin.MKVFormatHandler {
 				updatedConversion = conversion;
 				return true;
 			}
-			return false;
 		}
 		
 		public override IEnumerable<ConversionInfo> FindConversionTypes(FormatType inputID) {
@@ -72,7 +103,7 @@ namespace NeonVidUtil.Plugin.MKVFormatHandler {
  			}
 			
 			int index = updConv.InFormatType.Items[updConv.StreamIndex].ID;
-			return new MKVFormatDecoder(index);
+			return new MKVFormatDecoder(index, mkvExtractPath);
 		}
 	}
 }

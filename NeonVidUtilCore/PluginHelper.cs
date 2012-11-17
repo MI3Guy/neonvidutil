@@ -19,6 +19,9 @@ namespace NeonVidUtil.Core {
 					FormatHandler instance = (FormatHandler)Activator.CreateInstance(type);
 					allHandlers.Add(instance.GetType().Name, instance);
 				}
+				catch(TargetInvocationException ex) {
+					Console.WriteLine("Error loading plugin {0}: {1}", file.Name, ex.InnerException.Message);
+				}
 				catch(Exception ex) {
 					Console.WriteLine("Error loading plugin {0}: {1}", file.Name, ex.Message);
 				}

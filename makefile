@@ -1,15 +1,18 @@
 
-all: archive/NeonVidUtil-dotNET.tar.gz build/
+all: archive/NeonVidUtil-dotNET.tar.gz build/ archive/NeonVidUtil-win32.7z
 # archive/NeonVidUtil-win32.7z
 
 archive/NeonVidUtil-dotNET.tar.gz: archive/NeonVidUtil-dotNET/
-	cd archive/ rm -f NeonVidUtil-dotNET.tar.gz && tar -czf NeonVidUtil-dotNET.tar.gz NeonVidUtil-dotNET/
+	cd archive/ && tar -czf NeonVidUtil-dotNET.tar.gz NeonVidUtil-dotNET/
+
+archive/NeonVidUtil-win32.7z: archive/NeonVidUtil-win32/
+	cd archive/ && 7zr a NeonVidUtil-win32.7z NeonVidUtil-win32/
 
 archive/:
 	mkdir $@
 	
 clean:
-	rm -rf $(dotNetArchiveFiles) build/ $(unixFiles)
+	rm -rf $(dotNetArchiveFiles) build/ $(unixFiles) $(windowsFiles)
 
 # Rules for .NET code
 
@@ -109,5 +112,46 @@ build/: $(unixFiles) $(dotNetArchiveFiles)
 	cp vc1conv/bin/Release/libvc1conv.so $@/Plugins/
 
 # Rules for Windows build
+
+WINCXX = i586-mingw32msvc-g++
+WINC = i586-mingw32msvc-gcc
+
+windowsFiles = DGPulldown/bin/Release/DGPulldown.dll ffmpeg-convert/bin/Release/ffmpeg-convert.dll vc1conv/bin/Release/vc1conv.dll
+
+DGPulldown/bin/Release/DGPulldown.dll: DGPulldown/DGPulldown.cpp
+	mkdir -p DGPulldown/bin/Release/
+	$(WINCXX) -fpic -shared $^ -o $@
+
+ffmpeg-convert/bin/Release/ffmpeg-convert.dll: ffmpeg-convert/main.cpp
+	mkdir -p ffmpeg-convert/bin/Release/
+	$(WINCXX) -fpic -shared -D__STDC_CONSTANT_MACROS -Ilibraries/windows/ffmpeg/dev/include -Llibraries/windows/ffmpeg/dev/lib -o $@ $^ -lavcodec -lavformat -lavutil
+
+vc1conv/bin/Release/vc1conv.dll: vc1conv/vc1conv.c
+	mkdir -p vc1conv/bin/Release/
+	$(WINC) -fpic -shared $^ -o $@
+
+
+archive/NeonVidUtil-win32/: $(windowsFiles) $(dotNetArchiveFiles)
+	mkdir -p $@
+	cp NeonVidUtil/bin/Release/NeonVidUtil.exe $@/
+	cp NeonVidUtilCore/bin/Release/NeonVidUtilCore.dll $@/
+	cp libraries/NDesk.Options.dll $@/
+	mkdir -p $@/Plugins
+	cp DGPulldownFormatHandler/bin/Release/DGPulldownFormatHandler.dll $@/Plugins/
+	cp FFmpegFormatHandler/bin/Release/FFmpegFormatHandler.dll $@/Plugins/
+	cp FLACFormatHandler/bin/Release/FLACFormatHandler.dll $@/Plugins/
+	cp FLACSharp/bin/Release/FLACSharp.dll $@/Plugins/
+	cp MediaInfoFormatHandler/bin/Release/MediaInfoFormatHandler.dll $@/Plugins/
+	cp MediaInfoFormatHandler/MediaInfoFormatHandler.dll.config $@/Plugins/
+	cp VC1FormatHandler/bin/Release/VC1FormatHandler.dll $@/Plugins/
+	cp WAVFormatHandler/bin/Release/WAVFormatHandler.dll $@/Plugins/
+	cp WAVSharp/bin/Release/WAVSharp.dll $@/Plugins/
+	cp WavPackFormatHandler/bin/Release/WavPackFormatHandler.dll $@/Plugins/
+	cp WavPackSharp/bin/Release/WavPackSharp.dll $@/Plugins/
+	cp DGPulldown/bin/Release/DGPulldown.dll $@/Plugins/
+	cp ffmpeg-convert/bin/Release/ffmpeg-convert.dll $@/Plugins/
+	cp vc1conv/bin/Release/vc1conv.dll $@/Plugins/
+	cp libraries/windows/mediainfo/MediaInfo.dll $@/Plugins/
+	cp libraries/windows/mediainfo/wavpack.dll $@/Plugins/
 
 

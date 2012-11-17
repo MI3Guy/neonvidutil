@@ -8,7 +8,10 @@ namespace NeonVidUtil.Plugin.MediaInfoFormatHandler {
 	public class MediaInfoFormatHandler : InfoFormatHandler {
 		public MediaInfoFormatHandler() : base() {
 			MI = new MediaInfo();
-			MI.Option("Info_Version", "0.7.0.0;NeonVidUtil_MediaInfoFormatHandler;0.0.0.1");
+			if(MI.Option("Info_Version", "0.7.0.0;NeonVidUtil_MediaInfoFormatHandler;0.0.0.1") == "Unable to load MediaInfo library")
+			{
+				throw new Exception("Error loading libMediaInfo.");	
+			}
 		}
 		
 		protected MediaInfo MI;

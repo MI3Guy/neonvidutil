@@ -2,7 +2,17 @@ using System;
 using System.Runtime.InteropServices;
 
 namespace FLACSharp {
-	internal static class FLACSharpAPI {
+	public static class FLACSharpAPI {
+		public static void LoadLibFlac() {
+			try {
+				FLAC__stream_encoder_delete(FLAC__stream_encoder_new()); // Ensure that library is loaded.
+			}
+			catch {
+				throw new Exception("An error occurred while loading libFLAC.");
+			}
+		}
+			
+		
 		internal enum FLAC__StreamEncoderReadStatus {
 			CONTINUE,
 			END_OF_STREAM,

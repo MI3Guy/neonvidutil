@@ -38,6 +38,10 @@ unsigned int	coded_frames = 0;
 typedef size_t (*StreamRead)(void* stream, void* buff, size_t length);
 typedef size_t (*StreamWrite)(void* stream, void* buff, size_t length);
 
+void TestLoad(void) {
+	
+}
+
 size_t FileStreamRead(void* stream, void* buff, size_t length) {
 	if(feof((FILE*)stream)) {
 		return 0;
@@ -53,6 +57,7 @@ size_t FileStreamWrite(void* stream, void* buff, size_t length) {
 	return fwrite(buff, 1, length, (FILE*)stream);
 }
 
+int VC1ConvRemovePulldownStreamStream(StreamRead inStreamRead, void* inStream, StreamWrite outStreamWrite, void* outStream);
 
 int VC1ConvRemovePulldownFileFile(const char* inFile, const char* outFile) {
 	FILE	*fp, *fpout;

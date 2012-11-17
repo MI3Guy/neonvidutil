@@ -6,6 +6,8 @@ using NeonVidUtil.Core;
 namespace NeonVidUtil.Plugin.VC1FormatHandler {
 	public class VC1FormatHandler : ProcessFormatHandler {
 		public VC1FormatHandler() {
+			VC1Conv.TestLoad();
+			
 			rawFormats = new Dictionary<FormatType, FormatType>();
 			rawFormats.Add(new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.VC1),
 			               new FormatType(FormatType.FormatContainer.VC1, FormatType.FormatCodecType.VC1));

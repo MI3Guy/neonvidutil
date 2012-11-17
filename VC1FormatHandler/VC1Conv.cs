@@ -25,6 +25,18 @@ namespace NeonVidUtil.Plugin.VC1FormatHandler {
 			return length;
 		}
 		
+		[DllImport("vc1conv", EntryPoint = "TestLoad")]
+		private static extern void TestLoad2();
+		
+		public static void TestLoad() {
+			try {
+				TestLoad2();
+			}
+			catch {
+				throw new Exception("An error occurred while loading vc1conv.");
+			}
+		}
+		
 		[DllImport("vc1conv")]
 		private static extern int VC1ConvRemovePulldownFileFile(string inFile, string outFile);
 		

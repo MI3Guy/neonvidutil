@@ -72,7 +72,7 @@ int stream_type;
 #define CONVERT_25000_TO_29970  3
 #define CONVERT_CUSTOM          4
 
-#ifndef WINDOWS
+#ifndef WIN32
 #define O_BINARY 0
 #endif
 
@@ -140,6 +140,10 @@ int set_tc;
 
 
 extern "C" {
+	void TestLoad() {
+		
+	}
+	
 	bool DGPulldownRemoveFileFile(const char* inFile, const char* outFile) {
 		Rate = CONVERT_CUSTOM;
 		strcpy(InputRate, "23.976");

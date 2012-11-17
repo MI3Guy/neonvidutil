@@ -6,16 +6,18 @@ using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 	public class FFmpegConvert {
-		static FFmpegConvert() {
-			InitFFmpeg();
-		}
 		
 		public FFmpegConvert() {
 			
 		}
 		
-		public static void Test() {
-			// Will ensure that DLL loaded.
+		public static void LoadFFmpegConvert() { // Static constructor not used because exception needs to be caught.
+			try {
+				InitFFmpeg();
+			}
+			catch {
+				throw new Exception("An error occurred while loading FFmpegConvert.");
+			}
 		}
 		
 		private Stream inStream;

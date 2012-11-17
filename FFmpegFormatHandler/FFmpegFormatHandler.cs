@@ -7,6 +7,8 @@ using NeonVidUtil.Core;
 namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 	public class FFmpegFormatHandler : ConversionFormatHandler {
 		public FFmpegFormatHandler() {
+			FFmpegConvert.LoadFFmpegConvert();
+			
 			rawFormats = new Dictionary<FormatType, FormatType>();
 			rawFormats.Add(new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.TrueHD),
 			               new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD));

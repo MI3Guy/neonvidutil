@@ -37,6 +37,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="WavPackEncoder.cs" />
     <Compile Include="WavPackDecoder.cs" />
+    <Compile Include="WavPack.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

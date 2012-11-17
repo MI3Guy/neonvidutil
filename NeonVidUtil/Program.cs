@@ -114,7 +114,14 @@ namespace NeonVidUtil {
 			
 			FormatType outft = PluginHelper.AutoGenerateOutputType(outFileName);
 			
-			EncodePath path = new EncodePath(inft, outft, Settings);
+			EncodePath path;
+			try {
+				path = new EncodePath(inft, outft, Settings);
+			}
+			catch(Exception ex) {
+				Console.WriteLine(ex.Message);
+				return 1;
+			}
 			
 			Console.WriteLine("Conversion Path:");
 			Console.WriteLine(path.ToString());

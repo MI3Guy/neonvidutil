@@ -412,7 +412,7 @@ bool ConvertFFmpeg(AVFormatContext* inFmt, AVFormatContext* outFmt, int streamIn
 		}
 	}
 	else {
-		outCodec = inCodecCtx->codec;
+		outCodec = avcodec_find_encoder(inCodecCtx->codec->id);
 	}
 	
 	

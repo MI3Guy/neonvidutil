@@ -14,6 +14,18 @@ namespace NeonVidUtil.Plugin.DGPulldownFormatHandler {
 		private delegate void IOWriteFunction(IntPtr buff, int count);
 		private delegate void IOResetFunction();
 		
+		[DllImport("DGPulldown", EntryPoint = "TestLoad")]
+		private static extern void TestLoad2();
+		
+		public static void TestLoad() {
+			try {
+				TestLoad2();
+			}
+			catch {
+				throw new Exception("Could not load DGPulldown.");
+			}
+		}
+		
 		[DllImport("DGPulldown")]
 		private static extern bool DGPulldownRemoveFileFile(string inFile, string outFile);
 		
