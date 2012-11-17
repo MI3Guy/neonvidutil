@@ -20,51 +20,58 @@ namespace NeonVidUtil.Plugin.MKVFormatHandler {
 			}
 		}
 		
-		/*public override bool HandlesConversion(ConversionInfo conversion, out ConversionInfo updatedConversion) {
+		public override bool HandlesConversion(ConversionInfo conversion, out ConversionInfo updatedConversion) {
 			if(conversion.InFormatType.Container != FormatType.FormatContainer.Matroska || !conversion.OutFormatType.IsRawContainer()) {
 				updatedConversion = conversion;
 				return false;
 			}
 			
-			if(conversion.InFormatType.Index == -1) {
-				for(int i = 0; i < conversion.InFormatType.Items.Length; ++i) {
-					if(conversion.InFormatType.Items[i].Codec == conversion.OutFormatType.Codec) {
-						try {
-							return true;
-						}
-						catch {
-						}
-					}
+			if(conversion.StreamIndex == -1) {
+				int streamIndex;
+				if(int.TryParse(NeAPI.Settings["Core", "streamIndex"], out streamIndex)) {
+					updatedConversion = conversion.Clone();
+					updatedConversion.StreamIndex = streamIndex;
+					return true;
+				}
+				else {
+					for(int i = 0; i < conversion.InFormatType.Items.Length; ++i) {
+						if(conversion.InFormatType.Items[i].Codec == conversion.OutFormatType.Codec) {
+							try {
+								updatedConversion = conversion.Clone();
+								updatedConversion.StreamIndex = i;
+								return true;
+							}
+							catch {
+							}
+ 						}
+ 					}
+					
+					updatedConversion = conversion;
+					return false;
 				}
 			}
 			else {
+				updatedConversion = conversion;
 				return true;
 			}
 			return false;
-		}*/
+		}
 		
-		/*public override IEnumerable<ConversionInfo> FindConversionTypes(FormatType inputID) {
+		public override IEnumerable<ConversionInfo> FindConversionTypes(FormatType inputID) {
 			if(inputID.Container != FormatType.FormatContainer.Matroska) {
 				return null;
 			}
-			if(inputID.Index == -1) {
-				return from x in inputID.Items select new ConversionInfo { InFormatType = inputID, OutFormatType = x };
-			}
-			else {
-				return new ConversionInfo[] {
-					new ConversionInfo {
-						InFormatType = inputID,
-						OutFormatType = inputID.Items[inputID.Index]
-					}
-				};
-			}
-		}*/
+			
+			return inputID.Items.Select((item, index) => new ConversionInfo { InFormatType = inputID, OutFormatType = item, StreamIndex = index });
+		}
 		
 		public override FormatCodec ConvertStream(ConversionInfo conversion) {
-			int index = conversion.OutFormatType.Index;
-			if(conversion.InFormatType.Index != -1) {
-				index = conversion.InFormatType.Items[conversion.InFormatType.Index].ID;
-			}
+			ConversionInfo updConv;
+			if(!HandlesConversion(conversion, out updConv)) {
+				return null;
+ 			}
+			
+			int index = updConv.InFormatType.Items[updConv.StreamIndex].ID;
 			return new MKVFormatDecoder(index);
 		}
 	}

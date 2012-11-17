@@ -66,7 +66,8 @@ namespace NeonVidUtil.Core {
 		public override bool HandlesConversion(ConversionInfo conversion, out ConversionInfo updatedConversion) {
 			foreach(ConversionInfo conv in Conversions) {
 				if(conv.Equals(conversion)) {
-					updatedConversion = conversion;
+					updatedConversion = conversion.Clone();
+					updatedConversion.StreamIndex = 0;
 					return true;
 				}
 				

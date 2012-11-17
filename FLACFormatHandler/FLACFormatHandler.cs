@@ -34,11 +34,13 @@ namespace NeonVidUtil.Plugin.FLACFormatHandler {
 				return new ConversionInfo[] {
 					new ConversionInfo {
 						InFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
-						OutFormatType = new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC)
+						OutFormatType = new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC),
+						Flags = ConversionInfo.ConversionFlags.None
 					},
 					new ConversionInfo {
 						InFormatType = new FormatType(FormatType.FormatContainer.FLAC, FormatType.FormatCodecType.FLAC),
-						OutFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM)
+						OutFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+						Flags = ConversionInfo.ConversionFlags.None
 					}
 				};
 			}

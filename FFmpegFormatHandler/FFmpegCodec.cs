@@ -11,8 +11,10 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				inFormatName = "matroska";
 			}
 			else {
-				inFormatName = setting.inFormatName;
+				inFormatName = setting.InFormatName;
 			}
+			
+			streamIndex = setting.StreamIndex;
 		}
 		
 		FFmpegSetting setting;
@@ -33,7 +35,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			
 			Action callback = () => NeAPI.ProgressBar(progressId, inbuff);
 			
-			if(setting.codecName != null) {
+			if(setting.CodecName != null) {
 				/*string inFileName = null;
 				string outFileName = null;
 				if(inbuff is FileStream) {
@@ -50,7 +52,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				
 				bool errorCode;
 				//if(inFileName == null && outFileName == null) {
-					errorCode = ffmpeg.Convert(inbuff, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex, callback);
+					errorCode = ffmpeg.Convert(inbuff, inFormatName, outbuff, setting.OutFormatName, setting.CodecName, streamIndex, callback);
 				//}
 				//else if(inFileName == null /* && outFileName != null */) {
 				//	errorCode = ffmpeg.Convert(inbuff, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex, callback);
@@ -80,11 +82,12 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				}*/
 				
 				//if(inFileName == null && outFileName == null) {
-					ffmpeg.Demux(inbuff, inFormatName, outbuff, streamIndex, callback);
+					//ffmpeg.Demux(inbuff, inFormatName, outbuff, streamIndex, callback);
 				//}
 				//else {
 				//	ffmpeg.Demux(inFileName, inFormatName, outFileName, streamIndex, callback);
 				//}
+				throw new ArgumentNullException("CodecName must not be null.");
 			}
 			
 			if(outbuff is CircularStream) {
@@ -99,7 +102,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 					fromStr = setting.inFormatType.ContainerString + ":" + fromStr;
 				}*/
 				
-				string toStr = setting.OutFormatType.Codec.ToString();
+				string toStr = setting.OutFormatType.CodecString;
 				/*if(!PluginHelper.AutoIsRawCodec(setting.inFormatType)) {
 					toStr = setting.outFormatType.ContainerString + ":" + toStr;
 				}*/
