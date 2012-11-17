@@ -175,16 +175,6 @@ namespace JVL.Audio.WavPackWrapper
             StringBuilder
                 error                                       = new StringBuilder(1024);
 			
-			/*
-			 * 			public delegate int read_bytes_type(IntPtr id, IntPtr data, int bcount);
-			public delegate uint get_pos_type(IntPtr id);
-			public delegate int set_pos_abs_type(IntPtr id, uint pos);
-			public delegate int set_pos_rel_type(IntPtr id, int delta, int mode);
-			public delegate int push_back_byte_type(IntPtr id, int c);
-			public delegate uint get_length_type(IntPtr id);
-			public delegate int can_seek_type(IntPtr id);
-			 * */
-			
                 m_WavPackContext                            = WavpackOpenFileInputEx(ref reader, IntPtr.Zero, IntPtr.Zero, error, Open.Normalize | Open.WVC | Open.Max2Ch, 0);
             if (IntPtr.Zero == m_WavPackContext)
             {
@@ -194,8 +184,8 @@ namespace JVL.Audio.WavPackWrapper
             {
                 // init wave format header
                 m_WavPackIsFloat                            = (0 != (FileMode.Float & Mode));
-                m_WaveBytesPerSample                        = m_WavPackIsFloat  ? makeFloat4BytesPerSample  ? 4
-                                                                                                            : 2
+                m_WaveBytesPerSample                        = m_WavPackIsFloat  ? (makeFloat4BytesPerSample  ? 4
+                                                                                                            : 2)
                                                                                 : WavpackGetBytesPerSample(m_WavPackContext);
                 m_WaveFormat                                = new WAVFormatChunk(
 						channels: (ushort)WavpackGetNumChannels   (m_WavPackContext),
@@ -214,6 +204,14 @@ namespace JVL.Audio.WavPackWrapper
                 m_WaveFormat.nBlockAlign             = (ushort)(m_WaveFormat.nChannels * m_WaveBytesPerSample);
                 m_WaveFormat.nAvgBytesPerSec  = m_WaveFormat.nSamplesPerSec * m_WaveFormat.nBlockAlign;
                 m_WavPackSampleSize                         = m_WaveFormat.nChannels * WavPackBytesPerSample;*/
+				
+                m_WaveFormat = new WAVFormatChunk(
+					channels: (ushort)WavpackGetNumChannels   (m_WavPackContext),
+					samplesPerSec: (uint)   WavpackGetSampleRate    (m_WavPackContext),
+					bitsPerSample: (ushort)  (m_WaveBytesPerSample * 8),
+					validBitsPerSample: (ushort) WavpackGetBitsPerSample(m_WavPackContext),
+					channelMask: (uint)WavpackGetChannelMask(m_WavPackContext)
+				);
 
                 // stop if format is unexpected
                 if (0 > WavpackGetNumSamples(m_WavPackContext))

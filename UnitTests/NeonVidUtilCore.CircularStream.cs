@@ -12,25 +12,43 @@ namespace UnitTests.NeonVidUtilCore {
 		public void TestData() {
 			CircularStream stream = new CircularStream();
 			
-			const int MaxValueToTest = 10000;//00;
+			byte[] buff = new byte[0x20000];
+			using(FileStream fs = File.OpenRead("/media/EXTRADATA4/Videos/NeTestVideos/Main_Movie_t01.vc1")) {
+				Assert.AreEqual(buff.Length, fs.Read(buff, 0, buff.Length));
+			}
+			
+			Random rand = new Random();
 			
 			Thread t0 = new Thread(delegate() {
 				BinaryWriter writer = new BinaryWriter(stream);
-				for(int i = 0; i < MaxValueToTest; ++i) {
-					writer.Write(i);
+				for(int i = 0; i < buff.Length;) {
+					int amount = rand.Next() / 4;
+					if(amount > buff.Length - i) {
+						amount = buff.Length - i;
+					}
+					stream.Write(buff, i, amount);
+					i += amount;
 				}
 				stream.MarkEnd();
 			});
 			
 			Thread t1 = new Thread(delegate() {
-				BinaryReader reader = new BinaryReader(stream);
-				for(int i = 0; i < MaxValueToTest; ++i) {
-					int result = reader.ReadInt32();
-					Console.WriteLine("Read: {0}", result);
-					Assert.AreEqual(i, result);
+				int i;
+				while(true) {
+					byte[] buffer = new byte[rand.Next() / 4];
+					int len = stream.Read(buffer, 0, buffer.Length);
+					
+					for(int j = 0; j < len; ++j) {
+						Assert.AreEqual(buff[i + j], buffer[j]);
+					}
+					
+					i += len;
+					Assert.IsTrue(len != 0 || i == buff.Length);
+					if(len == 0) {
+						break;
+					}
 				}
-				byte[] data = new byte[1];
-				Assert.AreEqual(0, stream.Read(data, 0, 1));
+				
 			});
 			
 			t0.Start();

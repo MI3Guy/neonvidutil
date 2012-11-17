@@ -41,8 +41,14 @@ namespace NeonVidUtil.Core {
 				if(conversions.Count() > 0 || processes.Count() > 0) {
 					NeAPI.Output(kvp.Key);
 					
+					if(kvp.Value.ConversionContainers.Count() > 0) {
+						NeAPI.Output("Supported Containers: {0}", string.Join(", ", kvp.Value.ConversionContainers.Select(container => container.ToString())));
+					}
+					
 					foreach(ConversionInfo conversion in conversions) {
-						NeAPI.Output("\t{0}\t=>\t{1}", conversion.InFormatType.CodecString, conversion.OutFormatType.CodecString);
+						NeAPI.Output("\t{0}:{1}\t=>\t{2}:{3}",
+						             conversion.InFormatType.ContainerString, conversion.InFormatType.CodecString,
+						             conversion.OutFormatType.ContainerString, conversion.OutFormatType.CodecString);
 					}
 					
 					foreach(ProcessingInfo process in processes) {

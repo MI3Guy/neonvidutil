@@ -66,7 +66,7 @@ namespace NeonVidUtil.Core {
 		}
 		
 		public override int GetHashCode() {
-			return InFormatType.GetHashCode() + 17*OutFormatType.GetHashCode() + 3*StreamIndex;
+			return unchecked(InFormatType.GetHashCode() + 17*OutFormatType.GetHashCode() + 3*StreamIndex);
 		}
 	}
 }

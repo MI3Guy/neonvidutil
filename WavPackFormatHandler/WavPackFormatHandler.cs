@@ -34,12 +34,14 @@ namespace NeonVidUtil.Plugin.WavPackFormatHandler {
 				return new ConversionInfo[] {
 					new ConversionInfo {
 						InFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
-						OutFormatType = new FormatType(FormatType.FormatContainer.WavPack, FormatType.FormatCodecType.WavPack)
+						OutFormatType = new FormatType(FormatType.FormatContainer.WavPack, FormatType.FormatCodecType.WavPack),
+						Flags = ConversionInfo.ConversionFlags.None
 					},
-					new ConversionInfo {
+					/*new ConversionInfo {
 						InFormatType = new FormatType(FormatType.FormatContainer.WavPack, FormatType.FormatCodecType.WavPack),
-						OutFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM)
-					}
+						OutFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+						Flags = ConversionInfo.ConversionFlags.None
+					}*/
 				};
 			}
 		}

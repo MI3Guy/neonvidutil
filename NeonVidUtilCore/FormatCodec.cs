@@ -14,7 +14,7 @@ namespace NeonVidUtil.Core {
 		private static List<string> tempFiles = new List<string>();
 		
 		
-		public static string GetTempFileName(string extension) {
+		private static string GetTempFileName(string extension) {
 			if(extension == null) {
 				return Path.GetTempFileName();
 			}
@@ -73,37 +73,19 @@ namespace NeonVidUtil.Core {
 		}
 		
 		protected string UseTempFile(Stream inbuff) {
-			return UseTempFile(inbuff, null);
-		}
-		
-		protected string UseTempFile(Stream inbuff, string ext) {
-			string fname;
-			if(ext == null && inbuff is FileStream) {
+			if(inbuff is FileStream) {
 				FileStream fs = (FileStream)inbuff;
-				fname = fs.Name;
+				string fname = fs.Name;
 				fs.Close();
-			}
-			else if(inbuff is FileStream) {
-				FileStream fs = (FileStream)inbuff;
-				fname = CreateTempFileName(ext);
-				fs.Close();
-				File.Delete(fname);
-				File.Move(fs.Name, fname);
+				return fname;
 			}
 			else {
-				using(FileStream fs = CreateTempFile(ext)) {
-					//inbuff.CopyTo(fs);
-					byte[] buff = new byte[1024*4];
-					int len = 0;
-					while((len = inbuff.Read(buff, 0, buff.Length)) != 0) {
-						fs.Write(buff, 0, len);
-					}
-					fname = fs.Name;
+				string fname = Path.GetTempFileName();
+				using(FileStream fs = File.Create(fname)) {
+					inbuff.CopyTo(fs);
 				}
+				return fname;
 			}
-			
-			
-			return fname;
 		}
 		
 	}
