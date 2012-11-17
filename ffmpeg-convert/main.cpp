@@ -500,8 +500,9 @@ bool ConvertFFmpegAudio(AVFormatContext* inFmt, AVCodecContext* inCodecCtx, AVCo
 			
 			int got_packet_ptr = 0;
 			while(got_packet_ptr == 0) {
-				if(avcodec_encode_audio2(audioStream->codec, &outPacket, frame, &got_packet_ptr) != 0) {
-					std::cerr << "ffmpeg-convert: Error while encoding.\n";
+				int errorCode;
+				if((errorCode = avcodec_encode_audio2(audioStream->codec, &outPacket, frame, &got_packet_ptr)) != 0) {
+					std::cerr << "ffmpeg-convert: Error while encoding (errorCode = " << errorCode << ").\n";
 					avformat_close_input(&inFmt);
 					return false;
 				}

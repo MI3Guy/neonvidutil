@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\Unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLACSharp", "FLACSharp\FLACSharp.csproj", "{3CF46602-3954-46BA-AA74-75171A026769}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGPulldownFormatHandler", "DGPulldownSharp\DGPulldownFormatHandler.csproj", "{7B6BB2E7-1626-4D1A-832C-3AE3CDE04AEB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DGPulldownFormatHandler", "DGPulldownFormatHandler\DGPulldownFormatHandler.csproj", "{7B6BB2E7-1626-4D1A-832C-3AE3CDE04AEB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeMKVFormatHandler", "MakeMKVFormatHandler\MakeMKVFormatHandler.csproj", "{F45BC451-E337-4251-99A2-1D8316921135}"
 EndProject

@@ -2,11 +2,17 @@
 *.userprefs
 *.pidb
 *.md.pc
+test-results/
 
 # Build files
 bin/
+obj/
+archive/
+build/
 
 # Test files
 *.wav
 *.vc1
 
+# Other files
+*.patch

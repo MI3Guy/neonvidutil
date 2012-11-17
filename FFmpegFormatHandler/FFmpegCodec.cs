@@ -66,7 +66,8 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 				
 				if(!errorCode) {
 					//TODO: Throw exception.
-					System.Diagnostics.Debugger.Break();
+					//System.Diagnostics.Debugger.Break();
+					throw new Exception("An error occurred while converting.");
 				}
 			}
 			else {

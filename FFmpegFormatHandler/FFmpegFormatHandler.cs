@@ -25,6 +25,7 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			outputTypes.Add(".THD", new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD));
 			outputTypes.Add(".VC1", new FormatType(FormatType.FormatContainer.VC1, FormatType.FormatCodecType.VC1));
 			outputTypes.Add(".M2V", new FormatType(FormatType.FormatContainer.MPEG, FormatType.FormatCodecType.MPEGVideo));
+			outputTypes.Add(".AC3", new FormatType(FormatType.FormatContainer.AC3, FormatType.FormatCodecType.AC3));
 			
 			ffmpegSettings = new FFmpegSetting[] {
 				// Decoding/Encoding
@@ -51,6 +52,12 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 					OutFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
 					InFormatName = "dts", OutFormatName = "wav", CodecName = "pcm_s16le",
 					Flags = ConversionInfo.ConversionFlags.None
+				},
+				new FFmpegSetting {
+					InFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+					OutFormatType = new FormatType(FormatType.FormatContainer.AC3, FormatType.FormatCodecType.AC3),
+					InFormatName = "wav", OutFormatName = "ac3", CodecName = "ac3",
+					Flags = ConversionInfo.ConversionFlags.Lossy
 				},
 				
 				// Demuxing
