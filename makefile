@@ -12,7 +12,7 @@ archive/:
 	mkdir $@
 	
 clean:
-	rm -rf $(dotNetArchiveFiles) build/ $(unixFiles) $(windowsFiles)
+	rm -rf $(dotNetArchiveFiles) build/ $(unixFiles) $(windowsFiles) archive/*
 
 # Rules for .NET code
 
@@ -50,14 +50,14 @@ WavPackFormatHandler/bin/Release/WavPackFormatHandler.dll: NeonVidUtilCore/bin/R
 WavPackSharp/bin/Release/WavPackSharp.dll: WavPackSharp/*.cs
 	xbuild WavPackSharp/WavPackSharp.csproj /p:Configuration=Release /verbosity:quiet
 
-dotNetArchiveFiles = archive/ NeonVidUtil/bin/Release/NeonVidUtil.exe NeonVidUtilCore/bin/Release/NeonVidUtilCore.dll \
+dotNetArchiveFiles = NeonVidUtil/bin/Release/NeonVidUtil.exe NeonVidUtilCore/bin/Release/NeonVidUtilCore.dll \
 	DGPulldownFormatHandler/bin/Release/DGPulldownFormatHandler.dll FFmpegFormatHandler/bin/Release/FFmpegFormatHandler.dll \
 	FLACFormatHandler/bin/Release/FLACFormatHandler.dll FLACSharp/bin/Release/FLACSharp.dll \
 	MediaInfoFormatHandler/bin/Release/MediaInfoFormatHandler.dll VC1FormatHandler/bin/Release/VC1FormatHandler.dll \
 	WAVFormatHandler/bin/Release/WAVFormatHandler.dll WAVSharp/bin/Release/WAVSharp.dll \
 	WavPackFormatHandler/bin/Release/WavPackFormatHandler.dll WavPackSharp/bin/Release/WavPackSharp.dll
 
-archive/NeonVidUtil-dotNET/: $(dotNetArchiveFiles)
+archive/NeonVidUtil-dotNET/: $(dotNetArchiveFiles) archive/
 	mkdir -p $@
 	cp NeonVidUtil/bin/Release/NeonVidUtil.exe $@/
 	cp NeonVidUtilCore/bin/Release/NeonVidUtilCore.dll $@/
@@ -124,14 +124,14 @@ DGPulldown/bin/Release/DGPulldown.dll: DGPulldown/DGPulldown.cpp
 
 ffmpeg-convert/bin/Release/ffmpeg-convert.dll: ffmpeg-convert/main.cpp
 	mkdir -p ffmpeg-convert/bin/Release/
-	$(WINCXX) -fpic -shared -D__STDC_CONSTANT_MACROS -Ilibraries/windows/ffmpeg/dev/include -Llibraries/windows/ffmpeg/dev/lib -o $@ $^ -lavcodec -lavformat -lavutil
+	$(WINCXX) -g -fpic -shared -D__STDC_CONSTANT_MACROS -Ilibraries/windows/ffmpeg/dev/include -Llibraries/windows/ffmpeg/dev/lib -o $@ $^ -lavcodec -lavformat -lavutil
 
 vc1conv/bin/Release/vc1conv.dll: vc1conv/vc1conv.c
 	mkdir -p vc1conv/bin/Release/
 	$(WINC) -fpic -shared $^ -o $@
 
 
-archive/NeonVidUtil-win32/: $(windowsFiles) $(dotNetArchiveFiles)
+archive/NeonVidUtil-win32/: $(windowsFiles) $(dotNetArchiveFiles) archive/
 	mkdir -p $@
 	cp NeonVidUtil/bin/Release/NeonVidUtil.exe $@/
 	cp NeonVidUtilCore/bin/Release/NeonVidUtilCore.dll $@/
@@ -151,7 +151,12 @@ archive/NeonVidUtil-win32/: $(windowsFiles) $(dotNetArchiveFiles)
 	cp DGPulldown/bin/Release/DGPulldown.dll $@/Plugins/
 	cp ffmpeg-convert/bin/Release/ffmpeg-convert.dll $@/Plugins/
 	cp vc1conv/bin/Release/vc1conv.dll $@/Plugins/
+	cp libraries/windows/ffmpeg/avcodec-54.dll $@/Plugins/
+	cp libraries/windows/ffmpeg/avformat-54.dll $@/Plugins/
+	cp libraries/windows/ffmpeg/avutil-52.dll $@/Plugins/
+	cp libraries/windows/flac/libFLAC.dll $@/Plugins/
 	cp libraries/windows/mediainfo/MediaInfo.dll $@/Plugins/
-	cp libraries/windows/mediainfo/wavpack.dll $@/Plugins/
+	cp libraries/windows/mkvtoolnix/mkvextract.exe $@/Plugins/
+	cp libraries/windows/wavpack/wavpack.dll $@/Plugins/
 
 

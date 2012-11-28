@@ -15,8 +15,8 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			try {
 				InitFFmpeg();
 			}
-			catch {
-				throw new Exception("An error occurred while loading FFmpegConvert.");
+			catch(Exception ex) {
+				throw new Exception(string.Format("An error occurred while loading FFmpegConvert. {0}", ex.Message));
 			}
 		}
 		
