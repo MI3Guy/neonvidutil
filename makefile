@@ -151,8 +151,8 @@ archive/NeonVidUtil-win32/: $(windowsFiles) $(dotNetArchiveFiles) archive/
 	cp DGPulldown/bin/Release/DGPulldown.dll $@/Plugins/
 	cp ffmpeg-convert/bin/Release/ffmpeg-convert.dll $@/Plugins/
 	cp vc1conv/bin/Release/vc1conv.dll $@/Plugins/
-	cp libraries/windows/ffmpeg/avcodec-54.dll $@/Plugins/
-	cp libraries/windows/ffmpeg/avformat-54.dll $@/Plugins/
+	cp libraries/windows/ffmpeg/avcodec-55.dll $@/Plugins/
+	cp libraries/windows/ffmpeg/avformat-55.dll $@/Plugins/
 	cp libraries/windows/ffmpeg/avutil-52.dll $@/Plugins/
 	cp libraries/windows/flac/libFLAC.dll $@/Plugins/
 	cp libraries/windows/mediainfo/MediaInfo.dll $@/Plugins/

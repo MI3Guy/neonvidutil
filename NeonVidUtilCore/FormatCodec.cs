@@ -73,10 +73,10 @@ namespace NeonVidUtil.Core {
 		}
 		
 		protected string UseTempFile(Stream inbuff) {
-			if(inbuff is FileStream) {
-				FileStream fs = (FileStream)inbuff;
-				string fname = fs.Name;
-				fs.Close();
+			var fsInbuff = inbuff as FileStream;
+			if(fsInbuff != null && File.Exists(fsInbuff.Name)) { // File.Exists to filter out streams like stdout.
+				string fname = fsInbuff.Name;
+				fsInbuff.Close();
 				return fname;
 			}
 			else {

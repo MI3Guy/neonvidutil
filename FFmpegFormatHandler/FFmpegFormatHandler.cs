@@ -9,25 +9,39 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		public FFmpegFormatHandler() {
 			FFmpegConvert.LoadFFmpegConvert();
 			
-			rawFormats = new Dictionary<FormatType, FormatType>();
-			rawFormats.Add(new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.TrueHD),
-			               new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD));
-			rawFormats.Add(new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.AC3),
-			               new FormatType(FormatType.FormatContainer.AC3, FormatType.FormatCodecType.AC3));
-			rawFormats.Add(new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.EAC3),
-			               new FormatType(FormatType.FormatContainer.EAC3, FormatType.FormatCodecType.EAC3));
-			rawFormats.Add(new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.DTS),
-			               new FormatType(FormatType.FormatContainer.DTS, FormatType.FormatCodecType.DTS));
-			rawFormats.Add(new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.MPEGVideo),
-			               new FormatType(FormatType.FormatContainer.MPEG, FormatType.FormatCodecType.MPEGVideo));
-			
-			
-			outputTypes = new Dictionary<string, FormatType>();
-			outputTypes.Add(".WAV", new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM));
-			outputTypes.Add(".THD", new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD));
-			outputTypes.Add(".VC1", new FormatType(FormatType.FormatContainer.VC1, FormatType.FormatCodecType.VC1));
-			outputTypes.Add(".M2V", new FormatType(FormatType.FormatContainer.MPEG, FormatType.FormatCodecType.MPEGVideo));
-			outputTypes.Add(".AC3", new FormatType(FormatType.FormatContainer.AC3, FormatType.FormatCodecType.AC3));
+			rawFormats = new Dictionary<FormatType, FormatType>
+			{
+				{
+					new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.TrueHD),
+			               new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD)
+				},
+				{
+					new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.AC3),
+			               new FormatType(FormatType.FormatContainer.AC3, FormatType.FormatCodecType.AC3)
+				},
+				{
+					new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.EAC3),
+			               new FormatType(FormatType.FormatContainer.EAC3, FormatType.FormatCodecType.EAC3)
+				},
+				{
+					new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.DTS),
+			               new FormatType(FormatType.FormatContainer.DTS, FormatType.FormatCodecType.DTS)
+				},
+				{
+					new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.MPEGVideo),
+			               new FormatType(FormatType.FormatContainer.MPEG, FormatType.FormatCodecType.MPEGVideo)
+				}
+			};
+
+			outputTypes = new Dictionary<string, FormatType>
+			{
+				{ ".WAV", new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM) },
+				{ ".THD", new FormatType(FormatType.FormatContainer.TrueHD, FormatType.FormatCodecType.TrueHD) },
+				{ ".VC1", new FormatType(FormatType.FormatContainer.VC1, FormatType.FormatCodecType.VC1) },
+				{ ".M2V", new FormatType(FormatType.FormatContainer.MPEG, FormatType.FormatCodecType.MPEGVideo) },
+				{ ".AC3", new FormatType(FormatType.FormatContainer.AC3, FormatType.FormatCodecType.AC3) },
+				{ ".EAC3", new FormatType(FormatType.FormatContainer.EAC3, FormatType.FormatCodecType.EAC3) }
+			};
 			
 			ffmpegSettings = new FFmpegSetting[] {
 				// Decoding/Encoding
@@ -55,13 +69,21 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 					InFormatName = "dts", OutFormatName = "wav", CodecName = "pcm_s16le",
 					Flags = ConversionInfo.ConversionFlags.None
 				},
+
 				new FFmpegSetting {
 					InFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
 					OutFormatType = new FormatType(FormatType.FormatContainer.AC3, FormatType.FormatCodecType.AC3),
 					InFormatName = "wav", OutFormatName = "ac3", CodecName = "ac3",
 					Flags = ConversionInfo.ConversionFlags.Lossy
 				},
-				
+
+				new FFmpegSetting {
+					InFormatType = new FormatType(FormatType.FormatContainer.Wave, FormatType.FormatCodecType.PCM),
+					OutFormatType = new FormatType(FormatType.FormatContainer.EAC3, FormatType.FormatCodecType.EAC3),
+					InFormatName = "wav", OutFormatName = "eac3", CodecName = "eac3",
+					Flags = ConversionInfo.ConversionFlags.Lossy
+				},
+
 				// Demuxing
 				new FFmpegSetting {
 					InFormatType = new FormatType(FormatType.FormatContainer.None, FormatType.FormatCodecType.PCM),

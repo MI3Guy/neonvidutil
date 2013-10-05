@@ -16,6 +16,8 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 			
 			streamIndex = setting.StreamIndex;
 		}
+
+		FFmpegConvert converter;
 		
 		FFmpegSetting setting;
 		string inFormatName;
@@ -23,76 +25,33 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		
 		public override Stream InitConvertData(Stream inbuff, string outfile) {
 			if(outfile == null) {
-				return new CircularStream();
+				converter = new FFmpegConvert(
+					inStream: inbuff,
+					inFormatName: inFormatName,
+					outFormatName: setting.OutFormatName,
+					codecName: setting.CodecName,
+					bitrate: NeAPI.Settings[typeof(FFmpegFormatHandler), "bitrate"],
+					streamIndex: streamIndex);
 			}
 			else {
-				return File.Create(outfile);
+				converter = new FFmpegConvert(
+					inStream: inbuff,
+					inFormatName: inFormatName,
+					outFileName: outfile,
+					outFormatName: setting.OutFormatName,
+					codecName: setting.CodecName,
+					bitrate: NeAPI.Settings[typeof(FFmpegFormatHandler), "bitrate"],
+					streamIndex: streamIndex);
 			}
+
+			return converter.OutStream;
 		}
 		
 		public override void ConvertData(Stream inbuff, Stream outbuff, int progressId) {
-			FFmpegConvert ffmpeg = new FFmpegConvert();
-			
-			Action callback = () => NeAPI.ProgressBar(progressId, inbuff);
-			
-			if(setting.CodecName != null) {
-				/*string inFileName = null;
-				string outFileName = null;
-				if(inbuff is FileStream) {
-					FileStream fs = (FileStream)inbuff;
-					inFileName = fs.Name;
-					fs.Close();
-				}
-				
-				if(outbuff is FileStream) {
-					FileStream fs = (FileStream)outbuff;
-					outFileName = fs.Name;
-					fs.Close();
-				}*/
-				
-				bool errorCode;
-				//if(inFileName == null && outFileName == null) {
-					errorCode = ffmpeg.Convert(inbuff, inFormatName, outbuff, setting.OutFormatName, setting.CodecName, streamIndex, callback);
-				//}
-				//else if(inFileName == null /* && outFileName != null */) {
-				//	errorCode = ffmpeg.Convert(inbuff, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex, callback);
-				//}
-				//else if(/*inFileName != null && */outFileName == null) {
-				//	errorCode = ffmpeg.Convert(inFileName, inFormatName, outbuff, setting.outFormatName, setting.codecName, streamIndex, callback);
-				//}
-				//else /*if(inFileName != null && outFileName != null)*/ {
-				//	errorCode = ffmpeg.Convert(inFileName, inFormatName, outFileName, setting.outFormatName, setting.codecName, streamIndex, callback);
-				//}
-				
-				if(!errorCode) {
-					//TODO: Throw exception.
-					//System.Diagnostics.Debugger.Break();
-					throw new Exception("An error occurred while converting.");
-				}
-			}
-			else {
-				//string inFileName = null;
-				//string outFileName = null;
-				/*if(inbuff is FileStream && outbuff is FileStream) {
-					FileStream fs = (FileStream)inbuff;
-					inFileName = fs.Name;
-					fs.Close();
-					fs = (FileStream)inbuff;
-					outFileName = fs.Name;
-					fs.Close();
-				}*/
-				
-				//if(inFileName == null && outFileName == null) {
-					//ffmpeg.Demux(inbuff, inFormatName, outbuff, streamIndex, callback);
-				//}
-				//else {
-				//	ffmpeg.Demux(inFileName, inFormatName, outFileName, streamIndex, callback);
-				//}
-				throw new ArgumentNullException("CodecName must not be null.");
-			}
-			
-			if(outbuff is CircularStream) {
-				((CircularStream)outbuff).MarkEnd();
+			NeAPI.Output("ffmpeg command line arguments: {0}", converter.CommandLineArguments);
+
+			if(!converter.Run(() => NeAPI.ProgressBar(progressId, inbuff))) {
+				throw new Exception("An error occurred while converting.");
 			}
 		}
 		

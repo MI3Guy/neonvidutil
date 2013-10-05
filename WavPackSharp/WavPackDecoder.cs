@@ -175,7 +175,7 @@ namespace JVL.Audio.WavPackWrapper
             StringBuilder
                 error                                       = new StringBuilder(1024);
 			
-                m_WavPackContext                            = WavpackOpenFileInputEx(ref reader, IntPtr.Zero, IntPtr.Zero, error, Open.Normalize | Open.WVC | Open.Max2Ch, 0);
+                m_WavPackContext                            = WavpackOpenFileInputEx(ref reader, IntPtr.Zero, IntPtr.Zero, error, Open.WVC, 0);
             if (IntPtr.Zero == m_WavPackContext)
             {
                 throw new OpenFailedException(error.ToString());

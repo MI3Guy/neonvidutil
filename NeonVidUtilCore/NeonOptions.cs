@@ -21,13 +21,13 @@ namespace NeonVidUtil.Core {
 			set { this[new SettingItem(plugin, name)] = value; }
 		}
 		
-		public string this[FormatHandler plugin, string name] {
+		public string this[Type pluginType, string name] {
 			get {
 				string pluginName = null;
-				if(plugin == null) {
+				if(pluginType == null) {
 					return null;
 				}
-				else if((pluginName = PluginHelper.PluginShortName(plugin.GetType().Name)) != null) {
+				else if((pluginName = PluginHelper.PluginShortName(pluginType.Name)) != null) {
 					return this[pluginName, name];
 				}
 				else {
@@ -36,9 +36,18 @@ namespace NeonVidUtil.Core {
 			}
 			set {
 				string pluginName = null;
-				if(plugin != null && (pluginName = PluginHelper.PluginShortName(plugin.GetType().Name)) != null) {
+				if(pluginType != null && (pluginName = PluginHelper.PluginShortName(pluginType.Name)) != null) {
 					this[pluginName, name] = value;
 				}
+			}
+		}
+
+		public string this[FormatHandler plugin, string name] {
+			get {
+				return this[plugin.GetType(), name];
+			}
+			set {
+				this[plugin.GetType(), name] = value;
 			}
 		}
 		

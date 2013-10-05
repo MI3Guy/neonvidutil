@@ -1,16 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 using NeonVidUtil.Core;
 
 namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 	public class FFmpegConvert {
 		
+#if FFMPEG_LIBRARY
 		public FFmpegConvert() {
 			
 		}
 		
+
 		public static void LoadFFmpegConvert() { // Static constructor not used because exception needs to be caught.
 			try {
 				InitFFmpeg();
@@ -130,6 +134,122 @@ namespace NeonVidUtil.Plugin.FFmpegFormatHandler {
 		
 		[DllImport("ffmpeg-convert")]
 		private static extern int FFmpegGetEOF();
-	}
-}
 
+#else
+
+		public static void LoadFFmpegConvert() { // Static constructor not used because exception needs to be caught.
+			try {
+				var psi = new ProcessStartInfo("ffmpeg", "--version")
+				{
+					UseShellExecute = false,
+					RedirectStandardError = true
+				};
+				Process ffmpeg = Process.Start(psi);
+				ffmpeg.WaitForExit();
+			}
+			catch(Exception ex) {
+				throw new Exception(string.Format("An error occurred while loading FFmpegConvert. {0}", ex.Message));
+			}
+		}
+
+		public FFmpegConvert(Stream inStream, string inFormatName, string outFileName, string outFormatName, string codecName, string bitrate, int streamIndex) {
+			this.inStream = inStream;
+
+			psi = new ProcessStartInfo("ffmpeg", BuildFFmpegArgs(
+				inFileName: "-",
+				inFormatName: inFormatName,
+				outFileName: outFileName,
+				outFormatName: outFormatName,
+				codecName: codecName,
+				bitrate: bitrate,
+				streamIndex: streamIndex
+				))
+			{
+				UseShellExecute = false,
+				RedirectStandardError = true,
+				RedirectStandardInput = true
+			};
+
+			ffmpeg = Process.Start(psi);
+
+			OutStream = null;
+		}
+
+		public FFmpegConvert(Stream inStream, string inFormatName, string outFormatName, string codecName, string bitrate, int streamIndex) {
+
+			this.inStream = inStream;
+
+			psi = new ProcessStartInfo("ffmpeg", BuildFFmpegArgs(
+				inFileName: "-",
+				inFormatName: inFormatName,
+				outFileName: "-",
+				outFormatName: outFormatName,
+				codecName: codecName,
+				bitrate: bitrate,
+				streamIndex: streamIndex
+				))
+			{
+				UseShellExecute = false,
+				RedirectStandardError = true,
+				RedirectStandardOutput = true,
+				RedirectStandardInput = true
+			};
+
+			ffmpeg = Process.Start(psi);
+
+			OutStream = ffmpeg.StandardOutput.BaseStream;
+		}
+
+		private Stream inStream;
+		private ProcessStartInfo psi;
+		private Process ffmpeg;
+
+		public string CommandLineArguments {
+			get { return psi.Arguments; }
+		}
+
+		public Stream OutStream
+		{
+			get;
+			protected set;
+		}
+
+		public bool Run(Action callback) {
+			if(inStream != null) {
+				var ffmpegInput = ffmpeg.StandardInput.BaseStream;
+				byte[] data = new byte[0x1000];
+
+				int bytesRead;
+				while((bytesRead = inStream.Read(data, 0, data.Length)) != 0) {
+					ffmpegInput.Write(data, 0, bytesRead);
+					callback();
+				}
+
+				ffmpegInput.Close();
+			}
+
+			ffmpeg.WaitForExit();
+			bool result = ffmpeg.ExitCode == 0;
+			ffmpeg.Dispose();
+			ffmpeg = null;
+
+			return result;
+		}
+		
+		private string BuildFFmpegArgs(string inFileName, string inFormatName, string outFileName, string outFormatName, string codecName, string bitrate, int streamIndex) {
+			var sb = new StringBuilder();
+			sb.AppendFormat("-y -f {1} -i \"{0}\" ", inFileName.Replace("\"", "\"\""), inFormatName);
+
+			if(bitrate != null) {
+				sb.AppendFormat("-b:a \"{0}\"", bitrate.Replace("\"", "\"\""));
+			}
+
+			sb.AppendFormat(" -map {3}:0 -codec {2} -f {1} \"{0}\"", outFileName.Replace("\"", "\"\""), outFormatName, codecName, streamIndex);
+
+			return sb.ToString();
+		}
+		
+
+	}
+#endif
+}

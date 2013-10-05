@@ -9,14 +9,20 @@ namespace NeonVidUtil {
 	public static class Program {
 		public static int Main(string[] args) {
 #if DEBUG
-			args = new string[] { "--plugin-ignore=WAV", "/media/EXTRADATA4/Videos/NeTestVideos/test.wav", "test.ac3" };
+			//args = new string[] { "/media/john/EXTRADATA4/Videos/NeTestVideos/test.thd", "test.wav" };
+			//args = new string[] { "--plugin-ignore=WAV", "/media/john/EXTRADATA4/Videos/NeTestVideos/test.wav", "test.wv" };
+			//args = new string[] { "test.wv", "test.wav" };
+			//args = new string[] { "--plugin-ignore=WAV", "--bitrate=640k", "/media/john/EXTRADATA4/Videos/NeTestVideos/test.thd", "test.ac3" };
+			//args = new string[] { "--plugin-ignore=WAV", "--bitrate=640k", "/media/john/EXTRADATA4/Videos/NeTestVideos/test.thd", "test.eac3" };
+			args = new string[] { "--plugin-ignore=WAV", "--bitrate=768k", "/media/john/EXTRADATA4/Videos/NeTestVideos/test.thd", "test.dts" };
+			//args = new string[] { "--plugin-ignore=WAV", "/media/john/EXTRADATA4/Videos/NeTestVideos/test.wav", "test.wav" };
+			//args = new string[] { "/media/john/EXTRADATA4/Videos/NeTestVideos/test.mka", "test.wav" };
 #endif
 			
 			Console.WriteLine("Neon VidUtil pre relase test");
 			if(Type.GetType("Mono.Runtime") != null) {
 				Console.WriteLine("Detected .NET Runtime: Mono {0}", Environment.Version);
-			}
-			else {
+			} else {
 				Console.WriteLine("Unknown .NET Runtime: Version {0}", Environment.Version);
 				Console.WriteLine("Probably Microsoft.NET");
 			}
@@ -28,6 +34,7 @@ namespace NeonVidUtil {
 			string inFileName = null;
 			string outFileName = null;
 			bool show_help = false;
+			bool show_valid_bitrates = false;
 			
 			OptionSet options = new OptionSet() {
 				{ "n|streamindex=", "the index of the stream to use.",
@@ -55,8 +62,16 @@ namespace NeonVidUtil {
 						}
 					}
 				},
+				{ "b|bitrate=", "Specify the bitrate used for lossy audio. See --valid-bitrates.",
+					b => {
+						Settings["FFmpeg", "bitrate"] = b;
+					}
+				},
 				{ "h|help", "show this message",
 					v => show_help = (v != null)
+				},
+				{ "valid-bitrates", "Show valid bitrates for different audio types.",
+					v => show_valid_bitrates = (v != null)
 				},
 				
 				{
@@ -91,6 +106,25 @@ namespace NeonVidUtil {
 				Console.WriteLine("Usage: NeonVidUtil.exe [Options] inputfile outputfile");
 				Console.WriteLine("Options:");
 				options.WriteOptionDescriptions(Console.Out);
+				return 0;
+			}
+
+			if(show_valid_bitrates) {
+				Console.WriteLine("NeonVidUtil Valid Bitrates");
+				Console.WriteLine("Note: These lists may not be complete and are for reference only.");
+				Console.WriteLine();
+				Console.WriteLine("AC3");
+				Console.WriteLine("\t128k / 128000");
+				Console.WriteLine("\t448k / 448000");
+				Console.WriteLine("\t640k / 640000");
+				Console.WriteLine();
+				Console.WriteLine("EAC3");
+				Console.WriteLine("\tUnknown. I was unable to find a list.");
+				Console.WriteLine();
+				Console.WriteLine("DTS");
+				Console.WriteLine("\t768k / 768000");
+				Console.WriteLine("\t1536k / 1536000");
+
 				return 0;
 			}
 			

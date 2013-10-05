@@ -91,20 +91,11 @@ namespace WAVSharp {
 			int dataoffset = BytesPerSample*n;
 			switch(BytesPerSample) {
 				case 1:
-					return (sbyte)Data[dataoffset];
+					return unchecked( (sbyte)Data[dataoffset] );
 				case 2:
 					return BitConverter.ToInt16(Data, dataoffset);
-				case 3:{
-					byte[] sample = new byte[sizeof(int)];
-					for(int i = 0; i < BytesPerSample; ++i) {
-						sample[i] = Data[i + dataoffset];
-					}
-					bool positive = (sample[2] & 0x80) == 0;
-					if(!positive) { // Convert negative 24 bit number to negative 32 bit number
-						sample[3] = 0xFF;
-					}
-					return BitConverter.ToInt32(sample, 0);
-					}
+				case 3:
+					return unchecked( Data[dataoffset] | ((Data[dataoffset + 1]) << 8) | ((int)(sbyte)(Data[dataoffset + 2]) << 16) );
 				case 4:
 					return BitConverter.ToInt32(Data, dataoffset);
 				default:

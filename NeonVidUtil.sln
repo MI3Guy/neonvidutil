@@ -19,8 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAVFormatHandler", "WAVForm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WAVSharp", "WAVSharp\WAVSharp.csproj", "{81205C35-8E0C-457B-BC1B-7FABE2E20DF5}"
 EndProject
-Project("{2857B73E-F847-4B02-9238-064979017E93}") = "ffmpeg-convert", "ffmpeg-convert\ffmpeg-convert.cproj", "{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFmpegFormatHandler", "FFmpegFormatHandler\FFmpegFormatHandler.csproj", "{4015AA68-8A25-4C4F-9399-A0118DF7F220}"
 EndProject
 Project("{2857B73E-F847-4B02-9238-064979017E93}") = "DGPulldown", "DGPulldown\DGPulldown.cproj", "{D0AEC428-160A-4C3A-A7BD-82777A2F0084}"
@@ -83,10 +81,6 @@ Global
 		{52318870-7311-46C0-B87C-40E77AB378EC}.Debug|x86.Build.0 = Debug|Any CPU
 		{52318870-7311-46C0-B87C-40E77AB378EC}.Release|x86.ActiveCfg = Release|Any CPU
 		{52318870-7311-46C0-B87C-40E77AB378EC}.Release|x86.Build.0 = Release|Any CPU
-		{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}.Debug|x86.Build.0 = Debug|Any CPU
-		{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}.Release|x86.ActiveCfg = Release|Any CPU
-		{715CD6DF-AAC0-4581-BC28-CA2ED89A5CA1}.Release|x86.Build.0 = Release|Any CPU
 		{7B6BB2E7-1626-4D1A-832C-3AE3CDE04AEB}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{7B6BB2E7-1626-4D1A-832C-3AE3CDE04AEB}.Debug|x86.Build.0 = Debug|Any CPU
 		{7B6BB2E7-1626-4D1A-832C-3AE3CDE04AEB}.Release|x86.ActiveCfg = Release|Any CPU
@@ -154,9 +148,6 @@ Global
 		$3.WhileBraceForcement = AddBraces
 		$3.UsingBraceForcement = AddBraces
 		$3.FixedBraceForcement = AddBraces
-		$3.PlaceElseOnNewLine = True
-		$3.PlaceCatchOnNewLine = True
-		$3.PlaceFinallyOnNewLine = True
 		$3.BeforeMethodDeclarationParentheses = False
 		$3.BeforeMethodCallParentheses = False
 		$3.BeforeConstructorDeclarationParentheses = False

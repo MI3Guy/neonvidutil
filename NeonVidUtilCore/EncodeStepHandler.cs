@@ -21,19 +21,22 @@ namespace NeonVidUtil.Core {
 		
 		public void Run() {
 			NeAPI.Output(string.Format("Beginning Conversion: {0}", codec.DisplayValue));
+
 			try {
 				codec.ConvertData(instream, outstream, progressId);
 				error = null;
 			}
+#if !DEBUG
 			catch(Exception ex) {
 				NeAPI.Output("An error occurred during processing: {0}", ex.Message);
 				error = ex;
 			}
+#endif
 			finally {
 				NeAPI.ProgressBar(progressId, null);
 			}
 			
-			NeAPI.Output("Ended Conversion");
+			NeAPI.Output("Ended Conversion ({0})", codec.DisplayValue);
 		}
 		
 		public void RunThread() {

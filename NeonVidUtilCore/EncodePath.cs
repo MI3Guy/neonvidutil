@@ -65,7 +65,9 @@ namespace NeonVidUtil.Core {
 			}
 			
 			foreach(Stream s in streams) {
-				s.Close();
+				if(s != null) {
+					s.Close();
+				}
 			}
 		}
 		
